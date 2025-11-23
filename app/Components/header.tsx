@@ -59,14 +59,17 @@ export default function Header() {
   if (isPortfolio) {
     return (
       <>
-        <motion.header
-          initial={{ y: -120 }}
-          animate={{ y: 0 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 120 }}
-          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-            isScrolled ? 'bg-black/80 backdrop-blur-xl border-b border-gray-800/50 shadow-lg shadow-indigo-500/5' : 'bg-transparent'
-          }`}
-        >
+  <motion.header
+  initial={{ y: -120 }}
+  animate={{ y: 0 }}
+  transition={{ duration: 0.6, type: 'spring', stiffness: 120 }}
+  className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
+    ${isScrolled
+      ? 'bg-black/80 backdrop-blur-xl border-b border-gray-800/50 shadow-lg shadow-indigo-500/5'
+      : 'bg-transparent'}
+    bg-black/80 md:bg-transparent
+  `}
+>
           {/* 3D orb background */}
           <div className="absolute inset-0 -z-10 pointer-events-none">
             <Canvas className="absolute inset-0">
