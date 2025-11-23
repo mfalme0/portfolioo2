@@ -1,65 +1,97 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import Header from './Components/header';
+import Preloader from './Components/preloader';
+import { Hero } from './Components/main/hero';
+import TechStack from './Components/main/techstack';
+import LanguageCard from './Components/main/languages';
+import Github from './Components/main/github';
+import AboutMe from './Components/main/about';
+import { WorkExperience } from './Components/main/mboka';
+import { Projects } from './Components/main/projects';
+import Footer from './Components/footer';
+import { CiCircleChevUp } from 'react-icons/ci';
+
+export default function HomePage() {
+  const [loading, setLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const handlePreloaderComplete = () => {
+    setLoading(false);
+  };
+
+  // Detect scroll to show/hide back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Smooth scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="relative">
+      {/* Preloader */}
+      {loading && <Preloader onComplete={handlePreloaderComplete} />}
+
+      {/* Main Content - Only show after loading */}
+      {!loading && (
+        <>
+          {/* Header */}
+          <Header />
+
+          {/* Main Sections */}
+          <main className="relative">
+            <section id="hero">
+              <Hero />
+            </section>
+
+            <section id="about">
+              <AboutMe />
+            </section>
+
+            <section id="work-experience">
+              <WorkExperience />
+            </section>
+
+            <section id="techstack">
+              <TechStack />
+            </section>
+
+            <section id="languages">
+              <LanguageCard />
+            </section>
+
+            <section id="projects">
+              <Projects />
+            </section>
+
+            <section id="github">
+              <Github />
+            </section>
+          </main>
+
+          {/* Footer */}
+          <Footer />
+
+          {/* Back to Top Button */}
+          {showScrollTop && (
+            <button
+              onClick={scrollToTop}
+              className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-black shadow-lg hover:scale-110  text-white text-3xl transition-all duration-300"
+              aria-label="Back to Top"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+              <CiCircleChevUp />
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 }
