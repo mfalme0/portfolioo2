@@ -81,7 +81,7 @@ export default function Header() {
             {/* Logo */}
             <motion.div className="flex items-center gap-3 cursor-pointer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/">
-                <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/50">
+                <div className="relative w-12 h-12 rounded-full bg-gray-400/50 items-center justify-center shadow-lg shadow-indigo-500/50">
                   <FaGamepad className="text-white text-xl" />
                 </div>
               </Link>
@@ -116,7 +116,7 @@ export default function Header() {
             {/* Right CTA + mobile */}
             <div className="flex items-center gap-4">
               <Link href="/gear"
-                 className="hidden md:flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-bold rounded-full shadow-lg shadow-indigo-500/50">
+                 className="hidden md:flex items-center gap-2 px-6 py-2.5 bg-gray-400/50 text-white text-sm font-bold rounded-full shadow-lg shadow-indigo-500/50">
                   <FaCode className="text-lg" /> Gear
                
               </Link>

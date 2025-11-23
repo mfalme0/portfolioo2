@@ -8,6 +8,7 @@ import { TypeAnimation } from 'react-type-animation';
 import { Canvas, useFrame, RootState } from '@react-three/fiber';
 import { Stars, Sphere, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
+import Link from 'next/link';
 
 // --- 1. TASTEFUL 3D BACKGROUND COMPONENT ---
 // A floating, distorted sphere that reacts to time/color
@@ -160,12 +161,14 @@ export function Hero() {
             transition={{ delay: 1 }}
             className="flex gap-4 justify-center md:justify-start pt-4"
           >
-             <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all flex items-center gap-2">
+             <Link href='https://github.com/mfalme0'  target='_blank' rel="noopener noreferrer" className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all flex items-center gap-2">
                 <FaGithub /> GitHub
-             </button>
-             <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all flex items-center gap-2">
+             </Link>
+             <Link className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all flex items-center gap-2"
+            href= "https://www.linkedin.com/in/joseph-gitau-123456789/" target="_blank" rel="noopener noreferrer">
                 <FaLinkedin /> LinkedIn
-             </button>
+                </Link>
+            
           </motion.div>
         </motion.div>
 
