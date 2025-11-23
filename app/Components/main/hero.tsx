@@ -171,39 +171,9 @@ export function Hero() {
             
           </motion.div>
         </motion.div>
+        </div>
 
-        {/* RIGHT: 3D Tilt Image Card */}
-        <motion.div 
-          style={{ y: y2 }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="flex-1 flex justify-center relative group"
-        >
-          {/* Glowing circle behind image */}
-          <div 
-            style={{ background: themeColor }} 
-            className="absolute inset-0 blur-[100px] opacity-40 rounded-full transform scale-75" 
-          />
-          
-          <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full border-4 border-white/10 backdrop-blur-sm overflow-hidden shadow-2xl">
-             <Image
-                src={profile}
-                alt="Joseph Gitau"
-                fill
-                style={{ objectFit: 'cover' }}
-                className="hover:scale-110 transition-transform duration-700 ease-in-out grayscale hover:grayscale-0"
-                priority
-             />
-             {/* Gamer badge overlay */}
-             <div className="absolute bottom-4 right-10 bg-black/60 backdrop-blur-md p-2 rounded-full text-white border border-white/20">
-                <FaGamepad className="text-2xl animate-pulse" style={{ color: themeColor }}/>
-             </div>
-          </div>
-        </motion.div>
-      </div>
 
-      {/* Bottom Arrow */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
