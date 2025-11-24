@@ -165,7 +165,7 @@ export function Hero() {
                 <FaGithub /> GitHub
              </Link>
              <Link className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all flex items-center gap-2"
-            href= "https://www.linkedin.com/in/joseph-gitau-123456789/" target="_blank" rel="noopener noreferrer">
+            href= "https://www.linkedin.com/in/josephgitauc/" target="_blank" rel="noopener noreferrer">
                 <FaLinkedin /> LinkedIn
                 </Link>
             
