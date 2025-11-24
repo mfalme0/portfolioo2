@@ -1,26 +1,22 @@
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import frontG15 from "../Images/g513ic.png";
-import { motion, useInView } from "framer-motion";
-import {
-  FaMemory,
-  FaHdd,
-  FaDesktop,
-  FaBolt,
-  FaThermometerHalf,
-} from "react-icons/fa";
-import { SiNvidia, SiAmd } from "react-icons/si";
-import { BsNvidia } from "react-icons/bs";
+'use client';
 
-interface SegmentedGaugeProps {
-  label: string;
-  maxWatts: number;
-  colorClass?: string;
-}
+import React from 'react';
+import Image from 'next/image';
+import { motion, useInView } from 'framer-motion';
+import {
+  FaWifi,
+  FaBolt,
+  FaWeightHanging,
+  FaMicrochip,
+  FaBatteryFull,
+} from 'react-icons/fa';
+import { SiLogitech } from 'react-icons/si';
+
+import gpro from '../Images/gpro.webp';
 
 interface TechCardProps {
   title: string;
-  value: number | string;
+  value: string;
   sub: string;
   icon: React.ReactNode;
   accentColor: {
@@ -28,62 +24,6 @@ interface TechCardProps {
     bar: string;
   };
 }
-
-// --- SEGMENTED GAUGE ---
-const SegmentedGauge: React.FC<SegmentedGaugeProps> = ({
-  label,
-  maxWatts,
-  colorClass,
-}) => {
-  const ref = React.useRef(null);
-  const isInView = useInView(ref, { once: true });
-  const [count, setCount] = useState(0);
-  const totalSegments = 20;
-
-  useEffect(() => {
-    if (isInView) {
-      let start = 0;
-      const duration = 1500;
-      const stepTime = duration / maxWatts;
-      const timer = setInterval(() => {
-        start += 5;
-        if (start > maxWatts) start = maxWatts;
-        setCount(start);
-        if (start === maxWatts) clearInterval(timer);
-      }, stepTime);
-
-      return () => clearInterval(timer);
-    }
-  }, [isInView, maxWatts]);
-
-  const filledSegments = Math.round((count / maxWatts) * totalSegments);
-
-  return (
-    <div ref={ref} className="w-full">
-      <div className="flex justify-between items-end mb-2 font-mono">
-        <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">
-          {label}
-        </span>
-        <span className={`text-xl font-bold ${colorClass}`}>{count}W</span>
-      </div>
-
-      <div className="flex gap-[2px] h-6 bg-black p-[2px] border border-gray-700">
-        {Array.from({ length: totalSegments }).map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: i < filledSegments ? 1 : 0.2,
-              backgroundColor: i < filledSegments ? "currentColor" : "#333",
-            }}
-            transition={{ duration: 0.1 }}
-            className={`flex-1 h-full ${colorClass}`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // --- TECH CARD ---
 const TechCard: React.FC<TechCardProps> = ({
@@ -130,7 +70,7 @@ const TechCard: React.FC<TechCardProps> = ({
 };
 
 // --- MAIN COMPONENT ---
-export default function SecondaryRigSpecs() {
+export default function GProWireless() {
   return (
     <section className="relative w-full py-20 bg-black text-white font-sans">
       {/* GRID BG */}
@@ -145,14 +85,14 @@ export default function SecondaryRigSpecs() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
         {/* HEADER */}
-        <div className="mb-16 border-l-4 border-red-600 pl-6">
+        <div className="mb-16 border-l-4 border-blue-600 pl-6">
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white mb-2">
-            ROG Strix G15
+            G Pro Wireless
           </h1>
 
           <p className="font-mono text-gray-400 text-sm md:text-base">
-            SYSTEM_ID: BATTLE_STATION_BETA //{" "}
-            <span className="text-red-500">MAX_PERFORMANCE</span>
+            DEVICE_ID: ESPORTS_MOUSE_ALPHA //{" "}
+            <span className="text-blue-500">LIGHTSPEED_ENABLED</span>
           </p>
         </div>
 
@@ -165,58 +105,73 @@ export default function SecondaryRigSpecs() {
               <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-white"></div>
 
               <Image
-                src={frontG15}
-                alt="ROG Strix G15"
+                src={gpro}
+                alt="G Pro Wireless"
                 className="w-full h-auto object-contain grayscale-[20%] contrast-125 hover:grayscale-0 transition-all duration-500"
                 priority
               />
 
               <div className="absolute bottom-4 left-4 text-[10px] font-mono text-gray-600">
-                MODEL: G513IC // 15.6-INCH CHASSIS
+                MODEL: G-PRO-WIRELESS // HERO 25K SENSOR
               </div>
             </div>
           </div>
 
-          {/* SPECS + GAUGES */}
+          {/* SPECS */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <div className="mb-10">
               <h2 className="text-2xl font-bold mb-4 uppercase flex items-center gap-3">
-                <FaBolt className="text-yellow-500" /> Power & Specs
+                <FaBolt className="text-blue-500" /> Performance & Specs
               </h2>
 
               <ul className="text-gray-400 text-sm leading-relaxed mb-8 border-l border-gray-700 pl-4 space-y-1">
                 <li>
-                  <strong>CPU:</strong> AMD Ryzen 7 4800H
+                  <strong>Sensor:</strong> HERO 25K
                 </li>
                 <li>
-                  <strong>GPU:</strong> NVIDIA RTX 3050
+                  <strong>Connection:</strong> LIGHTSPEED Wireless
                 </li>
                 <li>
-                  <strong>RAM:</strong> 16GB DDR4
+                  <strong>Weight:</strong> 80g Ultra-lightweight
                 </li>
                 <li>
-                  <strong>Storage:</strong> 1TB NVMe SSD
+                  <strong>Battery:</strong> 48-60 hours
                 </li>
                 <li>
-                  <strong>Cooling:</strong> Liquid Metal
+                  <strong>Switches:</strong> Mechanical 50M clicks
                 </li>
                 <li>
-                  <strong>Display:</strong> 15.6 HD, 144Hz
+                  <strong>Latency:</strong> 1ms Response time
                 </li>
               </ul>
 
-              <div className="space-y-6 bg-[#0a0a0a] p-6 border border-gray-800">
-                <SegmentedGauge
-                  label="CPU :: AMD Ryzen 7 4800H"
-                  maxWatts={90}
-                  colorClass="text-orange-500"
-                />
-
-                <SegmentedGauge
-                  label="GPU :: NVIDIA RTX 3050"
-                  maxWatts={95}
-                  colorClass="text-green-500"
-                />
+              <div className="bg-[#0a0a0a] p-6 border border-gray-800">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b border-gray-800 pb-3">
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                      DPI Range
+                    </span>
+                    <span className="text-lg font-bold text-blue-500">
+                      100 - 25,600
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-gray-800 pb-3">
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                      IPS Tracking
+                    </span>
+                    <span className="text-lg font-bold text-purple-500">
+                      400+ IPS
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                      Acceleration
+                    </span>
+                    <span className="text-lg font-bold text-cyan-500">
+                      40G Max
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -225,43 +180,21 @@ export default function SecondaryRigSpecs() {
         {/* TECH GRID */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <TechCard
-            title="GPU"
-            sub="NVIDIA GeForce"
-            value="RTX 3050"
-            icon={<BsNvidia />}
+            title="SENSOR"
+            sub="Zero smoothing"
+            value="HERO 25K"
+            icon={<FaMicrochip />}
             accentColor={{
-              text: "text-green-500",
-              bar: "bg-green-500",
+              text: "text-blue-500",
+              bar: "bg-blue-500",
             }}
           />
 
           <TechCard
-            title="CPU"
-            sub="8 Cores / 16 Threads"
-            value="Ryzen 7 4800H"
-            icon={<SiAmd />}
-            accentColor={{
-              text: "text-orange-500",
-              bar: "bg-orange-500",
-            }}
-          />
-
-          <TechCard
-            title="RAM"
-            sub="DDR4 3200MHz"
-            value="16 GB"
-            icon={<FaMemory />}
-            accentColor={{
-              text: "text-purple-500",
-              bar: "bg-purple-500",
-            }}
-          />
-
-          <TechCard
-            title="DISPLAY"
-            sub="15.6 HD"
-            value="144 Hz"
-            icon={<FaDesktop />}
+            title="WIRELESS"
+            sub="1ms latency"
+            value="LIGHTSPEED"
+            icon={<FaWifi />}
             accentColor={{
               text: "text-cyan-500",
               bar: "bg-cyan-500",
@@ -269,10 +202,32 @@ export default function SecondaryRigSpecs() {
           />
 
           <TechCard
-            title="STORAGE"
-            sub="NVMe SSD"
-            value="1 TB"
-            icon={<FaHdd />}
+            title="WEIGHT"
+            sub="Ultra-light"
+            value="80 g"
+            icon={<FaWeightHanging />}
+            accentColor={{
+              text: "text-purple-500",
+              bar: "bg-purple-500",
+            }}
+          />
+
+          <TechCard
+            title="BATTERY"
+            sub="Continuous use"
+            value="48-60 hrs"
+            icon={<FaBatteryFull />}
+            accentColor={{
+              text: "text-green-500",
+              bar: "bg-green-500",
+            }}
+          />
+
+          <TechCard
+            title="CHARGING"
+            sub="Micro-USB"
+            value="PowerPlay"
+            icon={<FaBolt />}
             accentColor={{
               text: "text-yellow-500",
               bar: "bg-yellow-500",
@@ -280,13 +235,13 @@ export default function SecondaryRigSpecs() {
           />
 
           <TechCard
-            title="THERMALS"
-            sub="Liquid Metal"
-            value="Dual-Fan"
-            icon={<FaThermometerHalf />}
+            title="SWITCHES"
+            sub="Rated clicks"
+            value="50M"
+            icon={<SiLogitech />}
             accentColor={{
-              text: "text-red-500",
-              bar: "bg-red-500",
+              text: "text-orange-500",
+              bar: "bg-orange-500",
             }}
           />
         </div>

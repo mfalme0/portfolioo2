@@ -9,6 +9,12 @@ import PerformanceSpecs from "../Components/game/hero";       // Main Rig
 import SecondaryRigSpecs from "../Components/game/rig2";      // Secondary Rig     
 import Footer from "../Components/footer";                    // Game Over Footer
 import GearLoader from "../Components/game/loader";       // System Boot Loader
+import GProWireless from '../Components/game/gpro';
+import AulaF75Showcase from '../Components/game/aulaf75';
+import TARGMonitor from '../Components/game/targ';
+import KZEDXUltraShowcase from '../Components/game/kzedx';
+import G935Headset from '../Components/game/g935';
+import AulaSC660Showcase from '../Components/game/sc660';
 
 export default function GearPage() {
   const [loading, setLoading] = useState(true);
@@ -31,8 +37,13 @@ export default function GearPage() {
           <PerformanceSpecs />
 
           <SecondaryRigSpecs />
-
-    
+             <AulaF75Showcase />
+          <GProWireless />
+         <KZEDXUltraShowcase />
+          <TARGMonitor />
+          <AulaSC660Showcase />
+          <G935Headset />
+        
 
         </main>
 
