@@ -56,7 +56,7 @@ export default function HomePage() {
               <AboutMe />
             </section>
 
-            <section id="work-experience">
+            <section id="experience">
               <WorkExperience />
             </section>
 

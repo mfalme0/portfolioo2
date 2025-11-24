@@ -117,7 +117,7 @@ export default function AboutMe() {
                 className="absolute -bottom-4 right-8 z-20 bg-indigo-600 text-white px-4 py-1 rounded-full border-2 border-white dark:border-gray-900 shadow-lg flex items-center gap-2"
               >
                 <FaGamepad />
-                <span className="font-bold text-sm">Lvl. 24</span>
+                <span className="font-bold text-sm">Lvl. 22</span>
               </motion.div>
             </div>
           </motion.div>
@@ -136,7 +136,7 @@ export default function AboutMe() {
                 Character Profile
               </h2>
               <h1 className="text-4xl font-extrabold text-gray-800 dark:text-gray-100 mb-6">
-                About <span className="neon-text text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Joseph</span>
+                About <span className="neon-text text-transparent bg-clip-text bg-cyan-400">Joseph</span>
               </h1>
               
               <div className="p-6 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-xl border-l-4 border-indigo-500 shadow-sm">
