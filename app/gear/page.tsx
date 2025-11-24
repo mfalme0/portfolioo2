@@ -16,6 +16,8 @@ import KZEDXUltraShowcase from '../Components/game/kzedx';
 import G935Headset from '../Components/game/g935';
 import AulaSC660Showcase from '../Components/game/sc660';
 import GloriousModelOShowcase from '../Components/game/glorious';
+import APCBackUPS from '../Components/game/ups';
+import AulaS2022Showcase from '../Components/game/s2022';
 
 export default function GearPage() {
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,8 @@ export default function GearPage() {
           <AulaSC660Showcase />
           <G935Headset />
           <GloriousModelOShowcase />
+          <APCBackUPS />
+          <AulaS2022Showcase />
         
 
         </main>
