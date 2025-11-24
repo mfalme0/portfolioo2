@@ -15,6 +15,7 @@ import TARGMonitor from '../Components/game/targ';
 import KZEDXUltraShowcase from '../Components/game/kzedx';
 import G935Headset from '../Components/game/g935';
 import AulaSC660Showcase from '../Components/game/sc660';
+import GloriousModelOShowcase from '../Components/game/glorious';
 
 export default function GearPage() {
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,7 @@ export default function GearPage() {
           <TARGMonitor />
           <AulaSC660Showcase />
           <G935Headset />
+          <GloriousModelOShowcase />
         
 
         </main>
