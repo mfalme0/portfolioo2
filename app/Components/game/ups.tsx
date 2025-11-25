@@ -199,7 +199,7 @@ export default function APCBackUPS() {
                   <strong>Capacity:</strong> 1400VA / 810W
                 </li>
                 <li>
-                  <strong>Output:</strong> 120V AC
+                  <strong>Output:</strong> 100-240 AC
                 </li>
                 <li>
                   <strong>Outlets:</strong> 10 Total (5 Surge + 5 Battery)
