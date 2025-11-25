@@ -192,7 +192,7 @@ export default function SecondaryRigSpecs() {
                   <strong>GPU:</strong> NVIDIA RTX 3050
                 </li>
                 <li>
-                  <strong>RAM:</strong> 16GB DDR4
+                  <strong>RAM:</strong> 32GB DDR4
                 </li>
                 <li>
                   <strong>Storage:</strong> 1TB NVMe SSD
@@ -249,7 +249,7 @@ export default function SecondaryRigSpecs() {
           <TechCard
             title="RAM"
             sub="DDR4 3200MHz"
-            value="16 GB"
+            value="32 GB"
             icon={<FaMemory />}
             accentColor={{
               text: "text-purple-500",
