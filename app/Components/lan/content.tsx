@@ -44,7 +44,7 @@ const NEXT_EVENT = {
 const PAST_EVENTS = [
   {
     id: 1,
-    date: "November 11, 2025",
+    date: "December 11, 2025",
     location: "Kikuyu, Kenya",
     description:
       "testing the waters with a focus on tactical FPS titles, led by the **Delta Force** series",
@@ -53,7 +53,7 @@ const PAST_EVENTS = [
   },
   {
     id: 2,
-    date: "September 2, 2025",
+    date: "October 3, 2025",
     location: "Kikuyu, Kenya",
     description:
       "The inaugural event,A competitive night focused on intense tactics and team play, with the primary theme being **Counter-Strike**. .",
