@@ -1,216 +1,191 @@
-import React from 'react';
-import { FaJava, FaPython, FaJs, FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaVuejs } from 'react-icons/fa';
-import {  SiFlutter, SiKotlin, SiNextdotjs, SiCplusplus } from 'react-icons/si';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+/* eslint-disable react/jsx-no-comment-textnodes */
+'use client';
+
+import React, { useRef, Suspense, useMemo } from 'react';
+import {
+  FaJava, FaPython, FaJs, FaReact, FaNodeJs, FaHtml5, FaVuejs
+} from 'react-icons/fa';
+import { SiFlutter, SiKotlin, SiNextdotjs, SiCplusplus } from 'react-icons/si';
 import { TbBrandCSharp } from "react-icons/tb";
-import { Canvas } from '@react-three/fiber';
-import { Float, TorusKnot, MeshDistortMaterial, Stars } from '@react-three/drei';
+import {
+  motion, useMotionValue, useSpring, useReducedMotion
+} from 'framer-motion';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, PerspectiveCamera } from '@react-three/drei';
+import * as THREE from 'three';
 
-// --- 1. DATA & COLOR MAPPING ---
-type ColorType = 'orange' | 'blue' | 'yellow' | 'cyan' | 'green' | 'purple' | 'gray';
-
-interface Language {
-  name: string;
-  icon: React.ReactElement;
-  proficiency: number;
-  color: ColorType;
-}
-
-interface ColorMapItem {
-  text: string;
-  border: string;
-  shadow: string;
-  bg: string;
-}
-
-const languages: Language[] = [
-  { name: 'Java', icon: <FaJava />, proficiency: 60, color: 'orange' }, // Converted proficiency to %
-  { name: 'Python', icon: <FaPython />, proficiency: 65, color: 'blue' },
-  { name: 'JavaScript', icon: <FaJs />, proficiency: 90, color: 'yellow' },
-  { name: 'React', icon: <FaReact />, proficiency: 90, color: 'cyan' }, // Changed to cyan for React blue
-  { name: 'Node.js', icon: <FaNodeJs />, proficiency: 85, color: 'green' },
-  { name: 'HTML5', icon: <FaHtml5 />, proficiency: 95, color: 'orange' },
-  { name: 'CSS3', icon: <FaCss3Alt />, proficiency: 90, color: 'blue' },
-  { name: 'C#', icon: <TbBrandCSharp />, proficiency: 80, color: 'purple' },
-  { name: 'Flutter', icon: <SiFlutter />, proficiency: 75, color: 'cyan' },
-  { name: 'Kotlin', icon: <SiKotlin />, proficiency: 70, color: 'orange' },
-  { name: 'NextJS', icon: <SiNextdotjs />, proficiency: 85, color: 'gray' },
-  { name: 'C++', icon: <SiCplusplus />, proficiency: 75, color: 'blue' },
-  { name: 'VueJS', icon: <FaVuejs />, proficiency: 60, color: 'green' },
+const languages = [
+  { name: 'JavaScript', icon: <FaJs />, proficiency: 90 },
+  { name: 'React', icon: <FaReact />, proficiency: 90 },
+  { name: 'NextJS', icon: <SiNextdotjs />, proficiency: 85 },
+  { name: 'Node.js', icon: <FaNodeJs />, proficiency: 85 },
+  { name: 'Python', icon: <FaPython />, proficiency: 65 },
+  { name: 'Java', icon: <FaJava />, proficiency: 60 },
+  { name: 'C#', icon: <TbBrandCSharp />, proficiency: 80 },
+  { name: 'Flutter', icon: <SiFlutter />, proficiency: 75 },
+  { name: 'Kotlin', icon: <SiKotlin />, proficiency: 70 },
+  { name: 'C++', icon: <SiCplusplus />, proficiency: 75 },
+  { name: 'HTML', icon: <FaHtml5 />, proficiency: 95 },
+  { name: 'VueJS', icon: <FaVuejs />, proficiency: 60 },
 ];
 
-const colorMap: Record<ColorType, ColorMapItem> = {
-  orange: { text: 'text-orange-500', border: 'group-hover:border-orange-500', shadow: '#f97316', bg: 'bg-orange-500' },
-  blue:   { text: 'text-blue-600', border: 'group-hover:border-blue-600', shadow: '#2563eb', bg: 'bg-blue-600' },
-  yellow: { text: 'text-yellow-400', border: 'group-hover:border-yellow-400', shadow: '#facc15', bg: 'bg-yellow-400' },
-  cyan:   { text: 'text-cyan-400', border: 'group-hover:border-cyan-400', shadow: '#22d3ee', bg: 'bg-cyan-400' },
-  green:  { text: 'text-green-500', border: 'group-hover:border-green-500', shadow: '#22c55e', bg: 'bg-green-500' },
-  purple: { text: 'text-purple-500', border: 'group-hover:border-purple-500', shadow: '#a855f7', bg: 'bg-purple-500' },
-  gray:   { text: 'text-gray-400', border: 'group-hover:border-gray-400', shadow: '#94a3b8', bg: 'bg-gray-400' },
-};
+// --- 3D background ---
+const BlueprintGeometry = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
 
-// --- 2. 3D BACKGROUND COMPONENT ---
-const AnimatedBackground = () => {
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    const t = state.clock.getElapsedTime();
+    meshRef.current.rotation.x = t * 0.06;
+    meshRef.current.rotation.y = t * 0.1;
+  });
+
   return (
-    <div className="absolute inset-0 -z-0 opacity-20 pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 5] }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <Stars radius={50} depth={50} count={3000} factor={4} fade speed={1} />
-        
-        {/* A complex knot representing logic/code structure */}
-        <Float speed={2} rotationIntensity={1.5} floatIntensity={1.5}>
-          <TorusKnot args={[1, 0.3, 128, 16]} scale={1.2}>
-            <MeshDistortMaterial 
-              color="#4f46e5" 
-              wireframe 
-              distort={0.3} 
-              speed={2} 
-              roughness={0} 
-            />
-          </TorusKnot>
-        </Float>
-      </Canvas>
-    </div>
+    <Float speed={1.6} rotationIntensity={0.35} floatIntensity={0.35}>
+      <mesh ref={meshRef}>
+        <torusGeometry args={[4, 1.5, 14, 90]} />
+        <meshStandardMaterial color="#ffffff" wireframe transparent opacity={0.04} />
+      </mesh>
+    </Float>
   );
 };
 
-// --- 3. 3D CARD COMPONENT ---
-interface LanguageCardProps {
-  lang: Language;
-}
+const LanguageCard = ({ lang }: { lang: typeof languages[number] }) => {
+  const prefersReducedMotion = useReducedMotion();
 
-const LanguageCard = ({ lang }: LanguageCardProps) => {
-  const colors = colorMap[lang.color] || colorMap.gray;
-  
-  // Physics Tilt
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useMotionValue(0), { stiffness: 200, damping: 20 });
-  const rotateY = useSpring(useMotionValue(0), { stiffness: 200, damping: 20 });
+  // Only do tilt on desktop/hover devices
+  const enableTilt = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }, []);
 
-  function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-    const { currentTarget, clientX, clientY } = event;
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-    
-    rotateX.set(((clientY - centerY) / height) * -25);
-    rotateY.set(((clientX - centerX) / width) * 25);
-  }
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const rotateX = useSpring(rx, { stiffness: 160, damping: 24 });
+  const rotateY = useSpring(ry, { stiffness: 160, damping: 24 });
 
-  function handleMouseLeave() {
-    rotateX.set(0);
-    rotateY.set(0);
-  }
-
-  // Calculate Label based on %
-  const getLabel = (pct: number): string => {
-    if (pct >= 90) return "Master";
-    if (pct >= 75) return "Advanced";
-    return "Intermediate";
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion || !enableTilt) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dx = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
+    const dy = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
+    rx.set(dy * -8);
+    ry.set(dx * 8);
   };
+
+  const lvl = `LVL.0${Math.max(1, Math.min(3, Math.ceil(lang.proficiency / 30)))}`;
 
   return (
     <motion.div
-      variants={{
-        hidden: { opacity: 0, scale: 0.8 },
-        visible: { opacity: 1, scale: 1 }
+      variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+      onMouseMove={onMove}
+      onMouseLeave={() => { rx.set(0); ry.set(0); }}
+      style={{
+        rotateX: prefersReducedMotion || !enableTilt ? 0 : rotateX,
+        rotateY: prefersReducedMotion || !enableTilt ? 0 : rotateY,
+        transformStyle: 'preserve-3d',
+        perspective: 1200,
       }}
-      style={{ perspective: 1000 }}
-      className="relative group h-full"
+      className="group relative"
     >
-      <motion.div
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className={`
-          relative flex flex-col items-center justify-between p-5 h-full rounded-2xl 
-          bg-black  border border-gray-200/50 dark:border-gray-700/50 
-          backdrop-blur-md shadow-xl transition-all duration-300 ${colors.border}
-        `}
-      >
-        {/* Dynamic Glow Background */}
-        <div 
-           className="absolute inset-0 -z-10 rounded-2xl opacity-0 group-hover:opacity-15 transition-opacity duration-500"
-           style={{ background: colors.shadow, filter: 'blur(30px)' }}
-        />
+      <div className="relative p-6 bg-zinc-950/40 backdrop-blur-xl border border-white/5 rounded-sm transition-all duration-500 group-hover:bg-white/[0.03] group-hover:border-white/15 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-        <div style={{ transform: "translateZ(30px)" }} className="flex flex-col items-center w-full">
-          {/* Icon with spin effect */}
-          <motion.div 
-            whileHover={{ rotate: 360, scale: 1.2 }}
-            transition={{ type: "spring", stiffness: 200, damping: 10 }}
-            className={`text-5xl mb-3 ${colors.text} drop-shadow-sm`}
-          >
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="text-3xl mb-6 text-zinc-600 group-hover:text-white group-hover:scale-110 transition-all duration-500 ease-out">
             {lang.icon}
-          </motion.div>
-          
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
-            {lang.name}
-          </h2>
-
-          {/* XP Bar */}
-          <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden relative">
-             <motion.div 
-               initial={{ width: 0 }}
-               whileInView={{ width: `${lang.proficiency}%` }}
-               transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-               className={`h-full ${colors.bg}`}
-             />
           </div>
-          
-          <div className="flex justify-between w-full mt-2 text-xs font-mono text-gray-500 dark:text-gray-400">
-             <span>Level</span>
-             <span className={`${colors.text} font-bold`}>{getLabel(lang.proficiency)}</span>
+
+          <h3 className="text-[9px] font-bold tracking-[0.3em] text-zinc-500 uppercase mb-6 group-hover:text-zinc-200">
+            {lang.name}
+          </h3>
+
+          <div className="w-full space-y-3">
+            <div className="h-[1px] w-full bg-zinc-900 relative">
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: `${lang.proficiency}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: prefersReducedMotion ? 0 : 1.1, ease: 'easeOut' }}
+                className="absolute top-0 left-0 h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.35)]"
+              >
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+              </motion.div>
+            </div>
+
+            <div className="flex justify-between items-center text-[8px] font-mono tracking-widest text-zinc-600">
+              <span className="group-hover:text-white/70 transition-colors">{lvl}</span>
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity italic">
+                {lang.proficiency}%
+              </span>
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
 
-// --- 4. MAIN EXPORT ---
 export default function ProgrammingLanguages() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <section className="relative w-full py-20 bg-black overflow-hidden">
-      
-      {/* 3D Background */}
-      <AnimatedBackground />
+    <section className="relative w-full py-32 bg-[#050505] overflow-hidden" id="languages">
+      <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+      {/* 3D layer (low power) */}
+      <div className="absolute inset-0 z-0 opacity-25">
+        <Canvas
+          dpr={prefersReducedMotion ? 1 : [1, 1.5]}
+          gl={{ antialias: !prefersReducedMotion, powerPreference: 'high-performance', alpha: true }}
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-white mb-4">
-             Code <span className="text-indigo-500 neon-text">Fluency</span>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Speaking the languages of the web, mobile, and backend systems.
-          </p>
-        </motion.div>
+          <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
+          <ambientLight intensity={0.45} />
+          <pointLight position={[10, 10, 10]} intensity={0.9} />
+          <Suspense fallback={null}>
+            <BlueprintGeometry />
+          </Suspense>
+        </Canvas>
+      </div>
 
-        <motion.div 
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.08 }
-            }
-          }}
+      <div className="relative z-10 max-w-7xl mx-auto px-8">
+        <header className="mb-24 flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.75 }}
+            className="space-y-4"
+          >
+            <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase">
+              Technical Linguistics
+            </span>
+            <h2 className="text-5xl md:text-8xl font-medium text-white tracking-tighter">
+              Fluency<span className="text-zinc-700 italic">.sh</span>
+            </h2>
+          </motion.div>
+        </header>
+
+        <motion.div
+          variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-5"
+          viewport={{ once: true, margin: '-60px' }}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
         >
           {languages.map((lang) => (
             <LanguageCard key={lang.name} lang={lang} />
           ))}
         </motion.div>
+
+        <footer className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 opacity-40 hover:opacity-100 transition-opacity duration-700">
+          <div className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
+            // STACK_AUDIT_COMPLETE
+          </div>
+          <div className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
+            Total_Modules: {languages.length}
+          </div>
+        </footer>
       </div>
     </section>
   );

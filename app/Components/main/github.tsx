@@ -1,118 +1,194 @@
-import React from "react";
-import { GitHubCalendar } from "react-github-calendar";
-import { motion } from "framer-motion";
-import { Canvas, useFrame, RootState } from "@react-three/fiber";
-import { Float, Box, Stars } from "@react-three/drei";
-import { FaGithubAlt, FaCodeBranch } from "react-icons/fa";
+/* eslint-disable react/jsx-no-comment-textnodes */
+'use client';
+
+import React, { Suspense, useMemo, useState } from "react";
+import {GitHubCalendar} from "react-github-calendar";
+import { motion, useReducedMotion } from "framer-motion";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Float, PerspectiveCamera } from "@react-three/drei";
+import { FaGithubAlt } from "react-icons/fa";
 import * as THREE from "three";
 
-// --- 3D VOXEL BACKGROUND ---
-interface VoxelProps {
+// --- BACKGROUND SHARD ---
+const DataShard = ({
+  position,
+  scale,
+  speed,
+}: {
   position: [number, number, number];
-  color: string;
+  scale: number;
   speed: number;
-}
+}) => {
+  const meshRef = React.useRef<THREE.Mesh>(null);
 
-const Voxel = ({ position, color, speed }: VoxelProps) => {
-  const mesh = React.useRef<THREE.Mesh>(null);
-
-  useFrame((state: RootState) => {
-    if (!mesh.current) return;
+  useFrame((state) => {
+    if (!meshRef.current) return;
     const t = state.clock.getElapsedTime();
-    mesh.current.position.y += Math.sin(t * speed) * 0.002;
-    mesh.current.rotation.x = t * 0.5;
-    mesh.current.rotation.y = t * 0.2;
+    meshRef.current.rotation.y = t * (speed * 0.08);
+    meshRef.current.rotation.x = t * (speed * 0.04);
   });
 
   return (
-    <Float speed={speed} rotationIntensity={1} floatIntensity={1}>
-      <Box ref={mesh} position={position} args={[0.4, 0.4, 0.4]}>
-        <meshStandardMaterial color={color} roughness={0.2} metalness={0.8} />
-      </Box>
+    <Float speed={speed} rotationIntensity={0.45} floatIntensity={0.45}>
+      <mesh ref={meshRef} position={position} scale={scale}>
+        <icosahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial color="#ffffff" wireframe transparent opacity={0.04} />
+      </mesh>
     </Float>
   );
 };
 
-const BackgroundScene = () => {
-  const voxels = Array.from({ length: 30 }).map((_, i) => ({
-    id: i,
-    position: [
-      (Math.random() - 0.5) * 15,
-      (Math.random() - 0.5) * 10,
-      (Math.random() - 0.5) * 5,
-    ] as [number, number, number],
-    color: "#26a641", // GitHub green
-    speed: Math.random() * 2 + 0.5,
-  }));
+const ShardField = ({ enabled }: { enabled: boolean }) => {
+  const prefersReducedMotion = useReducedMotion();
+  if (!enabled) return null;
 
   return (
-    <div className="absolute inset-0 -z-0 opacity-30">
-      <Canvas camera={{ position: [0, 0, 10] }}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <Stars radius={50} count={1000} factor={4} fade speed={1} />
-        {voxels.map((v) => (
-          <Voxel key={v.id} position={v.position} color={v.color} speed={v.speed} />
-        ))}
+    <div className="absolute inset-0 -z-0 opacity-35">
+      <Canvas
+        dpr={prefersReducedMotion ? 1 : [1, 1.5]}
+        gl={{ antialias: !prefersReducedMotion, powerPreference: "high-performance", alpha: true }}
+      >
+        <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
+        <ambientLight intensity={0.45} />
+        <pointLight position={[10, 10, 10]} intensity={0.9} />
+        <Suspense fallback={null}>
+          <DataShard position={[-6, 3, -2]} scale={1.5} speed={1} />
+          <DataShard position={[7, -2, 0]} scale={1.2} speed={1.4} />
+          <DataShard position={[-2, -4, -3]} scale={0.8} speed={0.8} />
+        </Suspense>
       </Canvas>
     </div>
   );
 };
 
-// --- MAIN COMPONENT ---
 export default function Github() {
+  const prefersReducedMotion = useReducedMotion();
+
+  // If you decide "Hero-only 3D", set this false
+  const enableBackground3D = true;
+
+  const nowYear = new Date().getFullYear();
+  const [year, setYear] = useState(nowYear);
+
+  const theme = useMemo(
+    () => ({
+      light: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+      dark: ['#111111', '#072714', '#0a4a25', '#168039', '#22c55e'],
+    }),
+    []
+  );
+
   return (
-    <section className="relative w-full py-20 bg-black overflow-hidden">
-      <BackgroundScene />
+    <section className="relative w-full py-32 bg-[#050505] overflow-hidden" id="github">
+      <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      <div className="relative z-10 flex flex-col items-center px-4">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10"
-        >
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-gray-900/70 backdrop-blur-md rounded-full border border-gray-700 shadow-lg shadow-green-500/20">
-              <FaGithubAlt className="text-4xl text-white" />
+      <ShardField enabled={enableBackground3D} />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-8">
+        <header className="mb-16 flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.75 }}
+            className="space-y-4"
+          >
+            <div className="flex flex-col items-center gap-2">
+              <FaGithubAlt className="text-zinc-600 text-xl" />
+              <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase">
+                External Contribution Protocol
+              </span>
             </div>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-100">
-            Days I <span className="text-green-500 animate-pulse">Code</span>
-          </h1>
-          <p className="text-gray-400 mt-2 flex items-center justify-center gap-2">
-            <FaCodeBranch /> My Contribution Quest Log
-          </p>
-        </motion.div>
 
-        {/* GitHub Calendar */}
+            <h2 className="text-5xl md:text-7xl font-medium text-white tracking-tight">
+              The <span className="italic text-zinc-700 font-light">Ledger</span>.
+            </h2>
+
+            <p className="text-zinc-500 text-[10px] font-mono tracking-[0.2em] uppercase max-w-sm mx-auto pt-4 border-t border-white/5">
+              Tracking development velocity and commit cycles across decentralized repositories.
+            </p>
+          </motion.div>
+        </header>
+
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.985 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-          className="w-full max-w-5xl"
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="w-full max-w-5xl mx-auto"
         >
-          <div className="bg-gray-900/70 backdrop-blur-md border border-gray-700 rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-green-500/20 blur-[100px] rounded-full -z-10 group-hover:bg-green-500/30 transition-colors duration-700" />
+          <div className="bg-zinc-950/40 backdrop-blur-xl border border-white/5 rounded-sm p-6 md:p-10 relative group">
+            <div className="absolute -inset-px bg-gradient-to-tr from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
-            <div className="flex justify-center overflow-x-auto pb-4 custom-scrollbar">
+            {/* controls */}
+            <div className="relative z-10 flex items-center justify-between gap-4 mb-6">
+              <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                User: mfalme0
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] font-mono tracking-widest text-zinc-600 uppercase">
+                  Year
+                </span>
+                <select
+                  value={year}
+                  onChange={(e) => setYear(Number(e.target.value))}
+                  className="bg-black/30 border border-white/10 text-zinc-200 text-[10px] tracking-widest font-mono px-3 py-2 rounded-full outline-none focus:border-white/20"
+                >
+                  {Array.from({ length: 4 }).map((_, i) => {
+                    const y = nowYear - i;
+                    return (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+
+            {/* calendar */}
+            <div className="flex justify-center overflow-x-auto pb-4">
               <GitHubCalendar
                 username="mfalme0"
-                blockSize={16}
+                year={year}
+                blockSize={prefersReducedMotion ? 12 : 13}
                 blockMargin={4}
-                fontSize={16}
-                colorScheme="dark"
+                fontSize={12}
+                theme={theme}
               />
             </div>
 
-            <div className="mt-6 flex justify-between items-center text-xs text-gray-400 font-mono border-t border-gray-700 pt-4">
-              <span>Syncing with GitHub API...</span>
-              <div className="flex gap-2 items-center">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
-                <span>Live</span>
+            <footer className="mt-6 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-6">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[8px] text-zinc-600 font-mono tracking-widest uppercase">
+                    System_State
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[9px] text-zinc-400 font-mono uppercase">
+                      Syncing_Live
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[8px] text-zinc-600 font-mono tracking-widest uppercase">
+                    Node_Source
+                  </span>
+                  <span className="text-[9px] text-zinc-400 font-mono uppercase italic">
+                    @github/mfalme0
+                  </span>
+                </div>
               </div>
-            </div>
+
+              <div className="h-px flex-1 bg-white/5 hidden md:block mx-8 opacity-60" />
+
+              <div className="text-[9px] text-zinc-500 font-mono tracking-widest uppercase opacity-40 group-hover:opacity-100 transition-opacity">
+                // REPO_ARCHIVE_VERIFIED
+              </div>
+            </footer>
           </div>
         </motion.div>
       </div>
