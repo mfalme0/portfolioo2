@@ -1,196 +1,223 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import React, { Suspense, useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState, useEffect, useRef } from "react";
 import {GitHubCalendar} from "react-github-calendar";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, PerspectiveCamera } from "@react-three/drei";
+import { Float, MeshDistortMaterial, PerspectiveCamera } from "@react-three/drei";
 import { FaGithubAlt } from "react-icons/fa";
 import * as THREE from "three";
 
-// --- BACKGROUND SHARD ---
-const DataShard = ({
-  position,
-  scale,
-  speed,
-}: {
-  position: [number, number, number];
-  scale: number;
-  speed: number;
-}) => {
-  const meshRef = React.useRef<THREE.Mesh>(null);
+// ─────────────────────────────────────────────
+// THEME SYNC
+// ─────────────────────────────────────────────
+function useThemeColor() {
+  const [color, setColor] = useState('#f8fafc');
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12)      setColor('#7dd3fc'); // Morning: sky blue
+    else if (hour < 18) setColor('#f8fafc'); // Day: arctic white
+    else                setColor('#818cf8'); // Evening: indigo
+  }, []);
+  return color;
+}
 
+// ─────────────────────────────────────────────
+// 3D COMMIT SHARD
+// ─────────────────────────────────────────────
+const CommitShard = ({ color }: { color: string }) => {
+  const mesh = useRef<THREE.Mesh>(null);
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (!mesh.current) return;
     const t = state.clock.getElapsedTime();
-    meshRef.current.rotation.y = t * (speed * 0.08);
-    meshRef.current.rotation.x = t * (speed * 0.04);
+    mesh.current.rotation.y = t * 0.15;
+    mesh.current.rotation.z = Math.sin(t * 0.5) * 0.2;
   });
 
   return (
-    <Float speed={speed} rotationIntensity={0.45} floatIntensity={0.45}>
-      <mesh ref={meshRef} position={position} scale={scale}>
+    <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+      <mesh ref={mesh} scale={3}>
+        <icosahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial color={color} wireframe transparent opacity={0.06} />
+      </mesh>
+      <mesh scale={1.4}>
         <icosahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial color="#ffffff" wireframe transparent opacity={0.04} />
+        <MeshDistortMaterial
+          color={color}
+          speed={4}
+          distort={0.4}
+          metalness={1}
+          roughness={0}
+          emissive={color}
+          emissiveIntensity={0.3}
+          transparent
+          opacity={0.15}
+        />
       </mesh>
     </Float>
   );
 };
 
-const ShardField = ({ enabled }: { enabled: boolean }) => {
-  const prefersReducedMotion = useReducedMotion();
-  if (!enabled) return null;
-
-  return (
-    <div className="absolute inset-0 -z-0 opacity-35">
-      <Canvas
-        dpr={prefersReducedMotion ? 1 : [1, 1.5]}
-        gl={{ antialias: !prefersReducedMotion, powerPreference: "high-performance", alpha: true }}
-      >
-        <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
-        <ambientLight intensity={0.45} />
-        <pointLight position={[10, 10, 10]} intensity={0.9} />
-        <Suspense fallback={null}>
-          <DataShard position={[-6, 3, -2]} scale={1.5} speed={1} />
-          <DataShard position={[7, -2, 0]} scale={1.2} speed={1.4} />
-          <DataShard position={[-2, -4, -3]} scale={0.8} speed={0.8} />
-        </Suspense>
-      </Canvas>
-    </div>
-  );
-};
-
+// ─────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────
 export default function Github() {
+  const accentColor = useThemeColor();
   const prefersReducedMotion = useReducedMotion();
-
-  // If you decide "Hero-only 3D", set this false
-  const enableBackground3D = true;
-
+  const sectionRef = useRef(null);
   const nowYear = new Date().getFullYear();
   const [year, setYear] = useState(nowYear);
 
-  const theme = useMemo(
-    () => ({
-      light: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
-      dark: ['#111111', '#072714', '#0a4a25', '#168039', '#22c55e'],
-    }),
-    []
-  );
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  const shardY = useTransform(scrollYProgress, [0, 1], [-100, 100]);
+
+  // Dynamically generate the GitHub color scale based on current accent
+  const githubTheme = useMemo(() => ({
+    light: ['#111111', `${accentColor}22`, `${accentColor}44`, `${accentColor}88`, accentColor],
+    dark: ['#111111', `${accentColor}22`, `${accentColor}44`, `${accentColor}88`, accentColor],
+  }), [accentColor]);
 
   return (
-    <section className="relative w-full py-32 bg-[#050505] overflow-hidden" id="github">
+    <section ref={sectionRef} className="relative w-full py-40 bg-[#050505] overflow-hidden" id="github">
+      
+      {/* ── ATMOSPHERE ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[20%] right-[10%] h-[800px] w-[800px] rounded-full blur-[150px]"
+             style={{ background: accentColor, opacity: 0.04 }} />
+      </div>
+
+      {/* Engineering Grid */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.04 }}>
+        <pattern id="github-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke={accentColor} strokeWidth="0.5" />
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#github-grid)" />
+      </svg>
+
+      {/* Grain Overlay */}
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      <ShardField enabled={enableBackground3D} />
+      {/* 3D Shard Visual */}
+      <motion.div style={{ y: shardY }} className="absolute left-0 top-0 w-1/2 h-full z-0 opacity-40 pointer-events-none">
+        <Canvas gl={{ alpha: true }}>
+          <PerspectiveCamera makeDefault position={[0, 0, 10]} />
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={2} color={accentColor} />
+          <Suspense fallback={null}>
+            <CommitShard color={accentColor} />
+          </Suspense>
+        </Canvas>
+      </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
-        <header className="mb-16 flex flex-col items-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.75 }}
-            className="space-y-4"
-          >
-            <div className="flex flex-col items-center gap-2">
-              <FaGithubAlt className="text-zinc-600 text-xl" />
-              <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase">
-                External Contribution Protocol
-              </span>
-            </div>
+      {/* ── CONTENT ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
+        
+        {/* Label */}
+        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+          className="flex items-center gap-4 mb-20">
+          <div className="h-[1px] w-12" style={{ background: accentColor }} />
+          <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase font-black">
+            External Contribution Protocol
+          </span>
+        </motion.div>
 
-            <h2 className="text-5xl md:text-7xl font-medium text-white tracking-tight">
-              The <span className="italic text-zinc-700 font-light">Ledger</span>.
-            </h2>
-
-            <p className="text-zinc-500 text-[10px] font-mono tracking-[0.2em] uppercase max-w-sm mx-auto pt-4 border-t border-white/5">
-              Tracking development velocity and commit cycles across decentralized repositories.
-            </p>
-          </motion.div>
+        {/* Brutalist Headline */}
+        <header className="mb-32">
+          <motion.h2 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }}
+            className="text-[4rem] sm:text-[6.5rem] md:text-[8.5rem] font-black leading-[0.82] tracking-[-0.04em] text-white uppercase">
+            Commit
+            <br />
+            <span style={{ WebkitTextStroke: `2px ${accentColor}`, color: 'transparent' }}>
+              Ledger.
+            </span>
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }}
+            className="text-zinc-500 text-[10px] font-mono tracking-[0.3em] uppercase max-w-sm mt-12 border-l border-white/10 pl-6">
+            Tracking development velocity and cycles across decentralized repositories.
+          </motion.p>
         </header>
 
+        {/* The Glass Calendar Module */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.985 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-          className="w-full max-w-5xl mx-auto"
+          className="relative p-8 md:p-12 bg-zinc-950/50 backdrop-blur-xl border border-white/[0.06] group"
         >
-          <div className="bg-zinc-950/40 backdrop-blur-xl border border-white/5 rounded-sm p-6 md:p-10 relative group">
-            <div className="absolute -inset-px bg-gradient-to-tr from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-
-            {/* controls */}
-            <div className="relative z-10 flex items-center justify-between gap-4 mb-6">
-              <div className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-                User: mfalme0
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] font-mono tracking-widest text-zinc-600 uppercase">
-                  Year
-                </span>
-                <select
-                  value={year}
-                  onChange={(e) => setYear(Number(e.target.value))}
-                  className="bg-black/30 border border-white/10 text-zinc-200 text-[10px] tracking-widest font-mono px-3 py-2 rounded-full outline-none focus:border-white/20"
-                >
-                  {Array.from({ length: 4 }).map((_, i) => {
-                    const y = nowYear - i;
-                    return (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    );
-                  })}
-                </select>
+          {/* Header Controls */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+            <div className="flex items-center gap-4">
+              <FaGithubAlt className="text-xl text-zinc-400" />
+              <div className="flex flex-col">
+                <span className="text-[8px] font-black tracking-[0.3em] text-zinc-600 uppercase mb-1">Source_Node</span>
+                <span className="text-sm font-mono text-zinc-200">github.com/mfalme0</span>
               </div>
             </div>
 
-            {/* calendar */}
-            <div className="flex justify-center overflow-x-auto pb-4">
-              <GitHubCalendar
-                username="mfalme0"
-                year={year}
-                blockSize={prefersReducedMotion ? 12 : 13}
-                blockMargin={4}
-                fontSize={12}
-                theme={theme}
-              />
+            <div className="flex items-center gap-3 bg-black/40 border border-white/5 px-4 py-2">
+              <span className="text-[9px] font-black tracking-[0.2em] text-zinc-500 uppercase">Year_Index</span>
+              <select
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+                className="bg-transparent text-white text-[10px] font-mono outline-none cursor-pointer hover:text-white transition-colors"
+                style={{ color: accentColor }}
+              >
+                {[nowYear, nowYear - 1, nowYear - 2, nowYear - 3].map(y => (
+                  <option key={y} value={y} className="bg-[#050505]">{y}</option>
+                ))}
+              </select>
             </div>
-
-            <footer className="mt-6 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-6">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[8px] text-zinc-600 font-mono tracking-widest uppercase">
-                    System_State
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] text-zinc-400 font-mono uppercase">
-                      Syncing_Live
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <span className="text-[8px] text-zinc-600 font-mono tracking-widest uppercase">
-                    Node_Source
-                  </span>
-                  <span className="text-[9px] text-zinc-400 font-mono uppercase italic">
-                    @github/mfalme0
-                  </span>
-                </div>
-              </div>
-
-              <div className="h-px flex-1 bg-white/5 hidden md:block mx-8 opacity-60" />
-
-              <div className="text-[9px] text-zinc-500 font-mono tracking-widest uppercase opacity-40 group-hover:opacity-100 transition-opacity">
-                // REPO_ARCHIVE_VERIFIED
-              </div>
-            </footer>
           </div>
+
+          {/* Heatmap Container */}
+          <div className="overflow-x-auto pb-4 custom-scrollbar">
+            <GitHubCalendar
+              username="mfalme0"
+              year={year}
+              blockSize={14}
+              blockMargin={5}
+              fontSize={12}
+              theme={githubTheme}
+            />
+          </div>
+
+          {/* Module Footer Metrics */}
+          <footer className="mt-12 pt-8 border-t border-white/[0.05] flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: accentColor }} />
+                  <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: accentColor }} />
+                </span>
+                <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">Sync_Status: Live</span>
+              </div>
+              <div className="hidden md:block w-12 h-[1px] bg-white/5" />
+              <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">Verified_Archive: 200 OK</span>
+            </div>
+
+            <div className="flex gap-1">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="w-1 h-4 bg-white/5" style={{ backgroundColor: i < 3 ? `${accentColor}33` : undefined }} />
+              ))}
+            </div>
+          </footer>
         </motion.div>
+
+        {/* Section Footer Metadata */}
+        <div className="mt-20 flex justify-end opacity-30">
+           <span className="text-[9px] tracking-[0.3em] uppercase font-mono text-zinc-500">
+             // End_Of_Ledger
+           </span>
+        </div>
+
       </div>
     </section>
   );

@@ -1,22 +1,27 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-hooks/purity */
 'use client';
 
-import React, { Suspense, useMemo } from 'react';
+import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { SiMacos, SiAndroid, SiIos, SiLinux, SiProxmox } from 'react-icons/si';
 import { FaAws, FaDocker, FaFigma } from 'react-icons/fa';
 import { DiMongodb } from 'react-icons/di';
 import { RiFirebaseFill } from 'react-icons/ri';
-import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { Float, Icosahedron, MeshDistortMaterial, PerspectiveCamera } from '@react-three/drei';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, PerspectiveCamera, MeshDistortMaterial } from '@react-three/drei';
+import * as THREE from 'three';
 
+// ─────────────────────────────────────────────
+// TYPES & DATA
+// ─────────────────────────────────────────────
 interface Technology {
   name: string;
   icon: React.ReactElement;
   proficiency: 'Intermediate' | 'Advanced' | 'Expert';
 }
 
-const technologies: Technology[] = [
+const technologies: Technology[] =[
   { name: 'MacOS', icon: <SiMacos />, proficiency: 'Intermediate' },
   { name: 'iOS', icon: <SiIos />, proficiency: 'Expert' },
   { name: 'Android', icon: <SiAndroid />, proficiency: 'Advanced' },
@@ -34,185 +39,279 @@ const proficiencyToWidth = (p: Technology['proficiency']) => {
   if (p === 'Advanced') return '70%';
   return '40%';
 };
+
 const proficiencyToLevel = (p: Technology['proficiency']) => {
   if (p === 'Expert') return '03';
   if (p === 'Advanced') return '02';
   return '01';
 };
 
-// --- Floating background ---
-const FloatingShards = () => {
-  const prefersReducedMotion = useReducedMotion();
+// ─────────────────────────────────────────────
+// THEME SYNC (The "Pulse")
+// ─────────────────────────────────────────────
+function useThemeColor() {
+  const [color, setColor] = useState('#f8fafc');
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12)      setColor('#7dd3fc'); // Morning
+    else if (hour < 18) setColor('#f8fafc'); // Day
+    else                setColor('#818cf8'); // Evening
+  },[]);
+  return color;
+}
 
-  // Stable particle positions (generated once)
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 14 }).map(() => ([
-        Math.random() * 18 - 9,
-        Math.random() * 18 - 9,
-        -5 - Math.random() * 2,
-      ] as const)),
-    []
-  );
+// ─────────────────────────────────────────────
+// 3D INFRASTRUCTURE CORE
+// ─────────────────────────────────────────────
+const InfraCore = ({ color }: { color: string }) => {
+  const mesh = useRef<THREE.Mesh>(null);
+  const innerMesh = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (mesh.current) {
+      mesh.current.rotation.y = t * 0.08;
+      mesh.current.rotation.x = t * 0.04;
+    }
+    if (innerMesh.current) {
+      innerMesh.current.rotation.y = -t * 0.12;
+      innerMesh.current.rotation.z = t * 0.06;
+    }
+  });
 
   return (
-    <div className="absolute inset-0 overflow-hidden -z-0 pointer-events-none">
-      <Canvas
-        dpr={prefersReducedMotion ? 1 : [1, 1.5]}
-        gl={{ antialias: !prefersReducedMotion, powerPreference: 'high-performance', alpha: true }}
-      >
-        <PerspectiveCamera makeDefault position={[0, 0, 10]} />
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={1.25} color="#00d2ff" />
-
-        <Float speed={1.2} rotationIntensity={1.2} floatIntensity={1.2}>
-          <Icosahedron args={[1, 0]} position={[-5, 3, -2]} scale={1.7}>
-            <meshStandardMaterial color="#fff" wireframe opacity={0.045} transparent />
-          </Icosahedron>
-        </Float>
-
-        <Float speed={2.0} rotationIntensity={0.8} floatIntensity={0.9}>
-          <Icosahedron args={[1, 0]} position={[6, -2, 0]} scale={1.15}>
-            <MeshDistortMaterial color="#888" speed={2} distort={0.35} opacity={0.08} transparent />
-          </Icosahedron>
-        </Float>
-
-        {particles.map((pos, i) => (
-          <Float key={i} speed={prefersReducedMotion ? 0.6 : 1.6}>
-            <mesh position={pos}>
-              <sphereGeometry args={[0.02, 8, 8]} />
-              <meshBasicMaterial color="#ffffff" opacity={0.2} transparent />
-            </mesh>
-          </Float>
-        ))}
-      </Canvas>
-    </div>
+    <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.8}>
+      {/* Outer Wireframe Box */}
+      <mesh ref={mesh} scale={2.5}>
+        <icosahedronGeometry args={[2, 1]} />
+        <meshStandardMaterial color={color} wireframe transparent opacity={0.06} />
+      </mesh>
+      {/* Inner Distorted Data Shard */}
+      <mesh ref={innerMesh} scale={1.2}>
+        <octahedronGeometry args={[2, 2]} />
+        <MeshDistortMaterial
+          color={color}
+          speed={2}
+          distort={0.4}
+          metalness={1}
+          roughness={0}
+          emissive={color}
+          emissiveIntensity={0.2}
+          transparent
+          opacity={0.15}
+        />
+      </mesh>
+    </Float>
   );
 };
 
-// --- Card ---
-const TechCard = ({ tech }: { tech: Technology }) => {
-  const prefersReducedMotion = useReducedMotion();
-
-  const rx = useMotionValue(0);
-  const ry = useMotionValue(0);
-
-  const rotateX = useSpring(rx, { stiffness: 140, damping: 22 });
-  const rotateY = useSpring(ry, { stiffness: 140, damping: 22 });
-
-  const onMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion) return;
-    const { currentTarget, clientX, clientY } = event;
-    const rect = currentTarget.getBoundingClientRect();
-    const dx = (clientX - (rect.left + rect.width / 2)) / rect.width;
-    const dy = (clientY - (rect.top + rect.height / 2)) / rect.height;
-
-    rx.set(dy * -10);
-    ry.set(dx * 10);
-  };
+// ─────────────────────────────────────────────
+// MODULE CARD (The "Glass" UI)
+// ─────────────────────────────────────────────
+const TechModule = ({ tech, index, accentColor }: { tech: Technology; index: number; accentColor: string }) => {
+  const [hovered, setHovered] = useState(false);
+  const pLevel = proficiencyToLevel(tech.proficiency);
+  const pWidth = proficiencyToWidth(tech.proficiency);
 
   return (
     <motion.div
-      variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-      onMouseMove={onMove}
-      onMouseLeave={() => {
-        rx.set(0);
-        ry.set(0);
-      }}
-      style={{
-        rotateX: prefersReducedMotion ? 0 : rotateX,
-        rotateY: prefersReducedMotion ? 0 : rotateY,
-        transformStyle: 'preserve-3d',
-        perspective: 1200,
-      }}
-      className="group relative"
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.05, duration: 0.5, ease:[0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: "-50px" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="group relative p-6 md:p-8 bg-zinc-950/50 backdrop-blur-xl border border-white/[0.06] overflow-hidden transition-all duration-500 h-full"
+      style={{ borderColor: hovered ? `${accentColor}44` : undefined }}
     >
-      <div className="relative p-8 rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-md transition-all duration-500 group-hover:bg-white/[0.03] group-hover:border-white/10 overflow-hidden">
-        <div className="absolute -inset-px bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Radial Hover Sweep */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{ opacity: hovered ? 1 : 0 }}
+        style={{
+          background: `radial-gradient(ellipse at 0% 0%, ${accentColor}0d 0%, transparent 80%)`,
+        }}
+      />
 
-        <div className="relative z-10 flex flex-col items-center">
-          <div className="text-4xl mb-6 text-zinc-500 group-hover:text-white group-hover:scale-110 transition-all duration-700 ease-out">
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Header Metadata */}
+        <div className="flex items-start justify-between mb-10">
+          <span className="text-[10px] font-black tracking-[0.4em] text-zinc-600 tabular-nums uppercase">
+            SYS.0{pLevel}
+          </span>
+          <motion.div 
+            animate={{ color: hovered ? accentColor : '#52525b', scale: hovered ? 1.15 : 1 }}
+            className="text-3xl transition-colors duration-300"
+          >
             {tech.icon}
+          </motion.div>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-[11px] font-black tracking-[0.3em] uppercase text-zinc-500 mb-8 transition-colors group-hover:text-zinc-300">
+          {tech.name}
+        </h3>
+
+        {/* Bottom Metrics */}
+        <div className="mt-auto w-full space-y-3">
+          <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
+            <motion.div
+              initial={{ width: '0%' }}
+              whileInView={{ width: pWidth }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              className="absolute top-0 left-0 h-full"
+              style={{ background: accentColor }}
+            />
           </div>
-
-          <h3 className="text-[10px] font-bold tracking-[0.3em] text-zinc-500 uppercase mb-4">
-            {tech.name}
-          </h3>
-
-          <div className="w-full space-y-2">
-            <div className="h-[1px] w-full bg-zinc-800 relative">
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={prefersReducedMotion ? { width: proficiencyToWidth(tech.proficiency) } : { width: proficiencyToWidth(tech.proficiency) }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                className="absolute top-0 left-0 h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.45)]"
-              />
-            </div>
-
-            <div className="flex justify-between items-center px-0.5">
-              <span className="text-[8px] text-zinc-600 font-mono uppercase tracking-widest">
-                {tech.proficiency}
-              </span>
-              <span className="text-[8px] text-zinc-700 font-mono">
-                {proficiencyToLevel(tech.proficiency)}
-              </span>
-            </div>
+          
+          <div className="flex justify-between items-center">
+             <span className="text-[8px] font-mono tracking-widest text-zinc-600 uppercase">
+               {tech.proficiency}
+             </span>
+             <span className="text-[8px] font-mono font-bold" style={{ color: hovered ? accentColor : '#52525b' }}>
+               L_{pLevel}
+             </span>
           </div>
         </div>
       </div>
+
+      {/* Dynamic accent line */}
+      <motion.div
+        className="absolute bottom-0 left-0 h-[2px] w-0"
+        animate={{ width: hovered ? '100%' : '0%' }}
+        transition={{ duration: 0.5, ease:[0.22, 1, 0.36, 1] }}
+        style={{ background: accentColor }}
+      />
     </motion.div>
   );
 };
 
+// ─────────────────────────────────────────────
+// MAIN SECTION
+// ─────────────────────────────────────────────
 export default function TechStack() {
+  const accentColor = useThemeColor();
+  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset:["start end", "end start"]
+  });
+
+  const infraY = useTransform(scrollYProgress, [0, 1],[-80, 80]);
+
   return (
-    <section className="relative w-full py-32 bg-[#050505] overflow-hidden" id="techstack">
+    <section ref={sectionRef} className="relative w-full py-40 bg-[#050505] overflow-hidden" id="techstack">
+      
+      {/* ── ATMOSPHERE ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[10%] left-[-10%] h-[800px] w-[800px] rounded-full blur-[150px]"
+             style={{ background: accentColor, opacity: 0.04 }} />
+        <div className="absolute bottom-[-10%] right-[-5%] h-[600px] w-[600px] rounded-full blur-[120px]"
+             style={{ background: '#00d2ff', opacity: 0.03 }} />
+      </div>
+
+      {/* Engineering SVG Grid */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.04 }}>
+        <pattern id="infra-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke={accentColor} strokeWidth="0.5" />
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#infra-grid)" />
+      </svg>
+
+      {/* Film Grain */}
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      <Suspense fallback={null}>
-        <FloatingShards />
-      </Suspense>
+      {/* 3D Visual - Distorted Infra Core */}
+      <motion.div 
+        style={{ y: prefersReducedMotion ? 0 : infraY }} 
+        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
+      >
+        <Canvas gl={{ alpha: true }}>
+          <PerspectiveCamera makeDefault position={[0, 0, 12]} />
+          <ambientLight intensity={0.4} />
+          <pointLight position={[10, 10, 10]} intensity={2} color={accentColor} />
+          <pointLight position={[-10, -10, -10]} intensity={1} color="#ffffff" />
+          <Suspense fallback={null}>
+            <InfraCore color={accentColor} />
+          </Suspense>
+        </Canvas>
+      </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
-        <header className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <motion.div
-            initial={{ opacity: 0, x: -18 }}
-            whileInView={{ opacity: 1, x: 0 }}
+      {/* ── CONTENT ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
+        
+        {/* Section Label */}
+        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+          className="flex items-center gap-4 mb-20">
+          <div className="h-[1px] w-12" style={{ background: accentColor }} />
+          <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase font-black">
+            System Capabilities
+          </span>
+        </motion.div>
+
+        {/* Brutalist Header Layout */}
+        <header className="mb-32 flex flex-col xl:flex-row xl:items-end justify-between gap-12">
+          <motion.h2 
+            initial={{ opacity: 0, y: 40 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8 }} 
             viewport={{ once: true }}
-            transition={{ duration: 0.75 }}
-            className="space-y-4"
+            className="text-[4rem] sm:text-[6.5rem] md:text-[8.5rem] font-black leading-[0.82] tracking-[-0.04em] text-white uppercase"
           >
-            <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase">
-              System Capabilities
+            Infra
+            <br />
+            <span style={{ WebkitTextStroke: `2px ${accentColor}`, color: 'transparent' }}>
+              Structure.
             </span>
-            <h2 className="text-5xl md:text-7xl font-medium text-white tracking-tighter">
-              The <span className="italic text-zinc-400">Stack</span>.
-            </h2>
-          </motion.div>
+          </motion.h2>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.7 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.7 }}
-            className="text-zinc-500 text-sm max-w-xs font-light leading-relaxed border-l border-zinc-800 pl-6"
+            className="max-w-sm border-l-2 pl-6"
+            style={{ borderColor: accentColor }}
           >
-            A technical breakdown of the tools and environments used to develop high-performance consumer applications.
-          </motion.p>
+            <p className="text-zinc-400 text-sm font-light leading-relaxed">
+              A technical breakdown of the environments, virtualization platforms, and cloud infrastructure leveraged to deploy high-performance applications.
+            </p>
+          </motion.div>
         </header>
 
-        <motion.div
-          variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
-        >
-          {technologies.map((tech) => (
-            <TechCard key={tech.name} tech={tech} />
+        {/* The Gap Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-white/[0.05] border border-white/[0.05]">
+          {technologies.map((tech, i) => (
+            <div key={tech.name} className="bg-[#050505]">
+              <TechModule tech={tech} index={i} accentColor={accentColor} />
+            </div>
           ))}
-        </motion.div>
+        </div>
+
+        {/* Engineering Footer */}
+        <motion.footer 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="mt-24 pt-10 border-t border-white/[0.05] flex flex-col md:flex-row justify-between items-center gap-6"
+        >
+          <div className="flex items-center gap-4">
+             <span className="relative flex h-2 w-2">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: accentColor }} />
+               <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: accentColor }} />
+             </span>
+             <span className="text-[9px] tracking-[0.3em] font-mono text-zinc-500 uppercase">
+               ENV_READY // DEPLOYMENT_ACTIVE
+             </span>
+          </div>
+
+          <div className="text-[9px] tracking-[0.3em] font-mono text-zinc-600 uppercase">
+             Nodes_Indexed: {technologies.length}
+          </div>
+        </motion.footer>
+
       </div>
     </section>
   );

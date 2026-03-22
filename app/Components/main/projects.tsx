@@ -1,248 +1,265 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react/jsx-no-comment-textnodes */
 'use client';
 
-import React, { Suspense, useMemo } from 'react';
-import Image, { StaticImageData } from 'next/image';
+import React, { Suspense, useMemo, useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import project1 from "../Images/better.jpeg";
 import project3 from "../Images/ndai.jpeg";
 import project4 from "../Images/archie.jpeg";
 import ganji from "../Images/ganji.png";
 
 import { FiGithub, FiExternalLink } from 'react-icons/fi';
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useReducedMotion
-} from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { Float, Icosahedron, PerspectiveCamera } from '@react-three/drei';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, MeshDistortMaterial, PerspectiveCamera } from '@react-three/drei';
+import * as THREE from 'three';
 
-// --- 1) DATA ---
-type Project = {
-  title: string;
-  id: string;
-  description: string;
-  image: StaticImageData;
-  category: string;
-  github: string;
-  live?: string; // optional
-};
+// ─────────────────────────────────────────────
+// THEME SYNC (The "Pulse")
+// ─────────────────────────────────────────────
+function useThemeColor() {
+  const [color, setColor] = useState('#f8fafc');
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12)      setColor('#7dd3fc'); // Morning
+    else if (hour < 18) setColor('#f8fafc'); // Day
+    else                setColor('#818cf8'); // Evening
+  }, []);
+  return color;
+}
 
-const projects: Project[] = [
-  {
-    title: 'Better Farm',
-    id: '01',
-    description: 'Farming AI assistant featuring a specialized neural-chat architecture for agricultural optimization.',
-    image: project1,
-    category: 'APP_MOBILE',
-    github: 'https://github.com/mfalme0/betterFarm',
-  },
-  {
-    title: 'Ganji',
-    id: '02',
-    description: 'Financial ledger system designed for high-fidelity expense tracking and asset management.',
-    image: ganji,
-    category: 'APP_FINTECH',
-    github: 'https://github.com/mfalme0/ganji',
-  },
-  {
-    title: 'Ndai',
-    id: '03',
-    description: 'Comprehensive vehicle management infrastructure and logistics monitoring suite.',
-    image: project3,
-    category: 'WEB_SYSTEM',
-    github: 'https://github.com/mfalme0/ndai.com',
-  },
-  {
-    title: 'Archie',
-    id: '04',
-    description: 'High-security file archival protocol and distributed retrieval system.',
-    image: project4,
-    category: 'WEB_SECURITY',
-    github: 'https://github.com/mfalme0/Archiewebapp',
-  },
-];
-
-// --- 2) BACKGROUND (low-power) ---
-const ShardBackground = () => {
-  const prefersReducedMotion = useReducedMotion();
+// ─────────────────────────────────────────────
+// 3D PROJECT SHARD
+// ─────────────────────────────────────────────
+const ProjectShard = ({ color }: { color: string }) => {
+  const mesh = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    if (!mesh.current) return;
+    mesh.current.rotation.y = state.clock.getElapsedTime() * 0.1;
+    mesh.current.rotation.z = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.2;
+  });
 
   return (
-    <div className="absolute inset-0 -z-0 opacity-20 pointer-events-none">
-      <Canvas
-        dpr={prefersReducedMotion ? 1 : [1, 1.5]}
-        gl={{ antialias: !prefersReducedMotion, powerPreference: 'high-performance', alpha: true }}
-      >
-        <PerspectiveCamera makeDefault position={[0, 0, 10]} />
-        <ambientLight intensity={0.45} />
-        <pointLight position={[10, 10, 10]} intensity={0.9} />
-        <Suspense fallback={null}>
-          <Float speed={prefersReducedMotion ? 0.6 : 1.2} rotationIntensity={0.8} floatIntensity={0.8}>
-            <Icosahedron args={[3, 1]} position={[-8, 4, -5]}>
-              <meshStandardMaterial color="#fff" wireframe transparent opacity={0.08} />
-            </Icosahedron>
-          </Float>
-        </Suspense>
-      </Canvas>
-    </div>
+    <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+      <mesh ref={mesh} scale={3.2}>
+        <icosahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial color={color} wireframe transparent opacity={0.06} />
+      </mesh>
+      <mesh scale={1.5}>
+        <icosahedronGeometry args={[1, 0]} />
+        <MeshDistortMaterial
+          color={color}
+          speed={3}
+          distort={0.3}
+          metalness={1}
+          roughness={0.1}
+          emissive={color}
+          emissiveIntensity={0.2}
+          transparent
+          opacity={0.15}
+        />
+      </mesh>
+    </Float>
   );
 };
 
-// --- 3) CARD ---
-const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
-  const prefersReducedMotion = useReducedMotion();
-
-  // hover-only tilt devices
-  const enableTilt = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  }, []);
-
-  const rx = useMotionValue(0);
-  const ry = useMotionValue(0);
-  const rotateX = useSpring(rx, { stiffness: 160, damping: 24 });
-  const rotateY = useSpring(ry, { stiffness: 160, damping: 24 });
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion || !enableTilt) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const dx = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
-    const dy = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
-    rx.set(dy * -6);
-    ry.set(dx * 6);
-  };
+// ─────────────────────────────────────────────
+// PROJECT CARD (The "Asset Module")
+// ─────────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ProjectCard = ({ project, index, accentColor }: { project: any; index: number; accentColor: string }) => {
+  const [hovered, setHovered] = useState(false);
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.75, delay: index * 0.06 }}
-      viewport={{ once: true, margin: '-60px' }}
-      onMouseMove={onMove}
-      onMouseLeave={() => { rx.set(0); ry.set(0); }}
-      style={{
-        rotateX: prefersReducedMotion || !enableTilt ? 0 : rotateX,
-        rotateY: prefersReducedMotion || !enableTilt ? 0 : rotateY,
-        transformStyle: 'preserve-3d',
-        perspective: 1200,
-      }}
-      className="group relative h-full"
+      transition={{ delay: index * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: "-100px" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="group relative bg-zinc-950/50 backdrop-blur-xl border border-white/[0.06] overflow-hidden transition-all duration-500 flex flex-col h-full"
+      style={{ borderColor: hovered ? `${accentColor}44` : undefined }}
     >
-      <div className="relative flex flex-col h-full bg-zinc-950/20 backdrop-blur-xl transition-colors duration-700 overflow-hidden">
-        {/* image */}
-        <div className="relative h-64 w-full overflow-hidden">
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority={index === 0}
-          />
-          <div className="absolute inset-0 bg-black/45 group-hover:bg-black/15 transition-colors duration-1000" />
+      {/* Asset Header Tags */}
+      <div className="relative z-20 flex justify-between items-center p-6 border-b border-white/[0.05] bg-black/20">
+         <span className="text-[10px] font-black tracking-[0.4em] text-zinc-500 tabular-nums uppercase">
+           ID_{project.id}
+         </span>
+         <span className="text-[9px] font-black tracking-[0.2em] text-zinc-600 uppercase border border-white/10 px-2 py-1">
+           {project.category}
+         </span>
+      </div>
 
-          {/* meta */}
-          <div className="absolute top-6 left-6 flex flex-col gap-1">
-            <span className="text-[9px] font-mono tracking-[0.2em] text-white bg-black/70 px-2 py-1 backdrop-blur-md">
-              {project.id}
-            </span>
-            <span className="text-[8px] font-mono tracking-[0.1em] text-zinc-300 bg-black/70 px-2 py-1 backdrop-blur-md">
-              [ {project.category} ]
-            </span>
-          </div>
-        </div>
+      {/* Image Container */}
+      <div className="relative h-72 md:h-80 w-full overflow-hidden">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-1000"
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+        {/* Scanline overlay effect */}
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_2px,3px_100%] opacity-20" />
+        
+        {/* Accent hover fill */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+          animate={{ opacity: hovered ? 0.2 : 0 }}
+          style={{ background: `linear-gradient(to top, ${accentColor}, transparent)` }}
+        />
+      </div>
 
-        {/* content */}
-        <div className="p-8 flex flex-col flex-grow">
-          <h3 className="text-2xl md:text-3xl font-medium text-white tracking-tight mb-4 group-hover:text-cyan-300 transition-colors duration-500">
-            {project.title}
-          </h3>
+      {/* Content */}
+      <div className="p-8 md:p-10 flex flex-col flex-grow relative">
+        <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-none mb-6">
+          {project.title}
+        </h3>
+        <p className="text-zinc-400 text-sm leading-relaxed font-light mb-10 max-w-sm">
+          {project.description}
+        </p>
 
-          <p className="text-zinc-400/70 text-sm leading-relaxed mb-8 flex-grow">
-            {project.description}
-          </p>
-
-          {/* actions */}
-          <div className="flex items-center justify-between pt-6 border-t border-white/5">
-            <div className="flex items-center gap-6">
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 text-[10px] tracking-[0.3em] text-zinc-500 hover:text-white transition-colors uppercase"
-              >
-                <FiGithub /> Source
+        {/* Footer Actions */}
+        <div className="mt-auto pt-8 border-t border-white/[0.05] flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <a href={project.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[10px] font-black tracking-[0.3em] text-zinc-500 hover:text-white transition-colors uppercase">
+              <FiGithub style={{ color: hovered ? accentColor : 'inherit' }} /> Source
+            </a>
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[10px] font-black tracking-[0.3em] text-zinc-500 hover:text-white transition-colors uppercase">
+                <FiExternalLink style={{ color: hovered ? accentColor : 'inherit' }} /> Live
               </a>
-
-              {project.live && (
-                <a
-                  href={project.live}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-2 text-[10px] tracking-[0.3em] text-zinc-500 hover:text-white transition-colors uppercase"
-                >
-                  <FiExternalLink /> Live
-                </a>
-              )}
-            </div>
-
-            <div className="w-2 h-2 rounded-full bg-white/10 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(34,211,238,0.7)] transition-all duration-500" />
+            )}
+          </div>
+          <div className="flex gap-1">
+             <div className="w-1 h-1 rounded-full bg-white/10" />
+             <div className="w-1 h-1 rounded-full bg-white/10" />
           </div>
         </div>
       </div>
+
+      {/* Dynamic accent line */}
+      <motion.div
+        className="absolute bottom-0 left-0 h-[2px] z-20"
+        animate={{ width: hovered ? '100%' : '0%' }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        style={{ background: accentColor }}
+      />
     </motion.article>
   );
 };
 
-// --- 4) MAIN ---
+// ─────────────────────────────────────────────
+// MAIN SECTION
+// ─────────────────────────────────────────────
 export function Projects() {
+  const accentColor = useThemeColor();
+  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  const shardY = useTransform(scrollYProgress, [0, 1], [-120, 120]);
+
+  const projects = [
+    { title: 'Better Farm', id: '01', description: 'Farming AI assistant featuring a specialized neural-chat architecture for agricultural optimization.', image: project1, category: 'APP_MOBILE', github: 'https://github.com/mfalme0/betterFarm' },
+    { title: 'Ganji', id: '02', description: 'Financial ledger system designed for high-fidelity expense tracking and asset management.', image: ganji, category: 'APP_FINTECH', github: 'https://github.com/mfalme0/ganji' },
+    { title: 'Ndai', id: '03', description: 'Comprehensive vehicle management infrastructure and logistics monitoring suite.', image: project3, category: 'WEB_SYSTEM', github: 'https://github.com/mfalme0/ndai.com' },
+    { title: 'Archie', id: '04', description: 'High-security file archival protocol and distributed retrieval system.', image: project4, category: 'WEB_SECURITY', github: 'https://github.com/mfalme0/Archiewebapp' },
+  ];
+
   return (
-    <section className="relative w-full py-32 bg-[#050505] overflow-hidden" id="projects">
+    <section ref={sectionRef} className="relative w-full py-40 bg-[#050505] overflow-hidden" id="projects">
+      
+      {/* ── BACKGROUND ── */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[30%] left-[-15%] h-[900px] w-[900px] rounded-full blur-[180px]"
+             style={{ background: accentColor, opacity: 0.04 }} />
+        <div className="absolute bottom-[20%] right-[-10%] h-[700px] w-[700px] rounded-full blur-[140px]"
+             style={{ background: '#00d2ff', opacity: 0.03 }} />
+      </div>
+
+      {/* Grid Pattern */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.04 }}>
+        <pattern id="project-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke={accentColor} strokeWidth="0.5" />
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#project-grid)" />
+      </svg>
+
+      {/* Film Grain Texture */}
       <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      {/* keep or remove if you decide "Hero-only 3D" */}
-      <ShardBackground />
+      {/* 3D Visual - Distorted Project Shard */}
+      <motion.div style={{ y: shardY }} className="absolute right-0 top-0 w-1/2 h-full z-0 opacity-40 pointer-events-none">
+        <Canvas gl={{ alpha: true }}>
+          <PerspectiveCamera makeDefault position={[0, 0, 12]} />
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={2} color={accentColor} />
+          <Suspense fallback={null}>
+            <ProjectShard color={accentColor} />
+          </Suspense>
+        </Canvas>
+      </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8">
-        <header className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.75 }}
-            className="space-y-4"
-          >
-            <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase">
-              Deployed Assets
+      {/* ── CONTENT ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
+        
+        {/* Label */}
+        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+          className="flex items-center gap-4 mb-20">
+          <div className="h-[1px] w-12" style={{ background: accentColor }} />
+          <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase font-black">
+            Deployed Assets
+          </span>
+        </motion.div>
+
+        {/* Brutalist Headline */}
+        <header className="mb-32">
+          <motion.h2 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }}
+            className="text-[4rem] sm:text-[6.5rem] md:text-[8.5rem] font-black leading-[0.82] tracking-[-0.04em] text-white uppercase">
+            Portfolio
+            <br />
+            <span style={{ WebkitTextStroke: `2px ${accentColor}`, color: 'transparent' }}>
+              Archive.
             </span>
-            <h2 className="text-5xl md:text-7xl font-medium text-white tracking-tight">
-              Portfolio<span className="text-zinc-700 italic">.pkg</span>
-            </h2>
-          </motion.div>
+          </motion.h2>
         </header>
 
-        {/* clean bordered grid (no double borders) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 border border-white/5">
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className="border-t border-white/5 md:border-t-0 md:border-l border-white/5"
-            >
-              <ProjectCard project={project} index={index} />
+        {/* Gap Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/[0.05] border border-white/[0.05]">
+          {projects.map((project, i) => (
+            <div key={project.id} className="bg-[#050505]">
+              <ProjectCard project={project} index={i} accentColor={accentColor} />
             </div>
           ))}
         </div>
 
-        <footer className="mt-16 flex flex-col md:flex-row justify-between items-center gap-4 opacity-50 hover:opacity-100 transition-opacity duration-700">
+        {/* Audit Footer */}
+        <motion.footer 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="mt-24 pt-12 border-t border-white/[0.05] flex flex-col md:flex-row justify-between items-center gap-10 opacity-40"
+        >
           <div className="flex gap-10 text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
-            <span>Status: Active</span>
-            <span>Integrity: Verified</span>
+             <span>Status: Active_Deployment</span>
+             <span>Registry: Verified</span>
           </div>
-          <div className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
-            // END_OF_ARCHIVE
+          <div className="flex gap-1">
+             {[...Array(8)].map((_, i) => (
+               <div key={i} className="w-1.5 h-1.5 border border-white/20" />
+             ))}
           </div>
-        </footer>
+          <div className="text-[9px] font-mono tracking-[0.3em] text-zinc-500 uppercase">
+            // END_OF_REGISTRY
+          </div>
+        </motion.footer>
+
       </div>
     </section>
   );
