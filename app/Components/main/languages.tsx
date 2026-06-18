@@ -1,261 +1,144 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react/jsx-no-comment-textnodes */
-/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import React, { useRef, Suspense, useState, useEffect, useMemo } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, MeshDistortMaterial, PerspectiveCamera } from '@react-three/drei';
-import { FaJava, FaPython, FaJs, FaReact, FaNodeJs, FaHtml5, FaVuejs } from 'react-icons/fa';
-import { SiFlutter, SiKotlin, SiNextdotjs, SiCplusplus } from 'react-icons/si';
-import { TbBrandCSharp } from "react-icons/tb";
-import * as THREE from 'three';
+import React, { useRef } from 'react';
+import { FaPython, FaJs, FaReact, FaNodeJs } from 'react-icons/fa';
+import { SiFlutter, SiKotlin, SiNextdotjs, SiCplusplus, SiTypescript } from 'react-icons/si';
+import { TbBrandCSharp } from 'react-icons/tb';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTheme } from '../../Context/theme';
 
-// ─────────────────────────────────────────────
-// THEME SYNC
-// ─────────────────────────────────────────────
-function useThemeColor() {
-  const [color, setColor] = useState('#f8fafc');
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12)      setColor('#7dd3fc'); // Morning
-    else if (hour < 18) setColor('#f8fafc'); // Day
-    else                setColor('#818cf8'); // Evening
-  }, []);
-  return color;
-}
+const languages = [
+  { name: 'JavaScript', icon: <FaJs />, proficiency: 90 },
+  { name: 'TypeScript', icon: <SiTypescript />, proficiency: 88 },
+  { name: 'React', icon: <FaReact />, proficiency: 90 },
+  { name: 'Next.js', icon: <SiNextdotjs />, proficiency: 85 },
+  { name: 'Node.js', icon: <FaNodeJs />, proficiency: 85 },
+  { name: 'C#', icon: <TbBrandCSharp />, proficiency: 80 },
+  { name: 'Python', icon: <FaPython />, proficiency: 65 },
+  { name: 'Flutter', icon: <SiFlutter />, proficiency: 75 },
+  { name: 'Kotlin', icon: <SiKotlin />, proficiency: 70 },
+  { name: 'C++', icon: <SiCplusplus />, proficiency: 75 },
+];
 
-// ─────────────────────────────────────────────
-// 3D DATA CORE
-// ─────────────────────────────────────────────
-const DataCore = ({ color }: { color: string }) => {
-  const mesh = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (!mesh.current) return;
-    mesh.current.rotation.y = state.clock.getElapsedTime() * 0.15;
-    mesh.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.4) * 0.2;
+const floatDelays = ['float-delay-1', 'float-delay-2', 'float-delay-3', 'float-delay-4', 'float-delay-5',
+  'float-delay-6', 'float-delay-7', 'float-delay-8', 'float-delay-9', 'float-delay-10'];
+
+function LangRow({ lang, index, accent }: { lang: typeof languages[0]; index: number; accent: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
   });
-
-  return (
-    <Float speed={2.5} rotationIntensity={0.4} floatIntensity={0.6}>
-      <mesh ref={mesh}>
-        <torusKnotGeometry args={[3, 0.8, 128, 16]} />
-        <MeshDistortMaterial
-          color={color}
-          speed={3}
-          distort={0.25}
-          radius={1}
-          metalness={1}
-          roughness={0.1}
-          emissive={color}
-          emissiveIntensity={0.15}
-          transparent
-          opacity={0.12}
-          wireframe
-        />
-      </mesh>
-    </Float>
-  );
-};
-
-// ─────────────────────────────────────────────
-// LANGUAGE MODULE (The "Glass" UI)
-// ─────────────────────────────────────────────
-const LanguageModule = ({ lang, accentColor }: { lang: any; accentColor: string }) => {
-  const [hovered, setHovered] = useState(false);
-  const lvl = `LVL.0${Math.max(1, Math.min(3, Math.ceil(lang.proficiency / 30)))}`;
+  const x = useTransform(scrollYProgress, [0, 1], [index % 2 === 0 ? 15 : -15, index % 2 === 0 ? -15 : 15]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.6, 1, 1, 0.6]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="group relative p-6 bg-zinc-950/50 backdrop-blur-xl border border-white/[0.06] overflow-hidden transition-all duration-500"
-      style={{ borderColor: hovered ? `${accentColor}44` : undefined }}
+      ref={ref}
+      initial={{ opacity: 0, x: index % 2 === 0 ? -15 : 15 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '-40px' }}
+      style={{ x, opacity, borderBottom: '1px solid var(--color-border)' }}
+      className={`flex items-center gap-4 py-4 ${floatDelays[index % floatDelays.length]}`}
     >
-      {/* Radial Hover Sweep */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{ opacity: hovered ? 1 : 0 }}
+      <div
+        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-110"
         style={{
-          background: `radial-gradient(circle at center, ${accentColor}0d 0%, transparent 80%)`,
+          backgroundColor: `${accent}08`,
+          color: accent,
         }}
-      />
-
-      <div className="relative z-10 flex flex-col items-center text-center">
-        {/* Icon & LVL Tag */}
-        <div className="w-full flex justify-between items-start mb-6">
-          <span className="text-[8px] font-black tracking-[0.3em] text-zinc-600 tabular-nums">
-            {lvl}
+      >
+        <span className="text-sm">{lang.icon}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-xs font-medium tracking-[0.02em]" style={{ color: 'var(--color-foreground)' }}>
+            {lang.name}
           </span>
-          <motion.div 
-            animate={{ color: hovered ? accentColor : '#3f3f46', scale: hovered ? 1.2 : 1 }}
-            className="text-2xl"
-          >
-            {lang.icon}
-          </motion.div>
+          <span className="text-[10px] font-medium tabular-nums" style={{ color: 'var(--color-muted)' }}>
+            {lang.proficiency}%
+          </span>
         </div>
-
-        <h3 className="text-[10px] font-black tracking-[0.35em] uppercase text-zinc-400 mb-6 transition-colors group-hover:text-white">
-          {lang.name}
-        </h3>
-
-        {/* Progress System */}
-        <div className="w-full space-y-3">
-          <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
-            <motion.div
-              initial={{ x: '-100%' }}
-              whileInView={{ x: `${lang.proficiency - 100}%` }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true }}
-              className="absolute inset-0 w-full h-full"
-              style={{ background: accentColor }}
-            />
-          </div>
-          
-          <div className="flex justify-between items-center">
-             <span className="text-[8px] font-mono tracking-widest text-zinc-600">INT_SYS_CHECK</span>
-             <span className="text-[8px] font-mono font-bold" style={{ color: hovered ? accentColor : '#52525b' }}>
-               {lang.proficiency}%
-             </span>
-          </div>
+        <div className="h-1 w-full rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-border)' }}>
+          <motion.div
+            initial={{ width: '0%' }}
+            whileInView={{ width: `${lang.proficiency}%` }}
+            transition={{ duration: 1, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: true }}
+            className="h-full rounded-full transition-all duration-300"
+            style={{ backgroundColor: accent }}
+          />
         </div>
       </div>
-
-      {/* Bottom accent line */}
-      <motion.div
-        className="absolute bottom-0 left-0 h-[2px] w-0"
-        animate={{ width: hovered ? '100%' : '0%' }}
-        style={{ background: accentColor }}
-      />
     </motion.div>
   );
-};
+}
 
-// ─────────────────────────────────────────────
-// MAIN SECTION
-// ─────────────────────────────────────────────
 export default function ProgrammingLanguages() {
-  const accentColor = useThemeColor();
-  const sectionRef = useRef(null);
-  const prefersReducedMotion = useReducedMotion();
-
+  const { accent } = useTheme();
+  const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "end start"]
+    offset: ['start end', 'end start'],
   });
-
-  const coreScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1.2, 0.8]);
-
-  const languages = [
-    { name: 'JavaScript', icon: <FaJs />, proficiency: 90 },
-    { name: 'React', icon: <FaReact />, proficiency: 90 },
-    { name: 'NextJS', icon: <SiNextdotjs />, proficiency: 85 },
-    { name: 'Node.js', icon: <FaNodeJs />, proficiency: 85 },
-    { name: 'TypeScript', icon: <FaJs />, proficiency: 88 }, // Added consistency
-    { name: 'C#', icon: <TbBrandCSharp />, proficiency: 80 },
-    { name: 'Python', icon: <FaPython />, proficiency: 65 },
-    { name: 'Flutter', icon: <SiFlutter />, proficiency: 75 },
-    { name: 'Kotlin', icon: <SiKotlin />, proficiency: 70 },
-    { name: 'C++', icon: <SiCplusplus />, proficiency: 75 },
-    { name: 'PostgreSQL', icon: <FaNodeJs />, proficiency: 82 },
-    { name: 'Docker', icon: <FaNodeJs />, proficiency: 78 },
-  ];
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%']);
 
   return (
-    <section ref={sectionRef} className="relative w-full py-40 bg-[#050505] overflow-hidden">
-      
-      {/* ── ATMOSPHERE ── */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[30%] left-[50%] -translate-x-1/2 h-[900px] w-[900px] rounded-full blur-[160px]"
-             style={{ background: accentColor, opacity: 0.03 }} />
-      </div>
-
-      {/* Engineering Grid Overlay */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.04 }}>
-        <pattern id="lang-grid" width="60" height="60" patternUnits="userSpaceOnUse">
-          <path d="M 60 0 L 0 0 0 60" fill="none" stroke={accentColor} strokeWidth="0.5" />
-        </pattern>
-        <rect width="100%" height="100%" fill="url(#lang-grid)" />
-      </svg>
-
-      {/* Grain Overlay */}
-      <div className="absolute inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
-      {/* 3D Visual - Distorted Data Core */}
-      <motion.div style={{ scale: coreScale }} className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-        <Canvas gl={{ alpha: true }}>
-          <PerspectiveCamera makeDefault position={[0, 0, 10]} />
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={2} color={accentColor} />
-          <Suspense fallback={null}>
-            <DataCore color={accentColor} />
-          </Suspense>
-        </Canvas>
+    <section ref={sectionRef} className="relative w-full py-32 md:py-44 bg-background overflow-hidden" id="languages">
+      {/* Parallax background glow */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute bottom-[10%] left-[-5%] h-[500px] w-[500px] rounded-full blur-[250px]"
+          style={{ background: accent, opacity: 0.025 }}
+        />
       </motion.div>
 
-      {/* ── CONTENT ── */}
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
-        
-        {/* Section Label */}
-        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-          className="flex items-center gap-4 mb-20">
-          <div className="h-[1px] w-12" style={{ background: accentColor }} />
-          <span className="text-[10px] tracking-[0.5em] text-zinc-500 uppercase font-black">
-            Technical Linguistics
-          </span>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="flex items-center gap-4 mb-16"
+        >
+          <div className="h-[2px] w-8 rounded-full" style={{ background: accent }} />
+          <span className="apple-eyebrow">Languages</span>
         </motion.div>
 
-        {/* Brutalist Headline */}
-        <header className="mb-32">
-          <motion.h2 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }}
-            className="text-[4.2rem] sm:text-[6.5rem] md:text-[9rem] font-black leading-[0.82] tracking-[-0.05em] text-white uppercase">
-            Stack
-            <br />
-            <span style={{ WebkitTextStroke: `2px ${accentColor}`, color: 'transparent' }}>
-              Fluency.
-            </span>
-          </motion.h2>
-        </header>
-
-        {/* The Module Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-white/[0.05] border border-white/[0.05]">
-          {languages.map((lang, i) => (
-            <div key={i} className="bg-[#050505]">
-              <LanguageModule lang={lang} accentColor={accentColor} />
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
+          <div className="md:col-span-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              className="apple-heading"
+            >
+              Stack<br />
+              <span className="font-semibold" style={{ color: accent }}>
+                Fluency.
+              </span>
+            </motion.h2>
+          </div>
+          <div className="md:col-span-5 md:col-start-7">
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="apple-subtitle text-sm"
+            >
+              Proficiency across my primary languages and frameworks. Depth over breadth — every tool here is production-ready.
+            </motion.p>
+          </div>
         </div>
 
-        {/* Audit Footer */}
-        <motion.footer 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="mt-24 pt-12 border-t border-white/[0.05] flex flex-col md:flex-row justify-between items-center gap-8"
-        >
-          <div className="flex items-center gap-6">
-             <div className="flex flex-col">
-                <span className="text-[8px] font-black tracking-[0.3em] text-zinc-600 uppercase mb-1">Status</span>
-                <span className="text-[10px] font-mono text-zinc-400">// AUDIT_COMPLETE</span>
-             </div>
-             <div className="w-[1px] h-8 bg-white/10" />
-             <div className="flex flex-col">
-                <span className="text-[8px] font-black tracking-[0.3em] text-zinc-600 uppercase mb-1">Modules</span>
-                <span className="text-[10px] font-mono text-zinc-400">TOTAL_{languages.length}</span>
-             </div>
+        <div className="max-w-2xl mx-auto">
+          <div className="apple-card-flat p-6 md:p-8">
+            {languages.map((lang, i) => (
+              <LangRow key={lang.name} lang={lang} index={i} accent={accent} />
+            ))}
           </div>
-
-          <div className="flex gap-2">
-             {[...Array(4)].map((_, i) => (
-               <div key={i} className="w-2 h-2 border border-white/10" style={{ backgroundColor: i < 2 ? accentColor : 'transparent', opacity: i < 2 ? 0.5 : 1 }} />
-             ))}
-          </div>
-        </motion.footer>
-
+        </div>
       </div>
     </section>
   );

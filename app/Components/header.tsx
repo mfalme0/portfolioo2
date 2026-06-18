@@ -1,59 +1,31 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// ─────────────────────────────────────────────
-// THEME SYNC (The "Pulse")
-// ─────────────────────────────────────────────
-function useThemeColor() {
-  const [color, setColor] = useState('#f8fafc');
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12)      setColor('#7dd3fc'); // Morning
-    else if (hour < 18) setColor('#f8fafc'); // Day
-    else                setColor('#818cf8'); // Evening
-  }, []);
-  return color;
-}
+import { useTheme } from '../Context/theme';
 
 interface NavLink {
   name: string;
   href: string;
 }
 
-const portfolioLinks: NavLink[] = [
-  { name: 'Identity', href: '#about-me' },
-  { name: 'History', href: '#experience' },
-  { name: 'Arsenal', href: '#techstack' },
-  { name: 'Fluency', href: '#languages' },
-  { name: 'Archive', href: '#projects' },
-  { name: 'Ledger', href: '#github' },
-];
-
-const gearLinks: NavLink[] = [
-  { name: 'Systems', href: '#rigs' },
-  { name: 'Keyboards', href: '#keyboards' },
-  { name: 'Mice', href: '#mice' },
-  { name: 'Audio', href: '#audio' },
-  { name: 'Display', href: '#display' },
-  { name: 'Power', href: '#power' },
+const navLinks: NavLink[] = [
+  { name: 'Hero', href: '#hero' },
+  { name: 'About', href: '#about-me' },
+  { name: 'Work', href: '#experience' },
+  { name: 'Tech', href: '#techstack' },
+  { name: 'Languages', href: '#languages' },
+  { name: 'Projects', href: '#projects' },
 ];
 
 export default function Header() {
-  const accentColor = useThemeColor();
+  const { theme, toggleTheme, accent } = useTheme();
   const pathname = usePathname();
   const isPortfolio = pathname === '/';
-  const isGearPage = pathname === '/gear';
-  const isLanPage = pathname === '/LAN';
 
-  const navLinks = useMemo(() => (isGearPage ? gearLinks : portfolioLinks), [isGearPage]);
-  const defaultHash = useMemo(() => navLinks[0]?.href ?? '#', [navLinks]);
-  
-  const [activeHash, setActiveHash] = useState<string>(defaultHash);
+  const [activeHash, setActiveHash] = useState('#hero');
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -63,9 +35,8 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Intersection Observer for Active Section
   useEffect(() => {
-    if (!isPortfolio && !isGearPage) return;
+    if (!isPortfolio) return;
     const ids = navLinks.map((l) => l.href.slice(1));
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
 
@@ -79,10 +50,10 @@ export default function Header() {
 
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [isPortfolio, isGearPage, navLinks]);
+  }, [isPortfolio]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href.startsWith('#') && (isPortfolio || isGearPage)) {
+    if (href.startsWith('#') && isPortfolio) {
       e.preventDefault();
       const el = document.querySelector(href);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -93,111 +64,117 @@ export default function Header() {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-        isScrolled ? 'py-4' : 'py-8'
-      }`}>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled ? 'py-3' : 'py-6'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-6">
-          <div className={`relative flex items-center justify-between p-2 px-6 transition-all duration-500 rounded-full border ${
-            isScrolled 
-              ? 'bg-zinc-950/50 backdrop-blur-xl border-white/[0.08] shadow-2xl' 
-              : 'bg-transparent border-transparent'
-          }`}>
-            
-            {/* ── LOGO ── */}
-            <Link href="/" className="group flex items-center gap-4">
-              <div className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: accentColor }} />
-                <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: accentColor }} />
-              </div>
-              <span className="text-[11px] font-black tracking-[0.4em] text-white uppercase">
-                JGITAU<span className="text-zinc-600">.pkg</span>
+          <div
+            className={`flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500 ${
+              isScrolled
+                ? 'bg-(--color-background) backdrop-blur-2xl shadow-sm border border-(--color-border)'
+                : 'bg-transparent'
+            }`}
+          >
+            <Link href="/" className="flex items-center gap-3">
+              <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
+                JGITAU
               </span>
             </Link>
 
-            {/* ── DESKTOP NAVIGATION ── */}
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
-                const isActive = (isPortfolio || isGearPage) && link.href === activeHash;
+                const isActive = isPortfolio && link.href === activeHash;
                 return (
                   <a
                     key={link.name}
                     href={link.href}
                     onClick={(e) => handleClick(e, link.href)}
-                    className={`relative px-5 py-2 text-[9px] font-black tracking-[0.3em] uppercase transition-all duration-300 ${
-                      isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                    className={`relative px-4 py-2 text-[11px] font-medium tracking-[0.08em] uppercase transition-all duration-300 ${
+                      isActive
+                        ? 'text-(--color-foreground)'
+                        : 'text-(--color-muted) hover:text-(--color-foreground)'
                     }`}
                   >
+                    {link.name}
                     {isActive && (
                       <motion.div
                         layoutId="nav-active"
-                        className="absolute inset-0 bg-white/[0.05] border border-white/[0.08] rounded-full -z-10"
+                        className="absolute bottom-0 left-4 right-4 h-[2px] rounded-full"
+                        style={{ backgroundColor: accent }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                       />
                     )}
-                    {link.name}
                   </a>
                 );
               })}
             </nav>
 
-            {/* ── SYSTEM ACTIONS ── */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={toggleTheme}
+                aria-label="Toggle theme"
+                className="w-8 h-8 flex items-center justify-center text-sm transition-all duration-300 hover:opacity-60"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                {theme === 'light' ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                  </svg>
+                )}
+              </button>
+
               <Link
                 href="/gear"
-                className={`hidden md:block px-5 py-2 text-[9px] font-black tracking-[0.35em] uppercase border transition-all ${
-                  isGearPage 
-                    ? 'bg-white/5 border-white/20 text-white' 
-                    : 'border-white/[0.05] text-zinc-500 hover:border-white/20 hover:text-white'
-                } rounded-full`}
+                className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all"
+                style={{ color: 'var(--color-muted)' }}
               >
-                Module_Gear
+                Gear
               </Link>
-
               <Link
                 href="/LAN"
-                className={`hidden md:block px-5 py-2 text-[9px] font-black tracking-[0.35em] uppercase rounded-full transition-all ${
-                  isLanPage
-                    ? 'bg-white text-black'
-                    : 'bg-white/10 border border-white/10 text-white hover:bg-white hover:text-black'
-                }`}
-                style={{ 
-                   boxShadow: isLanPage ? `0 0 20px ${accentColor}44` : 'none',
-                   backgroundColor: isLanPage ? accentColor : undefined 
-                }}
+                className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all"
+                style={{ color: 'var(--color-muted)' }}
               >
-                Protocol_LAN
+                LAN
               </Link>
 
-              {/* Mobile Trigger */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5"
               >
-                <div className={`h-[1px] bg-white transition-all duration-300 ${mobileOpen ? 'w-6 rotate-45 translate-y-[3.5px]' : 'w-5'}`} />
-                <div className={`h-[1px] bg-white transition-all duration-300 ${mobileOpen ? 'w-6 -rotate-45 -translate-y-[3.5px]' : 'w-3'}`} />
+                <div
+                  className={`h-[1.5px] transition-all duration-300 ${
+                    mobileOpen ? 'w-6 rotate-45 translate-y-[3.5px]' : 'w-5'
+                  }`}
+                  style={{ backgroundColor: 'var(--color-foreground)' }}
+                />
+                <div
+                  className={`h-[1.5px] transition-all duration-300 ${
+                    mobileOpen ? 'w-6 -rotate-45 -translate-y-[3.5px]' : 'w-3'
+                  }`}
+                  style={{ backgroundColor: 'var(--color-foreground)' }}
+                />
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* ── MOBILE OVERLAY (Terminal Mode) ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[49] bg-[#050505]/98 backdrop-blur-3xl lg:hidden flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[49] bg-(--color-background) lg:hidden flex flex-col items-center justify-center"
           >
-            {/* Grid Pattern Overlay */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-            <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ 
-              backgroundImage: `linear-gradient(${accentColor}11 1px, transparent 1px), linear-gradient(90deg, ${accentColor}11 1px, transparent 1px)`,
-              backgroundSize: '40px 40px'
-            }} />
-
-            <nav className="relative z-10 flex flex-col items-center gap-10">
+            <nav className="flex flex-col items-center gap-10">
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.name}
@@ -206,24 +183,20 @@ export default function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                   onClick={(e) => handleClick(e, link.href)}
-                  className={`text-4xl font-black tracking-tighter uppercase ${
-                    link.href === activeHash ? 'text-white' : 'text-zinc-700'
+                  className={`text-2xl font-medium tracking-tight ${
+                    link.href === activeHash ? 'text-(--color-foreground)' : 'text-(--color-muted)'
                   }`}
-                  style={{ color: link.href === activeHash ? undefined : undefined }}
                 >
-                  {link.href === activeHash && <span className="mr-4" style={{ color: accentColor }}>&gt;</span>}
                   {link.name}
                 </motion.a>
               ))}
-
-              <div className="h-[1px] w-20 bg-white/10 my-4" />
-
-              <div className="flex flex-col items-center gap-6">
-                <Link href="/gear" onClick={() => setMobileOpen(false)} className="text-[10px] font-black tracking-[0.4em] text-zinc-500 uppercase">
-                  Gear_Inventory
+              <div className="h-[1px] w-16" style={{ backgroundColor: 'var(--color-border)' }} />
+              <div className="flex gap-8">
+                <Link href="/gear" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                  Gear
                 </Link>
-                <Link href="/LAN" onClick={() => setMobileOpen(false)} className="text-[10px] font-black tracking-[0.4em] uppercase" style={{ color: accentColor }}>
-                  LAN_Active_Node
+                <Link href="/LAN" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                  LAN
                 </Link>
               </div>
             </nav>
