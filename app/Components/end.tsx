@@ -238,7 +238,7 @@ export default function End() {
               &copy; {year} Joseph Gitau
             </p>
             <div className="flex items-center gap-4">
-              <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: `${accent}60` }}>Est. 2006</span>
+              <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: `${accent}60` }}>Est. 2023</span>
               <div className="w-[1px] h-3" style={{ backgroundColor: 'var(--color-border)' }} />
               <span className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
                 Nairobi

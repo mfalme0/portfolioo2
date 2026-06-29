@@ -222,27 +222,7 @@ export function Hero() {
           </a>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span
-            className="text-[8px] font-bold tracking-[0.25em] uppercase"
-            style={{ color: `${accent}80` }}
-          >
-            Scroll
-          </span>
-          <motion.div
-            animate={
-              reducedEffects ? {} : { height: [6, 24, 6], opacity: [0.3, 1, 0.3] }
-            }
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[1px]"
-            style={{ backgroundColor: accent }}
-          />
-        </motion.div>
+
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -256,7 +236,7 @@ export function Hero() {
               style={{ background: `linear-gradient(90deg, ${accent}60, transparent)` }}
             />
             <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: `${accent}60` }}>
-              Est. 2006
+              Est. 2023
             </span>
           </div>
         </motion.div>

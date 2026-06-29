@@ -109,7 +109,7 @@ export default function Footer() {
             &copy; {year} Joseph Gitau
           </p>
           <div className="flex items-center gap-4">
-            <span className="badge-est">Est. 2006</span>
+            <span className="badge-est">Est. 2023</span>
             <span className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
               Designed & Built in Nairobi
             </span>
