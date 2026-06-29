@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -121,7 +120,8 @@ export default function GearLoader({
             ? { opacity: 0, transition: { duration: 0.2 } }
             : { y: "-100%", transition: { duration: 0.8, ease: [0.19, 1, 0.22, 1] } }
         }
-        className="fixed inset-0 z-50 bg-[#050505] text-[#ff1a1a] font-mono flex items-center justify-center p-6 overflow-hidden"
+        className="fixed inset-0 z-50 font-mono flex items-center justify-center p-6 overflow-hidden"
+        style={{ backgroundColor: 'var(--bg)', color: 'var(--accent-default)' }}
       >
         {/* Subtle grain */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
@@ -139,7 +139,8 @@ export default function GearLoader({
           }}
         />
 
-        <div className="relative z-10 w-full max-w-xl rounded-xl border border-white/10 bg-black/60 backdrop-blur-md shadow-[0_0_80px_rgba(255,26,26,0.08)]">
+        <div className="relative z-10 w-full max-w-xl rounded-xl border border-white/10 bg-black/60 backdrop-blur-md"
+          style={{ boxShadow: '0 0 80px rgb(var(--accent-rgb) / 0.08)' }}>
           {/* Header */}
           <div className="flex items-end justify-between px-6 pt-6 pb-4 border-b border-white/10">
             <div className="flex items-center gap-3">
@@ -173,7 +174,7 @@ export default function GearLoader({
               <div className="flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-white/40">
                 {pct >= 100 ? (
                   <>
-                    <FaCheck className="text-[#ff1a1a]" />
+                    <FaCheck style={{ color: 'var(--accent-default)' }} />
                     READY
                   </>
                 ) : (
@@ -188,8 +189,8 @@ export default function GearLoader({
             {/* Progress bar */}
             <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden border border-white/10">
               <motion.div
-                className="h-full bg-[#ff1a1a]/90"
-                style={{ width: `${progress}%` }}
+                className="h-full"
+                style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)', width: `${progress}%` }}
                 transition={{ ease: "easeOut", duration: 0.2 }}
               />
             </div>
@@ -211,7 +212,8 @@ export default function GearLoader({
                 </div>
 
                 <div className="text-[12px] text-white flex items-center gap-2">
-                  <span className="inline-flex h-2 w-2 rounded-full bg-[#ff1a1a]/90 shadow-[0_0_18px_rgba(255,26,26,0.35)]">
+                  <span className="inline-flex h-2 w-2 rounded-full"
+                    style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)', boxShadow: '0 0 18px rgb(var(--accent-rgb) / 0.35)' }}>
                     <span className={reduceMotion ? "" : "animate-ping"} />
                   </span>
                   <span className="font-bold tracking-wide">
@@ -225,9 +227,9 @@ export default function GearLoader({
             {/* Footer meta */}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-[10px] uppercase tracking-[0.25em] text-white/35">
               <div className="flex gap-4">
-                <span className="text-[#ff1a1a]/60">mem: ok</span>
-                <span className="text-[#ff1a1a]/60">io: ok</span>
-                <span className="text-[#ff1a1a]/60">gpu: ok</span>
+                <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>mem: ok</span>
+                <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>io: ok</span>
+                <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>gpu: ok</span>
               </div>
 
               {/* Optional skip (nice UX) */}

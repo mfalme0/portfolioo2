@@ -33,17 +33,17 @@ export default function Footer() {
               Full-stack engineer building production-grade software across the entire technology stack.
             </p>
             <div className="flex items-center gap-4 mt-2">
-              {socials.map((s) => (
+              {socials.map((s, i) => (
                 <a
                   key={s.label}
                   href={s.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="transition-all duration-300 hover:opacity-60"
+                  className="block transition-all duration-300 hover:-translate-y-0.5 hover:opacity-60"
                   style={{ color: 'var(--color-muted)' }}
                   aria-label={s.label}
                 >
-                  <span className="text-sm">{s.icon}</span>
+                  <span className="text-sm block icon-float" style={{ animationDelay: `${i * 0.4}s` }}>{s.icon}</span>
                 </a>
               ))}
             </div>
@@ -96,14 +96,24 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Ornament */}
+        <div className="divider-ornament my-12">
+          <span>craft</span>
+          <span>code</span>
+          <span>ship</span>
+        </div>
+
         {/* Bottom */}
-        <div className="mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: '1px solid var(--color-border)' }}>
+        <div className="mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: '1px solid var(--color-border)' }}>
           <p className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
             &copy; {year} Joseph Gitau
           </p>
-          <span className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
-            Designed & Built in Nairobi
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="badge-est">Est. 2006</span>
+            <span className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
+              Designed & Built in Nairobi
+            </span>
+          </div>
         </div>
       </div>
     </footer>

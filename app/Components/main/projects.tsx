@@ -48,6 +48,7 @@ function ProjectCard({ project, index, accent }: { project: typeof projects[0]; 
             src={project.image}
             alt={project.title}
             fill
+            loading="lazy"
             className="object-cover transition-all duration-700 ease-out"
             style={{
               filter: hovered ? 'none' : 'grayscale(0.4) brightness(0.85)',
@@ -112,7 +113,7 @@ export function Projects() {
   const filtered = activeCategory === 'ALL' ? projects : projects.filter((p) => p.category === activeCategory);
 
   return (
-    <section className="relative w-full py-32 md:py-44 bg-background overflow-hidden" id="projects">
+    <section className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="projects">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -120,7 +121,14 @@ export function Projects() {
           viewport={{ once: true }}
           className="flex items-center gap-4 mb-16"
         >
-          <div className="h-[2px] w-8 rounded-full" style={{ background: accent }} />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="h-[2px] w-8 rounded-full origin-left"
+            style={{ background: accent }}
+          />
           <span className="apple-eyebrow">Projects</span>
         </motion.div>
 

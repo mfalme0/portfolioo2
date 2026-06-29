@@ -48,7 +48,7 @@ export default function PhotoGrid() {
             viewport={{ once: true }} transition={{ delay: 0.05 * index }}
             className="relative w-full h-56 overflow-hidden group cursor-pointer bg-[#050505]"
             onClick={() => setSelected(img)}>
-            <Image src={img.src} alt={img.alt} fill
+            <Image src={img.src} alt={img.alt} fill loading="lazy"
               className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 33vw" />
             {/* Corner brackets */}

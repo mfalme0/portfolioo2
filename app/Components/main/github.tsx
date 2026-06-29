@@ -17,7 +17,7 @@ export default function Github() {
   }), [accentColor]);
 
   return (
-    <section className="relative w-full py-32 md:py-44 bg-background overflow-hidden" id="github">
+    <section className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="github">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -25,7 +25,14 @@ export default function Github() {
           viewport={{ once: true }}
           className="flex items-center gap-4 mb-16"
         >
-          <div className="h-[2px] w-8 rounded-full" style={{ background: accentColor }} />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="h-[2px] w-8 rounded-full origin-left"
+            style={{ background: accentColor }}
+          />
           <span className="apple-eyebrow">GitHub</span>
         </motion.div>
 
@@ -84,6 +91,7 @@ export default function Github() {
                 onChange={(e) => setYear(Number(e.target.value))}
                 className="bg-transparent text-xs font-medium outline-none cursor-pointer"
                 style={{ color: accentColor }}
+                aria-label="Select GitHub contribution year"
               >
                 {[nowYear, nowYear - 1, nowYear - 2, nowYear - 3].map(y => (
                   <option key={y} value={y} className="bg-(--color-background)">{y}</option>

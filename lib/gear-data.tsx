@@ -2,26 +2,33 @@ import type { ReactNode } from 'react';
 
 import { SiNvidia, SiIntel, SiAmd, SiLogitech } from 'react-icons/si';
 import {
-  FaMemory, FaHdd, FaSnowflake, FaDesktop, FaThermometerHalf,
+  FaMemory, FaHdd, FaDesktop, FaThermometerHalf,
   FaKeyboard, FaWifi, FaPalette, FaClock, FaUsb, FaBolt, FaPlug,
   FaWeightHanging, FaMicrochip, FaBatteryFull, FaMusic, FaMicrophone,
-  FaVolumeUp, FaTv, FaAdjust, FaShieldAlt,
+  FaVolumeUp, FaTv, FaAdjust, FaShieldAlt, FaGamepad, FaBluetooth,
+  FaSyncAlt, FaCrosshairs, FaHeadphones,
 } from 'react-icons/fa';
 import {
-  MdPowerSettingsNew, MdSpeed, MdOutlet, MdHighQuality,MdOutlineMonitor
+  MdSpeed, MdOutlet, MdHighQuality, MdOutlineMonitor
 } from 'react-icons/md';
 import { BsNvidia } from 'react-icons/bs';
 import { GiSoundWaves, GiElectric } from 'react-icons/gi';
 import { HiOutlineSparkles } from 'react-icons/hi';
 import { IoMdSpeedometer } from 'react-icons/io';
 
-export type GearCategory = 'system' | 'keyboard' | 'mouse' | 'audio' | 'display' | 'power';
+export type GearCategory = 'system' | 'keyboard' | 'mouse' | 'audio' | 'display' | 'power' | 'controller';
 
 export interface GearSpec {
   label: string;
   value: string;
   tag?: string;
   icon?: ReactNode;
+}
+
+export interface BenchScore {
+  label: string;
+  score: number;
+  unit?: string;
 }
 
 export interface GearItem {
@@ -31,6 +38,7 @@ export interface GearItem {
   category: GearCategory;
   status: 'active' | 'retired';
   image: string;
+  gallery?: string[];
   tags?: string[];
   specs: GearSpec[];
   specLayout: 'split' | 'flat';
@@ -45,6 +53,8 @@ export interface GearItem {
   cons?: string[];
   purchaseYear?: number;
   price?: string;
+  connectivity?: GearSpec[];
+  benchmarks?: BenchScore[];
 }
 
 export const gearItems: GearItem[] = [
@@ -55,6 +65,11 @@ export const gearItems: GearItem[] = [
   category: 'system',
   status: 'active',
   image: '/images/gear/g18side.png',
+  gallery: [
+    '/images/gear/rog-strix-g18-view-1.png',
+    '/images/gear/rog-strix-g18-view-2.png',
+    '/images/gear/rog-strix-g18-view-3.png',
+  ],
   specs: [
     { label: 'CPU', value: 'Intel i9-14900HX', icon: <SiIntel className="text-blue-500" /> },
     { label: 'GPU', value: 'RTX 4060 (140W)', icon: <SiNvidia className="text-emerald-500" /> },
@@ -85,7 +100,23 @@ export const gearItems: GearItem[] = [
     'High fan noise during intensive GPU-accelerated tasks',
   ],
   purchaseYear: 2025,
-  price: 'KES 205,000', // Adjusted to reflect i9/G18 market pricing
+  price: 'KES 205,000',
+  benchmarks: [
+    { label: 'Cinebench R23 Multi', score: 21350 },
+    { label: 'Cinebench R23 Single', score: 2120 },
+    { label: 'Geekbench 6 Multi', score: 18200 },
+    { label: 'Geekbench 6 Single', score: 2850 },
+    { label: '3DMark Time Spy', score: 10200 },
+    { label: 'PCMark 10', score: 7450 },
+  ],
+  connectivity: [
+    { label: 'THUNDERBOLT 4', value: '1x USB4 40Gbps', icon: <FaBolt className="text-cyan-500" />, tag: 'PD+DP' },
+    { label: 'USB-A', value: '2x USB 3.2 Gen 2 10Gbps', icon: <FaUsb className="text-yellow-500" />, tag: 'TYPE-A' },
+    { label: 'USB-C', value: '1x USB 3.2 Gen 2 10Gbps', icon: <FaUsb className="text-yellow-500" />, tag: 'TYPE-C' },
+    { label: 'HDMI', value: '1x HDMI 2.1 48Gbps', icon: <FaTv className="text-purple-500" />, tag: '4K/120Hz' },
+    { label: 'AUDIO', value: '1x 3.5mm Combo', icon: <FaPlug className="text-green-500" />, tag: 'TRRS' },
+    { label: 'ETHERNET', value: '1x RJ45 2.5Gbps', icon: <FaWifi className="text-orange-500" />, tag: '2.5GBASE-T' },
+  ],
 },
   {
     slug: 'rog-strix-g15',
@@ -122,6 +153,21 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2023,
     price: 'KES 135,000',
+    benchmarks: [
+      { label: 'Cinebench R23 Multi', score: 10350 },
+      { label: 'Cinebench R23 Single', score: 1210 },
+      { label: 'Geekbench 6 Multi', score: 7200 },
+      { label: 'Geekbench 6 Single', score: 1550 },
+      { label: '3DMark Time Spy', score: 3800 },
+      { label: 'PCMark 10', score: 5200 },
+    ],
+    connectivity: [
+      { label: 'USB-C', value: '1x USB 3.2 Gen 1 5Gbps', icon: <FaUsb className="text-yellow-500" />, tag: 'TYPE-C' },
+      { label: 'USB-A', value: '3x USB 3.2 Gen 1 5Gbps', icon: <FaUsb className="text-yellow-500" />, tag: 'TYPE-A' },
+      { label: 'HDMI', value: '1x HDMI 2.0b 18Gbps', icon: <FaTv className="text-purple-500" />, tag: '4K/60Hz' },
+      { label: 'ETHERNET', value: '1x RJ45 1Gbps', icon: <FaWifi className="text-orange-500" />, tag: 'Gigabit' },
+      { label: 'AUDIO', value: '1x 3.5mm Combo', icon: <FaPlug className="text-green-500" />, tag: 'TRRS' },
+    ],
   },
   {
     slug: 'aula-f75',
@@ -157,6 +203,11 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2025,
     price: 'KES 6,500',
+    connectivity: [
+      { label: 'USB', value: 'USB-C (Wired)', icon: <FaPlug className="text-yellow-500" />, tag: '1Gbps' },
+      { label: 'RF', value: '2.4GHz Wireless', icon: <FaWifi className="text-blue-500" />, tag: '1000Hz' },
+      { label: 'BLUETOOTH', value: 'BT 5.x', icon: <FaWifi className="text-cyan-500" />, tag: 'TRI-MODE' },
+    ],
   },
   {
     slug: 'aula-s2022',
@@ -191,6 +242,9 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2023,
     price: 'KES 3,000',
+    connectivity: [
+      { label: 'USB', value: 'USB-A (Wired)', icon: <FaPlug className="text-yellow-500" />, tag: 'FULL-SPEED' },
+    ],
   },
   {
     slug: 'g-pro-wireless',
@@ -225,6 +279,10 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2024,
     price: 'KES 12,000',
+    connectivity: [
+      { label: 'CHARGING', value: 'Micro-USB', icon: <FaUsb className="text-yellow-500" />, tag: 'DATA+CHARGE' },
+      { label: 'WIRELESS', value: '2.4GHz LIGHTSPEED', icon: <FaWifi className="text-cyan-500" />, tag: '1MS LATENCY' },
+    ],
   },
   {
     slug: 'aula-sc660',
@@ -259,6 +317,10 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2023,
     price: 'KES 4,500',
+    connectivity: [
+      { label: 'CHARGING', value: 'USB-C', icon: <FaUsb className="text-yellow-500" />, tag: 'DATA+CHARGE' },
+      { label: 'WIRELESS', value: '2.4GHz / BT', icon: <FaWifi className="text-cyan-500" />, tag: 'TRI-MODE' },
+    ],
   },
   {
     slug: 'glorious-model-o',
@@ -295,6 +357,9 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2022,
     price: 'KES 6,000',
+    connectivity: [
+      { label: 'CABLE', value: 'USB-A Ascended Cord', icon: <FaPlug className="text-yellow-500" />, tag: 'FLEXIBLE' },
+    ],
   },
   {
     slug: 'kz-edx-ultra',
@@ -330,6 +395,50 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2024,
     price: 'KES 2,500',
+    connectivity: [
+      { label: 'CABLE', value: 'Detachable 0.75mm 2-Pin', icon: <FaPlug className="text-yellow-500" />, tag: 'OFC' },
+      { label: 'JACK', value: '3.5mm TRS', icon: <FaMusic className="text-green-500" />, tag: 'GOLD-PLATED' },
+    ],
+  },
+  {
+    slug: 'apc-easy-ups-bv-650va',
+    name: 'APC EASY UPS BV 650VA',
+    subtitle: 'POWER_ID: BACKUP_COMPACT // AVR_REGULATED',
+    category: 'power',
+    status: 'active',
+    image: '/images/gear/apc-easy-ups.png',
+    tags: ['AVR', 'COMPACT', '230V'],
+    specs: [
+      { label: 'CAPACITY', value: '650 VA', icon: <GiElectric className="text-red-500" />, tag: 'POWER RATING' },
+      { label: 'OUTPUT', value: '360 Watts', icon: <FaBolt className="text-orange-500" />, tag: 'MAX LOAD' },
+      { label: 'VOLTAGE', value: '230V', icon: <FaPlug className="text-purple-500" />, tag: 'UNIVERSAL' },
+      { label: 'AVR', value: 'Automatic', icon: <FaAdjust className="text-cyan-500" />, tag: 'REGULATED' },
+      { label: 'OUTLETS', value: '1 Universal', icon: <MdOutlet className="text-green-500" />, tag: 'SURGE+BAT' },
+      { label: 'PROTECTION', value: 'Surge + AVR', icon: <FaShieldAlt className="text-blue-500" />, tag: 'COMPACT' },
+    ],
+    specLayout: 'split',
+    imagePosition: 'left',
+    specTitle: 'POWER SPECIFICATIONS',
+    modelLabel: 'MODEL: BV650A-UI // TOWER COMPACT',
+    description: 'Compact APC Easy UPS with Automatic Voltage Regulation. Protects secondary gear and networking equipment from power fluctuations.',
+    story: 'The APC Easy UPS BV 650VA handles protection for my secondary setup and networking gear. Its Automatic Voltage Regulation (AVR) keeps equipment safe from the frequent voltage sags and spikes common in the Kenyan power grid without draining the battery. The 360W output is enough for my networking stack, secondary monitor, and charging station. The compact form factor fits neatly on a shelf, and the universal outlet works with all my equipment. It\'s the perfect companion to the larger 1400VA unit — covering secondary devices while the big UPS handles the primary rig.',
+    pros: [
+      'AVR provides voltage regulation without battery drain',
+      'Compact size fits on shelves and tight spaces',
+      'Universal 230V outlet works with all local equipment',
+      'Affordable entry point for UPS protection',
+    ],
+    cons: [
+      '360W output limits what you can plug in',
+      'Single outlet requires a power strip for multiple devices',
+      'Runtime is limited — about 5-8 minutes at half load',
+    ],
+    purchaseYear: 2025,
+    price: 'KES 8,500',
+    connectivity: [
+      { label: 'OUTLET', value: '1x Universal 230V', icon: <MdOutlet className="text-purple-500" />, tag: 'SURGE+BAT' },
+      { label: 'PROTECTION', value: 'Phone/Modem', icon: <FaPlug className="text-blue-500" />, tag: 'RJ11' },
+    ],
   },
   {
     slug: 'kz-castor-pro',
@@ -365,6 +474,10 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2025,
     price: 'KES 4,000',
+    connectivity: [
+      { label: 'CABLE', value: 'Detachable 0.75mm 2-Pin', icon: <FaPlug className="text-yellow-500" />, tag: 'OFC FLAT' },
+      { label: 'JACK', value: '3.5mm TRS', icon: <FaMusic className="text-green-500" />, tag: 'GOLD-PLATED' },
+    ],
   },
   {
     slug: 'logitech-g935',
@@ -402,6 +515,11 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2024,
     price: 'KES 18,000',
+    connectivity: [
+      { label: 'CHARGING', value: 'Micro-USB', icon: <FaUsb className="text-yellow-500" />, tag: 'DATA+CHARGE' },
+      { label: 'WIRELESS', value: '2.4GHz LIGHTSPEED', icon: <FaWifi className="text-cyan-500" />, tag: '1MS LATENCY' },
+      { label: 'WIRED', value: '3.5mm Analog', icon: <FaPlug className="text-green-500" />, tag: 'AUX MODE' },
+    ],
   },
   {
     slug: 'targ-27-monitor',
@@ -438,6 +556,11 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2024,
     price: 'KES 30,000',
+    connectivity: [
+      { label: 'HDMI', value: '2x HDMI 2.0 18Gbps', icon: <FaTv className="text-purple-500" />, tag: '4K/60Hz' },
+      { label: 'DP', value: '1x DisplayPort 1.4', icon: <MdOutlineMonitor className="text-cyan-500" />, tag: 'QHD/165Hz' },
+      { label: 'AUDIO', value: '3.5mm Out', icon: <FaPlug className="text-green-500" />, tag: 'HEADPHONE' },
+    ],
   },
   {
     slug: 'apc-back-ups-1400va',
@@ -474,6 +597,137 @@ export const gearItems: GearItem[] = [
     ],
     purchaseYear: 2025,
     price: 'KES 25,000',
+    connectivity: [
+      { label: 'OUTLETS', value: '10x NEMA 5-15R', icon: <MdOutlet className="text-purple-500" />, tag: '5+5 SURGE/BAT' },
+      { label: 'USB', value: 'USB HID Port', icon: <FaUsb className="text-yellow-500" />, tag: 'MONITORING' },
+      { label: 'RJ45', value: 'In + Out', icon: <FaWifi className="text-orange-500" />, tag: 'SURGE' },
+      { label: 'COAX', value: 'In + Out', icon: <FaPlug className="text-blue-500" />, tag: 'SURGE' },
+    ],
+  },
+  {
+    slug: 'dualshock-4',
+    name: 'DUALSHOCK 4',
+    subtitle: 'CONTROLLER_ID: PS4_GAMEPAD // JET_BLACK',
+    category: 'controller',
+    status: 'active',
+    image: '/images/gear/dualshock.png',
+    tags: ['WIRELESS', 'TOUCHPAD', 'MOTION'],
+    specs: [
+      { label: 'CONNECTIVITY', value: 'Bluetooth 2.1+EDR', icon: <FaBluetooth className="text-blue-500" />, tag: 'WIRELESS' },
+      { label: 'BATTERY', value: '8 Hours', icon: <FaBatteryFull className="text-green-500" />, tag: 'LITHIUM-ION' },
+      { label: 'SENSORS', value: '6-Axis Gyro+Accel', icon: <FaSyncAlt className="text-purple-500" />, tag: 'MOTION' },
+      { label: 'TOUCHPAD', value: '2-Point Capacitive', icon: <FaCrosshairs className="text-cyan-500" />, tag: 'CLICKABLE' },
+      { label: 'AUDIO', value: '3.5mm + Stereo', icon: <FaHeadphones className="text-pink-500" />, tag: 'BUILT-IN' },
+      { label: 'LIGHT BAR', value: 'RGB Multi-Color', icon: <FaPalette className="text-yellow-500" />, tag: 'CAMERA-TRACKED' },
+    ],
+    specLayout: 'split',
+    imagePosition: 'left',
+    specTitle: 'CONTROLLER SPECIFICATIONS',
+    modelLabel: 'MODEL: CUH-ZCT2 // JET BLACK // V2',
+    description: 'Sony\'s flagship DualShock 4 wireless controller for PlayStation 4. Reliable, responsive, and packed with features.',
+    story: 'The DualShock 4 is my primary PS4 controller, used for everything from competitive fighting games to immersive single-player adventures. The refined ergonomics and responsive analog sticks make it comfortable for extended sessions. The built-in touchpad adds a unique input dimension, and the light bar provides visual feedback in supported titles. Bluetooth connectivity means I can also pair it with my PC for certain games. The V2 revision improved the light bar visibility and added a more tactile D-pad — a welcome upgrade over the original launch model.',
+    pros: [
+      'Comfortable ergonomics for long gaming sessions',
+      'Responsive sticks and tactile button feedback',
+      'Built-in touchpad adds unique input options',
+      'Bluetooth works with PC and mobile devices too',
+    ],
+    cons: [
+      '8-hour battery life is mediocre',
+      'Micro-USB charging (not USB-C)',
+      'Light bar cannot be fully disabled',
+      'Rubber on thumbsticks wears over time',
+    ],
+    purchaseYear: 2023,
+    price: 'KES 6,500',
+    connectivity: [
+      { label: 'WIRELESS', value: 'Bluetooth 2.1+EDR', icon: <FaBluetooth className="text-blue-500" />, tag: 'STANDARD' },
+      { label: 'WIRED', value: 'Micro-USB', icon: <FaUsb className="text-yellow-500" />, tag: 'DATA+CHARGE' },
+      { label: 'AUDIO', value: '3.5mm TRRS', icon: <FaPlug className="text-green-500" />, tag: 'HEADSET' },
+    ],
+  },
+  {
+    slug: 'xbox-one-white',
+    name: 'XBOX ONE WHITE',
+    subtitle: 'CONTROLLER_ID: XBOX_GAMEPAD // ARCTIC_WHITE',
+    category: 'controller',
+    status: 'active',
+    image: '/images/gear/xbox-1.webp',
+    tags: ['WIRELESS', 'IMPULSE TRIGGERS', 'BLUETOOTH'],
+    specs: [
+      { label: 'CONNECTIVITY', value: 'Xbox Wireless + BT', icon: <FaWifi className="text-green-500" />, tag: 'DUAL-MODE' },
+      { label: 'BATTERY', value: '30+ Hours', icon: <FaBatteryFull className="text-cyan-500" />, tag: 'AA (2x)' },
+      { label: 'TRIGGERS', value: 'Impulse Vibration', icon: <FaBolt className="text-orange-500" />, tag: 'HAPTIC' },
+      { label: 'D-PAD', value: 'Hybrid Faceted', icon: <FaGamepad className="text-purple-500" />, tag: 'PRECISE' },
+      { label: 'AUDIO', value: '3.5mm Stereo', icon: <FaHeadphones className="text-pink-500" />, tag: 'BUILT-IN' },
+      { label: 'COMPAT', value: 'Xbox One / PC', icon: <FaUsb className="text-blue-500" />, tag: 'DUAL-PLATFORM' },
+    ],
+    specLayout: 'split',
+    imagePosition: 'right',
+    specTitle: 'CONTROLLER SPECIFICATIONS',
+    modelLabel: 'MODEL: 1708 // ARCTIC WHITE // BLUETOOTH',
+    description: 'The iconic Xbox One wireless controller in a clean arctic white finish. Ergonomic design with responsive controls.',
+    story: 'This white Xbox One controller is my go-to for Xbox gaming and PC titles that play better with a gamepad. The refined ergonomics fit comfortably in hand, and the hybrid D-pad is a massive improvement over the original Xbox One D-pad. Impulse triggers provide directional haptic feedback that adds immersion in supported games. Bluetooth connectivity means I can use it wirelessly with my PC without any adapters. The textured grips on the triggers and bumpers keep my fingers secure during intense sessions. AA batteries mean I never have to deal with a dead internal battery — just swap and go.',
+    pros: [
+      'Exceptional ergonomic design fits all hand sizes',
+      'Hybrid D-pad works great for both fighting and platforming',
+      'Impulse triggers deliver immersive directional rumble',
+      'Standard AA batteries are easy to replace',
+    ],
+    cons: [
+      'No rechargeable battery pack included',
+      'Textured grip could be more pronounced',
+      'Bluetooth range is limited compared to Xbox Wireless',
+    ],
+    purchaseYear: 2024,
+    price: 'KES 5,500',
+    connectivity: [
+      { label: 'WIRELESS', value: 'Xbox Wireless + BT 4.0', icon: <FaWifi className="text-green-500" />, tag: 'DUAL-MODE' },
+      { label: 'WIRED', value: 'Micro-USB', icon: <FaUsb className="text-yellow-500" />, tag: 'DATA+CHARGE' },
+      { label: 'AUDIO', value: '3.5mm TRRS', icon: <FaPlug className="text-green-500" />, tag: 'HEADSET' },
+    ],
+  },
+  {
+    slug: 'xbox-recon-tech',
+    name: 'XBOX RECON TECH',
+    subtitle: 'CONTROLLER_ID: XBOX_GAMEPAD // RECON_TECH_EDITION',
+    category: 'controller',
+    status: 'active',
+    image: '/images/gear/xbox-recon-tech.png',
+    tags: ['SPECIAL EDITION', 'WIRELESS', 'MILITARY CAMO'],
+    specs: [
+      { label: 'CONNECTIVITY', value: 'Xbox Wireless + BT', icon: <FaWifi className="text-green-500" />, tag: 'DUAL-MODE' },
+      { label: 'BATTERY', value: '30+ Hours', icon: <FaBatteryFull className="text-cyan-500" />, tag: 'AA (2x)' },
+      { label: 'TRIGGERS', value: 'Impulse Vibration', icon: <FaBolt className="text-orange-500" />, tag: 'HAPTIC' },
+      { label: 'D-PAD', value: 'Hybrid Faceted', icon: <FaGamepad className="text-purple-500" />, tag: 'PRECISE' },
+      { label: 'DESIGN', value: 'Recon Tech Camo', icon: <FaCrosshairs className="text-lime-500" />, tag: 'EXCLUSIVE' },
+      { label: 'COMPAT', value: 'Xbox One / PC', icon: <FaUsb className="text-blue-500" />, tag: 'DUAL-PLATFORM' },
+    ],
+    specLayout: 'split',
+    imagePosition: 'left',
+    specTitle: 'CONTROLLER SPECIFICATIONS',
+    modelLabel: 'MODEL: RECON-TECH // SPECIAL EDITION // CAMO',
+    description: 'Limited edition Recon Tech Xbox One controller featuring a distinctive military-grade camo design.',
+    story: 'The Recon Tech edition is my favourite special edition controller. The unique camouflage pattern gives it a tactical, rugged look that stands out from the standard controllers. Underneath the striking exterior, it packs the same great Xbox One controller features — impulse triggers, hybrid D-pad, and dual-mode wireless connectivity. The textured grip pattern on the back and triggers provides extra control during competitive sessions. As a limited edition model, it adds a touch of personality to my collection while delivering the same reliable performance I expect from Microsoft\'s controller design.',
+    pros: [
+      'Striking Recon Tech camo design is unique and eye-catching',
+      'Same great ergonomics and features as standard Xbox controller',
+      'Textured grips provide extra control',
+      'Limited edition collectible appeal',
+    ],
+    cons: [
+      'No rechargeable battery pack included',
+      'AA batteries add ongoing cost',
+      'Special edition markup vs standard colours',
+      'Camo pattern may not suit everyone\'s aesthetic',
+    ],
+    purchaseYear: 2024,
+    price: 'KES 7,500',
+    connectivity: [
+      { label: 'WIRELESS', value: 'Xbox Wireless + BT 4.0', icon: <FaWifi className="text-green-500" />, tag: 'DUAL-MODE' },
+      { label: 'WIRED', value: 'Micro-USB', icon: <FaUsb className="text-yellow-500" />, tag: 'DATA+CHARGE' },
+      { label: 'AUDIO', value: '3.5mm TRRS', icon: <FaPlug className="text-green-500" />, tag: 'HEADSET' },
+    ],
   },
 ];
 

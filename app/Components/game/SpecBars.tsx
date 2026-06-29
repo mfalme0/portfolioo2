@@ -10,7 +10,7 @@ interface SpecBar {
   color?: string;
 }
 
-export default function SpecBars({ bars, title }: { bars: SpecBar[]; title?: string }) {
+export default function SpecBars({ bars, title, accent = 'var(--accent-default)' }: { bars: SpecBar[]; title?: string; accent?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
 
@@ -18,7 +18,7 @@ export default function SpecBars({ bars, title }: { bars: SpecBar[]; title?: str
     <div ref={ref} className="space-y-5">
       {title && (
         <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-white/50 mb-6">
-          <span className="rog-accent">◆</span> {title}
+          <span style={{ color: accent }}>◆</span> {title}
         </h3>
       )}
       {bars.map((bar, i) => (
@@ -39,7 +39,10 @@ export default function SpecBars({ bars, title }: { bars: SpecBar[]; title?: str
               initial={{ width: '0%' }}
               animate={inView ? { width: `${bar.percent}%` } : {}}
               transition={{ delay: i * 0.1 + 0.2, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              style={{ background: bar.color || 'linear-gradient(90deg, #ff1a1a, #ff4444)' }}
+              style={{
+                background: bar.color || `linear-gradient(90deg, ${accent}, ${accent}cc)`,
+                boxShadow: `0 0 12px ${accent}4d`,
+              }}
             />
           </div>
         </motion.div>

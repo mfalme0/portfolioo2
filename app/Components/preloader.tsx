@@ -27,7 +27,7 @@ export default function Preloader({ onComplete }: { onComplete?: () => void }) {
             <div className="w-32 h-[2px] overflow-hidden rounded-full" style={{ backgroundColor: 'var(--color-border)' }}>
               <div
                 className="h-full w-full rounded-full animate-apple-progress"
-                style={{ backgroundColor: '#0071e3' }}
+                style={{ backgroundColor: 'var(--accent-default)' }}
               />
             </div>
             <span className="text-[10px] font-medium tracking-[0.2em] uppercase" style={{ color: 'var(--color-muted)' }}>

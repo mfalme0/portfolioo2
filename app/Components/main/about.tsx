@@ -51,6 +51,10 @@ function DomainCard({ domain, index, accent }: { domain: typeof domains[0]; inde
       viewport={{ once: true, margin: '-80px' }}
       style={{ y }}
       onClick={() => setExpanded(!expanded)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={expanded}
       className={`apple-card-flat p-8 cursor-pointer group ${floatDelays[index]}`}
     >
       <div className="flex items-start justify-between mb-4">
@@ -119,7 +123,7 @@ export default function AboutMe() {
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '-20%']);
 
   return (
-    <section ref={sectionRef} className="relative w-full py-32 md:py-44 bg-background overflow-hidden" id="about-me">
+    <section ref={sectionRef} className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="about-me">
       {/* Parallax background glow */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
         <div
@@ -136,7 +140,14 @@ export default function AboutMe() {
           viewport={{ once: true }}
           className="flex items-center gap-4 mb-16"
         >
-          <div className="h-[2px] w-8 rounded-full" style={{ background: accent }} />
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="h-[2px] w-8 rounded-full origin-left"
+            style={{ background: accent }}
+          />
           <span className="apple-eyebrow">About</span>
         </motion.div>
 

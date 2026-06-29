@@ -1,6 +1,4 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 import type { Metadata } from 'next';
 import { gearItems, getGearItem, getRelatedGearItems } from '@/lib/gear-data';
 import GearDetailClient from './client';
@@ -29,7 +27,7 @@ export default async function GearProductPage({ params }: { params: Promise<{ sl
   const related = getRelatedGearItems(item);
 
   return (
-    <div className="bg-[#050505] min-h-screen text-white selection:bg-[#ff1a1a] selection:text-black">
+    <div className="bg-background min-h-screen text-[#fafafa] selection:bg-[#a78bfa] selection:text-[#020202]">
       <Header />
       <GearDetailClient item={item} related={related} />
       <Footer />

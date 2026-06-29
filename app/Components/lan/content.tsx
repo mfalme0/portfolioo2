@@ -28,7 +28,7 @@ const EventCard = ({ event, accent }: { event: { id: number; date: string; locat
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
       <div className="relative overflow-hidden h-56">
-        <Image src={event.imageUrl} alt={`LAN Event: ${event.date}`} fill
+        <Image src={event.imageUrl} alt={`LAN Event: ${event.date}`} fill loading="lazy"
           className="object-cover grayscale-[30%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
           sizes="(max-width: 768px) 100vw, 50vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90" />
@@ -97,7 +97,7 @@ export default function LanPage() {
               LAN <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${accent}cc, ${accent}, ${accent}cc)` }}>Events</span>
             </h1>
             <div className="h-[2px] w-24 mx-auto mt-4" style={{ backgroundImage: `linear-gradient(to right, ${accent}, ${accent}cc)` }} />
-            <p className="text-[9px] tracking-[0.4em] text-zinc-600 uppercase font-mono mt-4">Gaming. Friends. Fun.</p>
+            <p className="text-[9px] tracking-[0.4em] text-zinc-600 uppercase font-mono mt-4">{'Gaming. Friends. Fun.'}</p>
           </div>
 
           <div className="space-y-16">
@@ -124,7 +124,7 @@ export default function LanPage() {
 
           {/* Footer */}
           <footer className="mt-24 mb-6 text-[9px] text-zinc-700 uppercase tracking-[0.3em] border-t border-white/[0.04] pt-6 w-full text-center font-mono">
-            LAN System v2.0 // <span style={{ color: accent + '80' }}>Gaming, Friends, & Fun</span> // End of Line
+            {'LAN System v2.0 // '}<span style={{ color: accent + '80' }}>Gaming, Friends, & Fun</span>{' // End of Line'}
           </footer>
         </div>
       </div>

@@ -7,10 +7,10 @@ export type Theme = 'light' | 'dark';
 type TimePeriod = 'night' | 'morning' | 'midday' | 'evening';
 
 const timeColors: Record<TimePeriod, { accent: string; accentRGB: string; label: string }> = {
-  night:   { accent: '#ff3b30', accentRGB: '255,59,48', label: 'red' },
-  morning: { accent: '#ff453a', accentRGB: '255,69,58', label: 'red' },
-  midday:  { accent: '#ff3b30', accentRGB: '255,59,48', label: 'red' },
-  evening: { accent: '#dc143c', accentRGB: '220,20,60', label: 'red' },
+  night:   { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
+  morning: { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
+  midday:  { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
+  evening: { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
 };
 
 function getTimePeriod(): TimePeriod {
@@ -22,26 +22,25 @@ function getTimePeriod(): TimePeriod {
 }
 
 function migrateTheme(stored: string | null): Theme {
-  if (stored === 'loki') return 'dark';
-  if (stored === 'dark') return 'light';
+  if (stored === 'loki' || stored === 'dark') return 'dark';
   if (stored === 'light') return 'light';
   return 'dark';
 }
 
 const baseThemes = {
   light: {
-    background: '#fafafa',
-    foreground: '#1d1d1f',
-    surface: '#ffffff',
-    cardBg: 'rgba(0,0,0,0.02)',
-    border: 'rgba(0,0,0,0.06)',
+    background: '#F5F3EE',
+    foreground: '#1A1A1A',
+    surface: '#FFFFFF',
+    cardBg: 'rgba(232,163,61,0.04)',
+    border: 'rgba(0,0,0,0.08)',
   },
   dark: {
-    background: '#1d1d1f',
-    foreground: '#f5f5f7',
-    surface: '#2d2d2f',
-    cardBg: 'rgba(255,255,255,0.03)',
-    border: 'rgba(255,255,255,0.08)',
+    background: '#10151C',
+    foreground: '#ECE9E1',
+    surface: '#1A222C',
+    cardBg: 'rgba(232,163,61,0.03)',
+    border: 'rgba(236,233,225,0.06)',
   },
 };
 

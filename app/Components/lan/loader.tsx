@@ -56,8 +56,8 @@ export default function LanLoader({ onComplete }: LanLoaderProps) {
       <motion.div
         initial={{ opacity: 1 }}
         exit={{ y: "-100%", transition: { duration: 0.8, ease: "easeInOut" } }}
-        className="fixed inset-0 z-50 bg-[#050505] font-mono flex flex-col items-center justify-center p-6 overflow-hidden"
-        style={{ color: accent }}
+        className="fixed inset-0 z-50 font-mono flex flex-col items-center justify-center p-6 overflow-hidden"
+        style={{ backgroundColor: 'var(--bg)', color: accent }}
       >
         {/* ROG grid */}
         <div className="absolute inset-0 opacity-[0.06] pointer-events-none"

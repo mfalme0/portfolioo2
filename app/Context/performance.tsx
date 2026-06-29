@@ -19,7 +19,7 @@ interface PerformanceContextType {
 
 function detectTier(): QualityTier {
   if (typeof window === 'undefined') return 'high';
-  const mem = (navigator as any).deviceMemory;
+  const mem = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
   const cores = navigator.hardwareConcurrency;
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isLowPerf = /Android|iPhone|iPad|iPod|Linux armv/i.test(navigator.userAgent + ' ' + navigator.platform);

@@ -1,44 +1,109 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../Context/theme';
 
+type PageType = 'home' | 'gear' | 'gear-detail' | 'lan';
+
 interface NavLink {
   name: string;
   href: string;
+  index: number;
 }
 
-const navLinks: NavLink[] = [
-  { name: 'Hero', href: '#hero' },
-  { name: 'About', href: '#about-me' },
-  { name: 'Work', href: '#experience' },
-  { name: 'Tech', href: '#techstack' },
-  { name: 'Languages', href: '#languages' },
-  { name: 'Projects', href: '#projects' },
+const portfolioNavLinks: NavLink[] = [
+  { name: 'Hero', href: '#hero', index: 0 },
+  { name: 'About', href: '#about-me', index: 1 },
+  { name: 'Work', href: '#experience', index: 2 },
+  { name: 'Tech', href: '#techstack', index: 3 },
+  { name: 'Languages', href: '#languages', index: 4 },
+  { name: 'Projects', href: '#projects', index: 5 },
 ];
 
-export default function Header() {
+const gearNavLinks: NavLink[] = [
+  { name: 'Systems', href: '#rigs', index: 0 },
+  { name: 'Keyboards', href: '#keyboards', index: 1 },
+  { name: 'Mice', href: '#mice', index: 2 },
+  { name: 'Audio', href: '#audio', index: 3 },
+  { name: 'Display', href: '#display', index: 4 },
+  { name: 'Power', href: '#power', index: 5 },
+  { name: 'Controllers', href: '#controllers', index: 6 },
+];
+
+const gearDetailNavLinks: NavLink[] = [
+  { name: 'Systems', href: '/gear#rigs', index: 0 },
+  { name: 'Keyboards', href: '/gear#keyboards', index: 1 },
+  { name: 'Mice', href: '/gear#mice', index: 2 },
+  { name: 'Audio', href: '/gear#audio', index: 3 },
+  { name: 'Display', href: '/gear#display', index: 4 },
+  { name: 'Power', href: '/gear#power', index: 5 },
+  { name: 'Controllers', href: '/gear#controllers', index: 6 },
+];
+
+const lanNavLinks: NavLink[] = [
+  { name: 'Home', href: '/', index: 0 },
+  { name: 'Gear', href: '/gear', index: 1 },
+  { name: 'LAN', href: '/LAN', index: 2 },
+];
+
+function getPageType(pathname: string): PageType {
+  if (pathname === '/') return 'home';
+  if (pathname === '/gear') return 'gear';
+  if (pathname.startsWith('/gear/')) return 'gear-detail';
+  if (pathname === '/LAN') return 'lan';
+  return 'home';
+}
+
+interface HeaderProps {
+  currentSection?: number;
+  onNavigate?: (index: number) => void;
+}
+
+export default function Header({ currentSection, onNavigate }: HeaderProps) {
   const { theme, toggleTheme, accent } = useTheme();
   const pathname = usePathname();
-  const isPortfolio = pathname === '/';
+
+  const pageType = useMemo(() => getPageType(pathname), [pathname]);
+  const isSectionPage = pageType === 'home' || pageType === 'gear';
+
+  const links = useMemo(() => {
+    switch (pageType) {
+      case 'home': return portfolioNavLinks;
+      case 'gear': return gearNavLinks;
+      case 'gear-detail': return gearDetailNavLinks;
+      case 'lan': return lanNavLinks;
+    }
+  }, [pageType]);
 
   const [activeHash, setActiveHash] = useState('#hero');
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
+    if (currentSection !== undefined) {
+      setIsScrolled(currentSection > 0);
+      return;
+    }
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [currentSection]);
 
   useEffect(() => {
-    if (!isPortfolio) return;
-    const ids = navLinks.map((l) => l.href.slice(1));
-    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (!isSectionPage) return;
+    if (pageType === 'home' && currentSection !== undefined) return;
+
+    const ids = links.map((l) => l.href.replace(/^\/gear#/, '#'));
+    const els = ids
+      .filter((id) => id.startsWith('#'))
+      .map((id) => document.getElementById(id.slice(1)))
+      .filter(Boolean) as HTMLElement[];
+
+    if (els.length === 0) return;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -50,17 +115,34 @@ export default function Header() {
 
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [isPortfolio]);
+  }, [pageType, isSectionPage, currentSection, links]);
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href.startsWith('#') && isPortfolio) {
+  const activeIndex = currentSection !== undefined
+    ? currentSection
+    : links.findIndex((l) => l.href.endsWith(activeHash));
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, index: number) => {
+    const isHashLink = href.startsWith('#');
+    const isSectionHash = isHashLink && isSectionPage;
+
+    if (isSectionHash) {
       e.preventDefault();
-      const el = document.querySelector(href);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (pageType === 'home' && onNavigate) {
+        onNavigate(index);
+      } else {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
       setMobileOpen(false);
       setActiveHash(href);
+      return;
     }
+
+    setMobileOpen(false);
   };
+
+  const showGearLink = pageType !== 'gear';
+  const showLanLink = pageType !== 'lan';
 
   return (
     <>
@@ -77,20 +159,20 @@ export default function Header() {
                 : 'bg-transparent'
             }`}
           >
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
               <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
                 JGITAU
               </span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => {
-                const isActive = isPortfolio && link.href === activeHash;
+            <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+              {links.map((link) => {
+                const isActive = link.index === activeIndex;
                 return (
                   <a
                     key={link.name}
                     href={link.href}
-                    onClick={(e) => handleClick(e, link.href)}
+                    onClick={(e) => handleClick(e, link.href, link.index)}
                     className={`relative px-4 py-2 text-[11px] font-medium tracking-[0.08em] uppercase transition-all duration-300 ${
                       isActive
                         ? 'text-(--color-foreground)'
@@ -129,23 +211,29 @@ export default function Header() {
                 )}
               </button>
 
-              <Link
-                href="/gear"
-                className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all"
-                style={{ color: 'var(--color-muted)' }}
-              >
-                Gear
-              </Link>
-              <Link
-                href="/LAN"
-                className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all"
-                style={{ color: 'var(--color-muted)' }}
-              >
-                LAN
-              </Link>
+              {showGearLink && (
+                <Link
+                  href="/gear"
+                  className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all hover:opacity-60"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  Gear
+                </Link>
+              )}
+              {showLanLink && (
+                <Link
+                  href="/LAN"
+                  className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all hover:opacity-60"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  LAN
+                </Link>
+              )}
 
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileOpen}
                 className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5"
               >
                 <div
@@ -175,16 +263,16 @@ export default function Header() {
             className="fixed inset-0 z-[49] bg-(--color-background) lg:hidden flex flex-col items-center justify-center"
           >
             <nav className="flex flex-col items-center gap-10">
-              {navLinks.map((link, i) => (
+              {links.map((link, i) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  onClick={(e) => handleClick(e, link.href)}
+                  onClick={(e) => handleClick(e, link.href, link.index)}
                   className={`text-2xl font-medium tracking-tight ${
-                    link.href === activeHash ? 'text-(--color-foreground)' : 'text-(--color-muted)'
+                    link.index === activeIndex ? 'text-(--color-foreground)' : 'text-(--color-muted)'
                   }`}
                 >
                   {link.name}
@@ -192,12 +280,16 @@ export default function Header() {
               ))}
               <div className="h-[1px] w-16" style={{ backgroundColor: 'var(--color-border)' }} />
               <div className="flex gap-8">
-                <Link href="/gear" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
-                  Gear
-                </Link>
-                <Link href="/LAN" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
-                  LAN
-                </Link>
+                {showGearLink && (
+                  <Link href="/gear" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                    Gear
+                  </Link>
+                )}
+                {showLanLink && (
+                  <Link href="/LAN" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                    LAN
+                  </Link>
+                )}
               </div>
             </nav>
           </motion.div>
