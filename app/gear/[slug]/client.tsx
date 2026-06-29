@@ -253,6 +253,26 @@ export default function GearDetailClient({
                     <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
                     <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
                     {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
+
+                    {item.slug === 'glorious-model-o' && s.label === 'WEIGHT' && (
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                        <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-xl min-w-[100px]">
+                          <div className="relative h-[80px]">
+                            <pre className="animate-arms-up absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
+>{`  \\ | /
+   \\|/
+    67
+  /   \\`}</pre>
+                            <pre className="animate-arms-down absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
+>{`  / | \\
+ /  |  \\
+    67
+  /   \\`}</pre>
+                          </div>
+                        </div>
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700" />
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>

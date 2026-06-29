@@ -557,8 +557,8 @@ export const gearItems: GearItem[] = [
     purchaseYear: 2024,
     price: 'KES 30,000',
     connectivity: [
-      { label: 'HDMI', value: '2x HDMI 2.0 18Gbps', icon: <FaTv className="text-purple-500" />, tag: '4K/60Hz' },
-      { label: 'DP', value: '1x DisplayPort 1.4', icon: <MdOutlineMonitor className="text-cyan-500" />, tag: 'QHD/165Hz' },
+      { label: 'HDMI', value: '2x HDMI 2.0 18Gbps', icon: <FaTv className="text-purple-500" />, tag: 'QHD/165Hz' },
+      { label: 'DP', value: '2x DisplayPort ', icon: <MdOutlineMonitor className="text-cyan-500" />, tag: 'QHD/180Hz' },
       { label: 'AUDIO', value: '3.5mm Out', icon: <FaPlug className="text-green-500" />, tag: 'HEADPHONE' },
     ],
   },

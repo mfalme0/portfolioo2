@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../Context/theme';
 
-type PageType = 'home' | 'gear' | 'gear-detail' | 'lan';
+type PageType = 'home' | 'gear' | 'gear-detail' | 'lan' | 'homelab' | 'homelab-detail';
 
 interface NavLink {
   name: string;
@@ -46,13 +46,24 @@ const gearDetailNavLinks: NavLink[] = [
 const lanNavLinks: NavLink[] = [
   { name: 'Home', href: '/', index: 0 },
   { name: 'Gear', href: '/gear', index: 1 },
-  { name: 'LAN', href: '/LAN', index: 2 },
+  { name: 'Homelab', href: '/homelab', index: 2 },
+  { name: 'LAN', href: '/LAN', index: 3 },
+];
+
+const homelabNavLinks: NavLink[] = [
+  { name: 'Servers', href: '#servers', index: 0 },
+];
+
+const homelabDetailNavLinks: NavLink[] = [
+  { name: 'Servers', href: '/homelab#servers', index: 0 },
 ];
 
 function getPageType(pathname: string): PageType {
   if (pathname === '/') return 'home';
   if (pathname === '/gear') return 'gear';
   if (pathname.startsWith('/gear/')) return 'gear-detail';
+  if (pathname === '/homelab') return 'homelab';
+  if (pathname.startsWith('/homelab/')) return 'homelab-detail';
   if (pathname === '/LAN') return 'lan';
   return 'home';
 }
@@ -75,6 +86,8 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
       case 'gear': return gearNavLinks;
       case 'gear-detail': return gearDetailNavLinks;
       case 'lan': return lanNavLinks;
+      case 'homelab': return homelabNavLinks;
+      case 'homelab-detail': return homelabDetailNavLinks;
     }
   }, [pageType]);
 
@@ -143,6 +156,7 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
 
   const showGearLink = pageType !== 'gear';
   const showLanLink = pageType !== 'lan';
+  const showHomelabLink = pageType !== 'homelab' && pageType !== 'homelab-detail';
 
   return (
     <>
@@ -220,6 +234,15 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
                   Gear
                 </Link>
               )}
+              {showHomelabLink && (
+                <Link
+                  href="/homelab"
+                  className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all hover:opacity-60"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  Homelab
+                </Link>
+              )}
               {showLanLink && (
                 <Link
                   href="/LAN"
@@ -283,6 +306,11 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
                 {showGearLink && (
                   <Link href="/gear" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
                     Gear
+                  </Link>
+                )}
+                {showHomelabLink && (
+                  <Link href="/homelab" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                    Homelab
                   </Link>
                 )}
                 {showLanLink && (

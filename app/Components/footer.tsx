@@ -14,6 +14,7 @@ const socials = [
 const footerLinks = [
   { label: 'GitHub', href: 'https://github.com/mfalme0' },
   { label: 'Gear', href: '/gear' },
+  { label: 'Homelab', href: '/homelab' },
   { label: 'LAN', href: '/LAN' },
 ];
 
