@@ -58,6 +58,12 @@ const homelabDetailNavLinks: NavLink[] = [
   { name: 'Servers', href: '/homelab#servers', index: 0 },
 ];
 
+const sitePageLinks: NavLink[] = [
+  { name: 'Gear', href: '/gear', index: 0 },
+  { name: 'Homelab', href: '/homelab', index: 1 },
+  { name: 'LAN', href: '/LAN', index: 2 },
+];
+
 function getPageType(pathname: string): PageType {
   if (pathname === '/') return 'home';
   if (pathname === '/gear') return 'gear';
@@ -154,10 +160,6 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
     setMobileOpen(false);
   };
 
-  const showGearLink = pageType !== 'gear';
-  const showLanLink = pageType !== 'lan';
-  const showHomelabLink = pageType !== 'homelab' && pageType !== 'homelab-detail';
-
   return (
     <>
       <header
@@ -205,9 +207,20 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
                   </a>
                 );
               })}
+              <div className="mx-2 h-4 w-[1px]" style={{ backgroundColor: 'var(--color-border)' }} />
+              {sitePageLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="relative px-3 py-2 text-[11px] font-semibold tracking-[0.08em] uppercase transition-all duration-300 hover:opacity-60"
+                  style={{ color: 'var(--color-accent)' }}
+                >
+                  {link.name}
+                </Link>
+              ))}
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
@@ -224,34 +237,6 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
                   </svg>
                 )}
               </button>
-
-              {showGearLink && (
-                <Link
-                  href="/gear"
-                  className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all hover:opacity-60"
-                  style={{ color: 'var(--color-muted)' }}
-                >
-                  Gear
-                </Link>
-              )}
-              {showHomelabLink && (
-                <Link
-                  href="/homelab"
-                  className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all hover:opacity-60"
-                  style={{ color: 'var(--color-muted)' }}
-                >
-                  Homelab
-                </Link>
-              )}
-              {showLanLink && (
-                <Link
-                  href="/LAN"
-                  className="hidden md:block text-[10px] font-medium tracking-[0.08em] uppercase transition-all hover:opacity-60"
-                  style={{ color: 'var(--color-muted)' }}
-                >
-                  LAN
-                </Link>
-              )}
 
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
@@ -303,21 +288,11 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
               ))}
               <div className="h-[1px] w-16" style={{ backgroundColor: 'var(--color-border)' }} />
               <div className="flex gap-8">
-                {showGearLink && (
-                  <Link href="/gear" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
-                    Gear
+                {sitePageLinks.map((link) => (
+                  <Link key={link.name} href={link.href} onClick={() => setMobileOpen(false)} className="text-xs font-bold tracking-[0.08em] uppercase" style={{ color: 'var(--color-accent)' }}>
+                    {link.name}
                   </Link>
-                )}
-                {showHomelabLink && (
-                  <Link href="/homelab" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
-                    Homelab
-                  </Link>
-                )}
-                {showLanLink && (
-                  <Link href="/LAN" onClick={() => setMobileOpen(false)} className="text-xs font-medium tracking-[0.08em] uppercase" style={{ color: 'var(--color-muted)' }}>
-                    LAN
-                  </Link>
-                )}
+                ))}
               </div>
             </nav>
           </motion.div>

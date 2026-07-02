@@ -1,41 +1,88 @@
-# Joseph Gitau – Portfolio Site (LLM Context)
+# Joseph Gitau — Portfolio Site (LLM Context)
 
 ## Site Overview
-Personal portfolio of **Joseph Gitau (mfalme0)**, a full-stack engineer in Nairobi, Kenya.  
+Personal portfolio of **Joseph Gitau (mfalme0)**, a full-stack engineer based in Nairobi, Kenya.  
 **URL:** https://josephgitauc.vercel.app  
-**Stack:** Next.js 16, React 19, Tailwind CSS 4, TypeScript, Framer Motion, Three.js
+**Stack:** Next.js 16 (App Router), React 19, Tailwind CSS 4, TypeScript, Framer Motion, Three.js
 
 ---
 
 ## Pages & Routes
 
-| Route | Description |
-|-------|-------------|
-| `/` | Single-page scrolling portfolio: Hero → About Me → Experience → Tech Stack → Languages → Projects → GitHub Calendar → Contact/Footer |
-| `/gear` | Gear showcase: 11 equipment items across 6 categories (System, Keyboard, Mouse, Audio, Display, Power) |
-| `/gear/[slug]` | Individual gear detail (name, brand, price, specs, story, pros/cons) |
-| `/LAN` | LAN party events page with photo gallery and lightbox |
+| Route | Description | SEO Metadata |
+|-------|-------------|-------------|
+| `/` | Single-page horizontal-scroll portfolio: Hero → About Me → Experience → Tech Stack → Languages → Projects → Testimonials → GitHub → End | Full OG, JSON-LD (Person schema) |
+| `/gear` | Gear showcase: 11 items across 6 categories (system, keyboard, mouse, audio, display, power) | Title + description + OG |
+| `/gear/[slug]` | Individual gear detail page | Dynamic title/description + OG |
+| `/homelab` | Homelab dashboard: server services, status indicators, resource monitors | Title + description + OG |
+| `/homelab/[slug]` | Individual homelab service detail page | Dynamic title/description + OG |
+| `/LAN` | LAN party photo gallery with lightbox | Title + description + OG |
+
+All sub-routes have dedicated `layout.tsx` with proper metadata exports.
 
 ---
 
-## Home Page Sections (in order)
+## Home Page Sections (in order, horizontal scroll)
 
-1. **Hero** – Name, title, typewriter animation, social links, stats (YoE, projects, happy clients)
-2. **About Me** – 4 domain cards (Web/Mobile Dev, Backend, Databases, DevOps)
-3. **Experience** (`mboka`) – Work experience timeline
-4. **Tech Stack** (`techstack`) – Grid of technologies/platforms
-5. **Languages** (`languages`) – Programming language proficiency bars
-6. **Projects** (`projects`) – Filterable project cards with screenshots
-7. **GitHub** (`github`) – GitHub contribution calendar widget
-8. **End** – Marquee (tech scroll), contact info, social links, footer
+1. **Hero** – Name, typewriter role animation, stats counters (3+ years, 20+ projects, full-stack delivery), GitHub/LinkedIn/Resume links
+2. **About Me** – 4 expandable domain cards (Frontend, Backend, Mobile, DevOps)
+3. **Experience** – Work history timeline with role details
+4. **Tech Stack** – Grid of technologies with icons (3 columns sm:4 md:5)
+5. **Languages** – Language proficiency bars with percentage scores
+6. **Projects** – Filterable cards (All, Web, Mobile, CLI, Backend) with screenshots, tech tags, links
+7. **Testimonials** – Client quote carousel with prev/next navigation
+8. **GitHub** – Contribution calendar widget from react-github-calendar
+9. **End** – Marquee tech ticker, contact form, social links, footer
+
+Navigation: Fixed header with nav links + keyboard arrows + touch swipe + scroll wheel.
+
+---
+
+## SEO Implementation Details
+
+### Structured Data (JSON-LD)
+- **Person schema** with name, jobTitle, url, sameAs (GitHub, LinkedIn, X), knowsAbout skills
+- Injected in root layout `<head>` via `<script type="application/ld+json">`
+
+### Metadata (Next.js Metadata API)
+- **Root layout**: Template "%s — Joseph Gitau", default description, keywords array, OpenGraph + Twitter cards, robots (index/follow)
+- **Gear detail**: `generateMetadata` with item name + description
+- **Homelab detail**: `generateMetadata` with service name + description
+- **Gear/Homelab/LAN list**: Layout-level metadata export
+
+### Sitemap (`/sitemap.ts`)
+- Static pages: `/` (1.0), `/gear` (0.9), `/LAN` (0.7)
+- Dynamic: All `/gear/[slug]` pages (0.6), all `/homelab/[slug]` pages (0.6)
+- Change frequencies: monthly for static, weekly for gear/LAN, monthly for details
+
+### robots.txt (`/robots.ts`)
+- Allows all user agents
+- Points to `/sitemap.xml`
+- Host: https://josephgitauc.vercel.app
+
+### OpenGraph Image
+- Dynamic OG image generated via `app/opengraph-image.tsx` (Next.js `ImageResponse`)
+- 1200×630 PNG with name, title, and tech stack on dark background
+- Referenced across all pages: root layout, gear list, gear detail, homelab list, homelab detail, LAN
+- Fallback: text-based metadata (title + description) for platforms that don't fetch images
+
+### Technical SEO
+- `metadataBase` set to canonical URL
+- `alternates.canonical` set on every page (root, gear detail, homelab detail)
+- `suppressHydrationWarning` on `<html>` for theme script
+- Skip-to-content link for accessibility
+- Semantic HTML sections with IDs for anchor navigation
+- Responsive viewport (default Next.js)
+- Fast loading with Geist font via next/font (no CLS)
+- `googleBot` extended rules: `max-image-preview: large`, `max-snippet: -1`
 
 ---
 
 ## Gear Data (`/gear` and `/gear/[slug]`)
 
-11 items with the following structure per item:
+11 items with the following structure:
 - **name, brand, category, slug, image, price, currency, link**
-- **specs:** Array of `{ label, value, icon }` (e.g. CPU, RAM, GPU, connectivity, drivers, etc.)
+- **specs:** Array of `{ label, value, icon }` (CPU, RAM, GPU, connectivity, etc.)
 - **story:** Personal narrative about the gear
 - **pros / cons:** Arrays of strings
 - **related:** Array of related gear slugs
@@ -44,22 +91,37 @@ Categories: `system`, `keyboard`, `mouse`, `audio`, `display`, `power`
 
 ---
 
-## Key Technologies Used
-- **React 19** with Server/Client Components
-- **Framer Motion** – scroll/spring animations, layout transitions
-- **Three.js** via `@react-three/fiber` + `@react-three/drei` – 3D collectibles on home page
-- **react-github-calendar** – GitHub contribution graph
-- **react-icons** – Icon library (Font Awesome, Simple Icons)
-- **Verification/Analytics** – `@vercel/analytics`
-- **Dynamic sitemap** at `/sitemap.ts`, **robots.txt** at `/robots.ts`
+## Homelab Data (`/homelab` and `/homelab/[slug]`)
+
+Services with the following structure:
+- **name, slug, description, status (operational/degraded/down/maintenance), type, icon, url, tags**
+- **stats:** Array of `{ label, value, unit }` (uptime, requests, latency, etc.)
+- **history:** Array of `{ date, type (info/warning/error), message }`
+- **related:** Array of related service slugs
 
 ---
 
-## Theming
-- **Dark theme** with ROG (Republic of Gamers) aesthetic
-- **Accent color:** `#ff1a1a` (red)
-- **Adaptive performance:** Detects device memory/CPU to adjust 3D quality (low/medium/high)
-- **Font:** Geist (via `next/font`)
+## Key Technologies Used
+- **React 19** with Server/Client Components, Suspense
+- **Framer Motion** – scroll animations, layout transitions, AnimatePresence
+- **Three.js** via `@react-three/fiber` + `@react-three/drei` – 3D collectibles on home page
+- **react-github-calendar** – GitHub contribution graph
+- **react-icons** – Icon library (Font Awesome, Simple Icons)
+- **@vercel/analytics** – Visitor analytics
+- **Dynamic sitemap** at `/sitemap.ts`, **robots.txt** at `/robots.ts`
+- **Geist** typeface via `next/font/google`
+
+---
+
+## Theming & UX
+- **Dual theme:** Dark (default) + Light, toggle via header button, persisted to localStorage
+- **Accent color:** `#E8A33D` (amber/gold)
+- **Navigation:** Custom horizontal scroll (`translateX`), keyboard arrows, touch swipe, scroll wheel
+- **Drawing overlay:** PencilCanvas persists across all pages via SketchProvider in layout, toggle with `Ctrl+``
+- **Page loaders:** Themed boot sequences (home = typographic, gear = ROG Armoury Crate, homelab = BIOS POST, LAN = network scan)
+- **Adaptive performance:** Detects device memory/CPU to adjust animation quality
+- **Font:** Geist Sans + Geist Mono (variable fonts via next/font)
+- **Responsive:** Full mobile support with hamburger nav
 
 ---
 
@@ -70,3 +132,12 @@ Categories: `system`, `keyboard`, `mouse`, `audio`, `display`, `power`
 - `JWT_SECRET` – JWT auth
 
 Backend is **not yet implemented** – all data is currently static.
+
+---
+
+## Content Strategy Notes
+- **Primary keywords:** full-stack engineer Nairobi, software developer Kenya, React developer, Next.js portfolio
+- **Secondary keywords:** systems architect, DevOps engineer, C# developer, TypeScript, Docker, cloud infrastructure
+- **Brand keywords:** Joseph Gitau, mfalme0, portfolio site
+- **Internal linking:** Header nav links to all home sections, gear/homelab/LAN pages cross-linked in footer, gear detail links to related items
+- **External links:** GitHub, LinkedIn, X profiles (nofollow via target="_blank")
