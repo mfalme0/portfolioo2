@@ -36,7 +36,7 @@ export default function ConnectivityTerminal({
             <span className="text-zinc-300">{port.label}</span>
             {port.tag && (
               <span className="text-zinc-600">
-                // <span className="text-zinc-500">{port.tag}</span>
+                {'// '}<span className="text-zinc-500">{port.tag}</span>
               </span>
             )}
           </div>

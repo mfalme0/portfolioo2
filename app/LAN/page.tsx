@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from "react";
-import LanLoader from "../Components/lan/loader";
+import PageLoader from "../Components/page-loader";
 import Header from "../Components/header";
 import LanPageContent from "../Components/lan/content";
 
@@ -10,7 +10,7 @@ export default function LanClientWrapper() {
   return (
     <>
       <Header />
-      {!loadingComplete && <LanLoader onComplete={() => setLoadingComplete(true)} />}
+      {!loadingComplete && <PageLoader theme="lan" onComplete={() => setLoadingComplete(true)} />}
 
       {loadingComplete && (
         <LanPageContent />

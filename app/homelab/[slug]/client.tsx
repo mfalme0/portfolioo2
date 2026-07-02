@@ -7,9 +7,10 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import type { HomelabItem } from '@/lib/homelab-data';
 import { GiProcessor } from 'react-icons/gi';
 import { FaMemory, FaHdd, FaTerminal, FaCube, FaServer } from 'react-icons/fa';
-import HomelabLoader from '@/app/Components/homelab/loader';
+import PageLoader from '@/app/Components/page-loader';
 import ServiceCard from '@/app/Components/homelab/ServiceCard';
 import ActiveService from '@/app/Components/game/ActiveService';
+import NeonGlitch from '@/app/Components/neon-glitch';
 
 const accentColor = '#EF4444';
 const accentRgb: [number, number, number] = [239, 68, 68];
@@ -94,7 +95,8 @@ export default function HomelabDetailClient({
     <>
       <AnimatePresence mode="wait">
         {loading && (
-          <HomelabLoader
+          <PageLoader
+            theme="homelab"
             onComplete={() => setLoading(false)}
           />
         )}
@@ -191,51 +193,59 @@ export default function HomelabDetailClient({
                 transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="space-y-3"
               >
-                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-xl">
-                    <GiProcessor className="text-blue-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">PROCESSOR</div>
-                    <div className="text-sm font-semibold truncate">{item.cpu}</div>
-                    <div className="flex gap-3 mt-1">
-                      <span className="text-[10px] font-mono text-zinc-500">{item.cpu.includes('i5-6500') ? '4C / 4T' : '2C / 4T'}</span>
+                <NeonGlitch>
+                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-xl">
+                      <GiProcessor className="text-blue-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">PROCESSOR</div>
+                      <div className="text-sm font-semibold truncate">{item.cpu}</div>
+                      <div className="flex gap-3 mt-1">
+                        <span className="text-[10px] font-mono text-zinc-500">{item.cpu.includes('i5-6500') ? '4C / 4T' : '2C / 4T'}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </NeonGlitch>
 
-                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl">
-                    <FaMemory className="text-purple-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">MEMORY</div>
-                    <div className="text-sm font-semibold">{item.ram}</div>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                  <div className="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-xl">
-                    <FaHdd className="text-yellow-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">STORAGE</div>
-                    <div className="text-sm font-semibold">{item.storage}</div>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                  <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-xl">
-                    <FaTerminal className="text-red-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">OPERATING SYSTEM</div>
-                    <div className="text-sm font-semibold">{item.os}</div>
-                    <div className="flex gap-3 mt-1">
-                      <span className="text-[10px] font-mono text-zinc-500">{item.dockerWrapper}</span>
+                <NeonGlitch>
+                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
+                    <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl">
+                      <FaMemory className="text-purple-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">MEMORY</div>
+                      <div className="text-sm font-semibold">{item.ram}</div>
                     </div>
                   </div>
-                </div>
+                </NeonGlitch>
+
+                <NeonGlitch>
+                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
+                    <div className="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-xl">
+                      <FaHdd className="text-yellow-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">STORAGE</div>
+                      <div className="text-sm font-semibold">{item.storage}</div>
+                    </div>
+                  </div>
+                </NeonGlitch>
+
+                <NeonGlitch>
+                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
+                    <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-xl">
+                      <FaTerminal className="text-red-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">OPERATING SYSTEM</div>
+                      <div className="text-sm font-semibold">{item.os}</div>
+                      <div className="flex gap-3 mt-1">
+                        <span className="text-[10px] font-mono text-zinc-500">{item.dockerWrapper}</span>
+                      </div>
+                    </div>
+                  </div>
+                </NeonGlitch>
               </motion.div>
             </div>
 
@@ -279,15 +289,17 @@ export default function HomelabDetailClient({
                     boxShadow: `0 0 30px -8px rgba(${pr},${pg},${pb},0.12)`,
                   }}
                 >
-                  <div className="absolute top-0 left-0 right-0 h-[2px] opacity-60" style={{ backgroundColor: accentColor }} />
-                  <div
-                    className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: `linear-gradient(to right, transparent, rgba(${pr},${pg},${pb},0.4), transparent)` }}
-                  />
-                  {specIcon(s.label) && <div className="text-xl mb-2 flex justify-center">{specIcon(s.label)}</div>}
-                  <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
-                  <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
-                  {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
+                  <NeonGlitch className="w-full h-full">
+                    <div className="absolute top-0 left-0 right-0 h-[2px] opacity-60" style={{ backgroundColor: accentColor }} />
+                    <div
+                      className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{ background: `linear-gradient(to right, transparent, rgba(${pr},${pg},${pb},0.4), transparent)` }}
+                    />
+                    {specIcon(s.label) && <div className="text-xl mb-2 flex justify-center">{specIcon(s.label)}</div>}
+                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
+                    <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
+                    {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
+                  </NeonGlitch>
                 </motion.div>
               ))}
             </div>

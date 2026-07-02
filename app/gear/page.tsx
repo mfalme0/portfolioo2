@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import Header from "../Components/header";
 import Footer from "../Components/footer";
-import GearLoader from "../Components/game/loader";
+import PageLoader from "../Components/page-loader";
 import SpotlightCard from "../Components/game/SpotlightCard";
 import { gearItems } from '@/lib/gear-data';
 import type { GearCategory, GearItem } from '@/lib/gear-data';
@@ -251,7 +251,7 @@ export default function GearPage() {
   return (
     <div className="bg-background min-h-screen text-[#fafafa] selection:bg-[#a78bfa] selection:text-[#020202]">
       <AnimatePresence mode="wait">
-        {loading && <GearLoader onComplete={() => setLoading(false)} />}
+        {loading && <PageLoader theme="gear" onComplete={() => setLoading(false)} />}
       </AnimatePresence>
 
       <div className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
@@ -269,7 +269,7 @@ export default function GearPage() {
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col gap-2">
                 <span className="text-[9px] font-mono tracking-[0.4em] uppercase text-zinc-600">
-                  // EQUIPMENT_MANIFEST
+                  {'// EQUIPMENT_MANIFEST'}
                 </span>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
                   THE GEAR

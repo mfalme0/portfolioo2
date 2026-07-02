@@ -35,7 +35,7 @@ export default function Testimonials() {
   const t = testimonials[active];
 
   return (
-    <section className="relative w-full h-full flex items-center justify-center bg-background overflow-hidden px-8 md:px-14">
+    <section className="relative w-full h-full flex items-center justify-center bg-background overflow-hidden pt-20 md:pt-24 px-8 md:px-14">
       <div className="rog-hex-grid" />
 
       <div className="relative z-10 max-w-2xl w-full text-center">

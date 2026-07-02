@@ -11,11 +11,11 @@ interface RevealCardProps {
 }
 
 export function RevealCard({ children, index, isOpen, title }: RevealCardProps) {
-  const isLeft = index % 2 === 0;
+  const isUp = index % 2 === 0;
   const num = String(index + 1).padStart(2, '0');
 
   return (
-    <div className="relative w-full h-dvh overflow-hidden bg-background">
+    <div className="section-grid relative w-full h-dvh overflow-hidden bg-background">
       {/* Hex grid background */}
       <div className="rog-hex-grid" />
       {/* Scan line */}
@@ -23,17 +23,17 @@ export function RevealCard({ children, index, isOpen, title }: RevealCardProps) 
 
       {/* Content — always mounted, animates in */}
       <motion.div
-        className="absolute inset-0 overflow-y-auto"
+        className="absolute inset-0 overflow-y-auto overflow-x-hidden"
         initial={{ opacity: 0 }}
         animate={{
           opacity: isOpen ? 1 : 0,
-          transition: { duration: 0.5, delay: isOpen ? 0.4 : 0, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: 0.6, delay: isOpen ? 0.65 : 0, ease: [0.65, 0, 0.35, 1] },
         }}
       >
         {children}
       </motion.div>
 
-      {/* Cover overlay — slides away */}
+      {/* Cover overlay — slides up/down with premium ease */}
       <motion.div
         className="absolute inset-0 z-10"
         style={{
@@ -42,12 +42,11 @@ export function RevealCard({ children, index, isOpen, title }: RevealCardProps) 
         }}
         initial={false}
         animate={{
-          x: isOpen ? (isLeft ? '-100%' : '100%') : '0%',
+          y: isOpen ? (isUp ? '-100%' : '100%') : '0%',
           transition: {
-            type: 'spring',
-            stiffness: 90,
-            damping: 28,
-            mass: 1,
+            duration: 0.75,
+            delay: isOpen ? 0.5 : 0,
+            ease: [0.65, 0, 0.35, 1],
           },
         }}
       >
@@ -72,7 +71,7 @@ export function RevealCard({ children, index, isOpen, title }: RevealCardProps) 
           <div
             className="absolute inset-0 opacity-[0.04]"
             style={{
-              background: `radial-gradient(ellipse at ${isLeft ? '70%' : '30%'} 50%, rgb(var(--accent-rgb) / 1) 0%, transparent 70%)`,
+              background: `radial-gradient(ellipse at 50% ${isUp ? '30%' : '70%'}, rgb(var(--accent-rgb) / 1) 0%, transparent 70%)`,
             }}
           />
 
@@ -90,12 +89,15 @@ export function RevealCard({ children, index, isOpen, title }: RevealCardProps) 
             </div>
 
             {title && (
-              <h2
+              <motion.h2
                 className="text-[clamp(1.8rem,4.5vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] mb-6"
                 style={{ color: 'var(--color-foreground)' }}
+                initial={false}
+                animate={isOpen ? { scale: [1, 1.02, 1], opacity: [1, 1, 0] } : {}}
+                transition={{ duration: 0.6, delay: 0.15, ease: [0.65, 0, 0.35, 1] }}
               >
                 {title}
-              </h2>
+              </motion.h2>
             )}
 
             <div

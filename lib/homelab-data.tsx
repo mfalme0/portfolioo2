@@ -1,13 +1,7 @@
 import type { ReactNode } from 'react';
 
-import { SiIntel, SiDocker, SiGitea } from 'react-icons/si';
-import {
-  FaMemory, FaHdd, FaMicrochip, FaTerminal, FaCube, FaFilm,
-  FaMusic, FaCamera, FaDownload, FaCode, FaEye, FaGamepad,
-  FaPlug, FaServer, FaChartLine, FaWifi, FaGitAlt, FaBook,
-} from 'react-icons/fa';
+import { FaMemory, FaHdd, FaTerminal, FaCube, FaServer } from 'react-icons/fa';
 import { GiProcessor } from 'react-icons/gi';
-import { MdPhotoLibrary, MdSensors, MdSpeed } from 'react-icons/md';
 
 export type HomelabCategory = 'server' | 'network' | 'storage' | 'infrastructure';
 

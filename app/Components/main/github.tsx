@@ -17,36 +17,36 @@ export default function Github() {
   }), [accentColor]);
 
   return (
-    <section className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="github">
+    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background vintage-frame" id="github">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="flex items-center gap-4 mb-16"
+          className="flex items-center gap-4 mb-8"
         >
           <motion.div
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="h-[2px] w-8 rounded-full origin-left"
             style={{ background: accentColor }}
           />
           <span className="apple-eyebrow">GitHub</span>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-10">
           <div className="md:col-span-6">
             <motion.h2
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
-              className="apple-heading"
+              className="apple-heading-compact"
             >
-              Commit<br />
-              <span className="font-semibold" style={{ color: accentColor }}>
+              Commit{' '}
+              <span className="font-bold" style={{ color: accentColor }}>
                 Activity.
               </span>
             </motion.h2>
@@ -56,7 +56,7 @@ export default function Github() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="apple-subtitle text-sm"
+              className="apple-subtitle"
             >
               Daily contribution history across all public repositories.
               Consistent delivery, every week.
@@ -65,10 +65,10 @@ export default function Github() {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="apple-card-flat p-6 md:p-8"
+          className="apple-card-flat p-4 md:p-6"
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
             <div className="flex items-center gap-4">

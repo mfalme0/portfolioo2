@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import NeonGlitch from '@/app/Components/neon-glitch';
 
 interface SpecBar {
   label: string;
@@ -22,30 +23,31 @@ export default function SpecBars({ bars, title, accent = 'var(--accent-default)'
         </h3>
       )}
       {bars.map((bar, i) => (
-        <motion.div
-          key={bar.label}
-          initial={{ opacity: 0, x: -20 }}
-          animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="space-y-1.5"
-        >
-          <div className="flex items-center justify-between">
-            <span className="rog-spec-label text-[10px]">{bar.label}</span>
-            <span className="text-[11px] font-semibold text-white/80">{bar.value}</span>
-          </div>
-          <div className="rog-spec-bar-track">
-            <motion.div
-              className="rog-spec-bar-fill"
-              initial={{ width: '0%' }}
-              animate={inView ? { width: `${bar.percent}%` } : {}}
-              transition={{ delay: i * 0.1 + 0.2, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              style={{
-                background: bar.color || `linear-gradient(90deg, ${accent}, ${accent}cc)`,
-                boxShadow: `0 0 12px ${accent}4d`,
-              }}
-            />
-          </div>
-        </motion.div>
+        <NeonGlitch key={bar.label}>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-1.5"
+          >
+            <div className="flex items-center justify-between">
+              <span className="rog-spec-label text-[10px]">{bar.label}</span>
+              <span className="text-[11px] font-semibold text-white/80">{bar.value}</span>
+            </div>
+            <div className="rog-spec-bar-track">
+              <motion.div
+                className="rog-spec-bar-fill"
+                initial={{ width: '0%' }}
+                animate={inView ? { width: `${bar.percent}%` } : {}}
+                transition={{ delay: i * 0.1 + 0.2, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  background: bar.color || `linear-gradient(90deg, ${accent}, ${accent}cc)`,
+                  boxShadow: `0 0 12px ${accent}4d`,
+                }}
+              />
+            </div>
+          </motion.div>
+        </NeonGlitch>
       ))}
     </div>
   );

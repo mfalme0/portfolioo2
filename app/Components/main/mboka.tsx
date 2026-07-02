@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
 
 const experiences = [
@@ -70,35 +70,26 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
   onClick: () => void;
   accent: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-  const cardY = useTransform(scrollYProgress, [0, 1], [15, -15]);
-
   return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true, margin: '-60px' }}
-      style={{ y: cardY }}
-      className="flex gap-6"
+      className="flex gap-4 md:gap-6"
     >
-      <div className="flex flex-col items-center pt-1">
+      <div className="flex flex-col items-center pt-1 shrink-0">
         <TimelineDot active={expanded} accent={accent} />
         {index < experiences.length - 1 && <TimelineBar />}
       </div>
-      <div className="flex-1 pb-12">
+      <div className="flex-1 min-w-0 pb-6">
         <div
           onClick={onClick}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
           role="button"
           tabIndex={0}
           aria-expanded={expanded}
-          className="apple-card-flat p-6 cursor-pointer group transition-all duration-300"
+          className="apple-card-flat p-4 cursor-pointer group transition-all duration-300"
           style={{
             borderColor: expanded ? 'var(--border-hover)' : undefined,
           }}
@@ -130,7 +121,7 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-sm font-light leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
               {exp.description}
             </p>
           </motion.div>
@@ -143,28 +134,22 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
 export function WorkExperience() {
   const { accent } = useTheme();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%']);
 
   return (
-    <section ref={sectionRef} className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="experience">
-      <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
+    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background overflow-x-hidden vintage-frame" id="experience">
+      <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-[30%] right-[-5%] h-[450px] w-[450px] rounded-full blur-[250px]"
           style={{ background: accent, opacity: 0.02 }}
         />
-      </motion.div>
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="flex items-center gap-4 mb-16"
+          className="flex items-center gap-4 mb-8"
         >
           <motion.div
             initial={{ scaleX: 0 }}
@@ -177,17 +162,17 @@ export function WorkExperience() {
           <span className="apple-eyebrow">Experience</span>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
           <div className="md:col-span-6">
             <motion.h2
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
-              className="apple-heading"
+              className="apple-heading-compact"
             >
-              Where I&apos;ve<br />
-              <span className="font-semibold" style={{ color: accent }}>
+              Where I&apos;ve{' '}
+              <span className="font-bold" style={{ color: accent }}>
                 Made Impact.
               </span>
             </motion.h2>

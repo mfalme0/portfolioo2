@@ -43,7 +43,7 @@ function ProjectCard({ project, index, accent }: { project: typeof projects[0]; 
     >
       <div className="apple-card-flat overflow-hidden">
         {/* Image container */}
-        <div className="relative h-56 md:h-72 w-full overflow-hidden">
+        <div className="relative h-36 md:h-40 w-full overflow-hidden">
           <Image
             src={project.image}
             alt={project.title}
@@ -72,13 +72,13 @@ function ProjectCard({ project, index, accent }: { project: typeof projects[0]; 
         </div>
 
         {/* Content */}
-        <div className="p-6 md:p-7">
-          <div className="flex items-start justify-between mb-3">
+        <div className="p-4 md:p-5">
+          <div className="flex items-start justify-between mb-2">
             <div>
               <span className="text-[10px] font-semibold tracking-[0.05em] uppercase mb-1 block" style={{ color: accent }}>
                 {project.subtitle}
               </span>
-              <h3 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
+              <h3 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
                 {project.title}
               </h3>
             </div>
@@ -86,15 +86,15 @@ function ProjectCard({ project, index, accent }: { project: typeof projects[0]; 
               animate={{ x: hovered ? 2 : 0, y: hovered ? -2 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              <FiArrowUpRight className="text-lg" style={{ color: 'var(--color-muted)' }} />
+              <FiArrowUpRight className="text-base" style={{ color: 'var(--color-muted)' }} />
             </motion.div>
           </div>
-          <p className="text-sm font-light leading-relaxed mb-6 line-clamp-2" style={{ color: 'var(--color-muted)' }}>
+          <p className="text-sm leading-relaxed mb-4 line-clamp-2" style={{ color: 'var(--color-muted)' }}>
             {project.description}
           </p>
 
           {/* Footer */}
-          <div className="flex items-center gap-6 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
+          <div className="flex items-center gap-6 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
             <a href={project.github} target="_blank" rel="noreferrer"
               className="flex items-center gap-2 text-xs font-medium transition-all hover:opacity-60"
               style={{ color: 'var(--color-foreground)' }}>
@@ -113,36 +113,36 @@ export function Projects() {
   const filtered = activeCategory === 'ALL' ? projects : projects.filter((p) => p.category === activeCategory);
 
   return (
-    <section className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="projects">
+    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background vintage-frame" id="projects">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="flex items-center gap-4 mb-16"
+          className="flex items-center gap-4 mb-8"
         >
           <motion.div
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="h-[2px] w-8 rounded-full origin-left"
             style={{ background: accent }}
           />
           <span className="apple-eyebrow">Projects</span>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-10">
           <div className="md:col-span-6">
             <motion.h2
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
-              className="apple-heading"
+              className="apple-heading-compact"
             >
-              What I&apos;ve<br />
-              <span className="font-semibold" style={{ color: accent }}>
+              What I&apos;ve{' '}
+              <span className="font-bold" style={{ color: accent }}>
                 Built.
               </span>
             </motion.h2>
@@ -152,7 +152,7 @@ export function Projects() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="apple-subtitle text-sm"
+              className="apple-subtitle"
             >
               Production applications spanning fintech, agriculture, security, and
               logistics. Every project ships with clean architecture and a strong
@@ -162,7 +162,7 @@ export function Projects() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-12">
+        <div className="flex flex-wrap gap-2 mb-8">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -180,7 +180,7 @@ export function Projects() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} accent={accent} />
           ))}

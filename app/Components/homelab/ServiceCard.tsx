@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { HomelabService } from '@/lib/homelab-data';
 
 const statusConfig = {
@@ -20,7 +21,7 @@ export default function ServiceCard({ service }: { service: HomelabService }) {
               <span className="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md overflow-hidden"
                 style={{ backgroundColor: `rgba(255,255,255,0.04)`, border: '1px solid rgba(255,255,255,0.06)' }}
               >
-                <img src={service.icon} alt={service.name} className="w-3.5 h-3.5 object-contain" />
+                <Image src={service.icon!} alt={service.name} width={14} height={14} className="w-3.5 h-3.5 object-contain" />
               </span>
             )}
             <span className="relative flex h-2 w-2">

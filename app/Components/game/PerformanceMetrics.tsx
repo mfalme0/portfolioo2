@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import AnimatedCounter from './AnimatedCounter';
+import NeonGlitch from '@/app/Components/neon-glitch';
 
 interface Metric {
   label: string;
@@ -44,17 +45,19 @@ export default function PerformanceMetrics({
               boxShadow: `0 0 30px ${accent}0d`,
             }}
           >
-            {metric.icon && (
-              <div className="text-xl mb-2 flex justify-center">{metric.icon}</div>
-            )}
-            <div className="text-3xl md:text-4xl font-black tracking-tight mb-1">
-              <AnimatedCounter
-                end={metric.value}
-                suffix={metric.suffix}
-                decimals={metric.decimals ?? 0}
-              />
-            </div>
-            <div className="rog-spec-label text-[9px]">{metric.label}</div>
+            <NeonGlitch>
+              {metric.icon && (
+                <div className="text-xl mb-2 flex justify-center">{metric.icon}</div>
+              )}
+              <div className="text-3xl md:text-4xl font-black tracking-tight mb-1">
+                <AnimatedCounter
+                  end={metric.value}
+                  suffix={metric.suffix}
+                  decimals={metric.decimals ?? 0}
+                />
+              </div>
+              <div className="rog-spec-label text-[9px]">{metric.label}</div>
+            </NeonGlitch>
           </motion.div>
         ))}
       </div>

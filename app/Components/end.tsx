@@ -55,7 +55,7 @@ export default function End() {
                 opacity: 0.35 + (i % 3) * 0.15,
               }}
             >
-              <span className="mr-3 opacity-30">//</span>
+              <span className="mr-3 opacity-30">{'//'}</span>
               {item}
             </span>
           ))}
@@ -112,14 +112,28 @@ export default function End() {
                 name="name"
                 placeholder="Name"
                 required
-                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-lg px-4 py-3 text-xs text-zinc-300 placeholder-zinc-600 font-mono tracking-wider focus:outline-none focus:border-zinc-600 transition-colors"
+                className="w-full rounded-lg px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-foreground)',
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'var(--accent-default)'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
               />
               <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 required
-                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-lg px-4 py-3 text-xs text-zinc-300 placeholder-zinc-600 font-mono tracking-wider focus:outline-none focus:border-zinc-600 transition-colors"
+                className="w-full rounded-lg px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-foreground)',
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'var(--accent-default)'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
               />
             </div>
             <textarea
@@ -127,17 +141,29 @@ export default function End() {
               placeholder="Message"
               required
               rows={4}
-              className="w-full bg-zinc-900/60 border border-zinc-800 rounded-lg px-4 py-3 text-xs text-zinc-300 placeholder-zinc-600 font-mono tracking-wider focus:outline-none focus:border-zinc-600 transition-colors resize-none"
+              className="w-full rounded-lg px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300 resize-none"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                color: 'var(--color-foreground)',
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--accent-default)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
             />
             <button
               type="submit"
-              className="rog-btn-primary w-full rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+              style={{
+                backgroundColor: 'var(--accent-default)',
+                color: '#ffffff',
+                border: 'none',
+              }}
             >
               Send Message
             </button>
-            <p className="text-[9px] font-mono text-zinc-700 text-center">
+            <p className="text-[9px] font-mono text-center" style={{ color: 'var(--color-muted)' }}>
               or email directly at{' '}
-              <a href="mailto:josephgitauc@gmail.com" className="text-zinc-500 hover:text-zinc-400 underline underline-offset-2">
+              <a href="mailto:josephgitauc@gmail.com" className="underline underline-offset-2 transition-colors" style={{ color: 'var(--accent-default)' }}>
                 josephgitauc@gmail.com
               </a>
             </p>
@@ -171,7 +197,7 @@ export default function End() {
                 Full-stack engineer building production-grade software across the entire technology stack.
               </p>
               <div className="flex items-center gap-4 mt-2">
-                {socials.map((s, i) => (
+                {socials.map((s) => (
                   <a
                     key={s.label}
                     href={s.url}

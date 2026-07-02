@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
 
 const domains = [
@@ -35,27 +35,19 @@ const floatDelays = ['float-delay-1', 'float-delay-2', 'float-delay-3', 'float-d
 
 function DomainCard({ domain, index, accent }: { domain: typeof domains[0]; index: number; accent: string }) {
   const [expanded, setExpanded] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [20, -20]);
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true, margin: '-80px' }}
-      style={{ y }}
+      transition={{ delay: index * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '-60px' }}
       onClick={() => setExpanded(!expanded)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }}
       role="button"
       tabIndex={0}
       aria-expanded={expanded}
-      className={`apple-card-flat p-8 cursor-pointer group ${floatDelays[index]}`}
+      className={`apple-card-flat p-5 cursor-pointer group ${floatDelays[index]}`}
     >
       <div className="flex items-start justify-between mb-4">
         <span className="apple-eyebrow-accent" style={{ color: accent }}>
@@ -82,7 +74,7 @@ function DomainCard({ domain, index, accent }: { domain: typeof domains[0]; inde
       <motion.p
         animate={{ height: expanded ? 'auto' : 0, opacity: expanded ? 1 : 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="overflow-hidden text-xs leading-relaxed"
+        className="overflow-hidden text-sm leading-relaxed"
         style={{ color: 'var(--color-muted)' }}
       >
         {domain.detail}
@@ -115,64 +107,57 @@ function DomainCard({ domain, index, accent }: { domain: typeof domains[0]; inde
 
 export default function AboutMe() {
   const { accent } = useTheme();
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '-20%']);
 
   return (
-    <section ref={sectionRef} className="relative w-full py-32 md:py-44 bg-background overflow-hidden vintage-frame" id="about-me">
-      {/* Parallax background glow */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none">
+    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background vintage-frame" id="about-me">
+      <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-[20%] left-[-5%] h-[500px] w-[500px] rounded-full blur-[250px]"
           style={{ background: accent, opacity: 0.02 }}
         />
-      </motion.div>
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="flex items-center gap-4 mb-16"
+          className="flex items-center gap-4 mb-8"
         >
           <motion.div
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="h-[2px] w-8 rounded-full origin-left"
             style={{ background: accent }}
           />
           <span className="apple-eyebrow">About</span>
         </motion.div>
 
-        <div className="mb-20 grid grid-cols-1 md:grid-cols-12 gap-10 items-end">
+        <div className="mb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
           <div className="md:col-span-7">
             <motion.h2
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               viewport={{ once: true }}
-              className="apple-heading"
+              className="apple-heading-compact"
             >
-              Engineering at<br />
-              <span className="font-semibold" style={{ color: accent }}>
+              Engineering at{' '}
+              <span className="font-bold" style={{ color: accent }}>
                 Every Layer.
               </span>
             </motion.h2>
           </div>
           <div className="md:col-span-5">
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
               viewport={{ once: true }}
-              className="apple-subtitle text-sm leading-relaxed"
+              className="apple-subtitle leading-relaxed"
             >
               I don&apos;t just write code — I architect complete systems. From
               pixel-perfect React interfaces to containerised backend services
@@ -181,7 +166,7 @@ export default function AboutMe() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {domains.map((domain, i) => (
             <DomainCard key={i} domain={domain} index={i} accent={accent} />
           ))}

@@ -4,6 +4,8 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "./Context/theme";
 import { PerformanceProvider } from "./Context/performance";
+import { ErrorBoundary } from "./Components/error-boundary";
+import { SketchProvider } from "./Components/sketch-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -98,11 +100,14 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <ThemeProvider>
-          <PerformanceProvider>
-            {children}
-          </PerformanceProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <PerformanceProvider>
+              <SketchProvider />
+              {children}
+            </PerformanceProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

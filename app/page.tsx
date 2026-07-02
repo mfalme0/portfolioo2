@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Header from './Components/header';
-import Preloader from './Components/preloader';
+import PageLoader from './Components/page-loader';
 import { Hero } from './Components/main/hero';
 import TechStack from './Components/main/techstack';
 import ProgrammingLanguages from './Components/main/languages';
@@ -15,6 +15,9 @@ import Testimonials from './Components/main/testimonials';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from './Context/theme';
 import { RevealCard } from './Components/reveal-card';
+import Terminal from './Components/terminal';
+
+type ViewMode = 'sketch' | 'terminal' | 'dark';
 
 const SECTION_NAMES = [
   'Hero',
@@ -35,6 +38,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
   const [scrollBtnHovered, setScrollBtnHovered] = useState(false);
+  const [mode, setMode] = useState<ViewMode>('sketch');
   const lastTouchY = useRef(0);
   const touchActive = useRef(false);
   const isScrolling = useRef(false);
@@ -88,6 +92,7 @@ export default function HomePage() {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100dvh';
+
     return () => {
       document.body.style.overflow = '';
       document.body.style.height = '';
@@ -112,13 +117,44 @@ export default function HomePage() {
 
   const isPastHero = currentSection > 0;
 
+  // Keyboard shortcut: Ctrl+` toggles terminal mode
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === '`') {
+        e.preventDefault();
+        setMode(m => m === 'terminal' ? 'sketch' : 'terminal');
+      }
+      if (e.key === 'Escape' && mode === 'terminal') {
+        setMode('sketch');
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [mode]);
+
+  const handleBuildComplete = useCallback(() => {
+    setMode('dark');
+  }, []);
+
+  const handleTerminalExit = useCallback(() => {
+    setMode('sketch');
+  }, []);
+
+  const handleThemeChange = useCallback((theme: 'sketch' | 'dark') => {
+    setMode(theme);
+  }, []);
+
+  const toggleMode = useCallback(() => {
+    setMode(m => m === 'terminal' ? 'sketch' : 'terminal');
+  }, []);
+
   return (
     <>
       <style>{`::selection{background:${accent}4d;color:#fff}`}</style>
-      <div className="relative bg-background min-h-screen">
+      <div className={`relative bg-background min-h-screen ${mode === 'sketch' ? 'blueprint-mode' : ''}`}>
         <AnimatePresence mode="wait">
           {loading ? (
-            <Preloader key="preloader" onComplete={handlePreloaderComplete} />
+            <PageLoader key="page-loader" theme="home" onComplete={handlePreloaderComplete} />
           ) : (
             <motion.div
               key="content"
@@ -141,62 +177,62 @@ export default function HomePage() {
                 />
               </div>
 
-              <main id="main-content" className="relative z-10">
+              <main id="main-content" className="relative z-10 w-full overflow-hidden">
                 <div
-                  className="flex flex-col will-change-transform transition-transform duration-[0.8s] ease-[cubic-bezier(0.32,0.08,0.24,1)]"
+                  className="flex flex-row will-change-transform transition-transform duration-[0.8s] ease-[cubic-bezier(0.32,0.08,0.24,1)]"
                   style={{
-                    transform: `translateY(-${currentSection * 100}vh)`,
+                    transform: `translateX(-${currentSection * 100}vw)`,
                   }}
                 >
                   {/* Hero — no card */}
-                  <section id="hero" className="h-dvh w-full flex-shrink-0 relative z-10">
-                    <Hero />
+                  <section id="hero" className="h-dvh w-dvw flex-shrink-0 relative z-10">
+                    <Hero onNavigate={goTo} />
                   </section>
 
                   {/* Reveal sections — each wrapped in a card that slides away */}
-                  <div className="h-dvh w-full flex-shrink-0" id="about-me">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="about-me">
                     <RevealCard index={0} isOpen={currentSection >= 1} title="About Me">
                       <AboutMe />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0" id="experience">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="experience">
                     <RevealCard index={1} isOpen={currentSection >= 2} title="Experience">
                       <WorkExperience />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0" id="techstack">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="techstack">
                     <RevealCard index={2} isOpen={currentSection >= 3} title="Tech Stack">
                       <TechStack />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0" id="languages">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="languages">
                     <RevealCard index={3} isOpen={currentSection >= 4} title="Languages">
                       <ProgrammingLanguages />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0" id="projects">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="projects">
                     <RevealCard index={4} isOpen={currentSection >= 5} title="Projects">
                       <Projects />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0" id="testimonials">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="testimonials">
                     <RevealCard index={5} isOpen={currentSection >= 6} title="Testimonials">
                       <Testimonials />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0" id="github">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="github">
                     <RevealCard index={6} isOpen={currentSection >= 7} title="GitHub">
                       <Github />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-full flex-shrink-0">
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden">
                     <RevealCard index={7} isOpen={currentSection >= 8} title="End">
                       <End />
                     </RevealCard>
@@ -298,7 +334,52 @@ export default function HomePage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Mode toggle button */}
+        <motion.button
+          onClick={toggleMode}
+          className="mode-toggle-btn"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          title={`Switch to ${mode === 'terminal' ? 'sketch' : 'terminal'} mode (Ctrl+\`)`}
+          aria-label="Toggle terminal mode"
+        >
+          {mode === 'terminal' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="4 17 10 11 4 5" />
+              <line x1="12" y1="19" x2="20" y2="19" />
+            </svg>
+          )}
+        </motion.button>
+
+        {/* Terminal overlay */}
+        <AnimatePresence>
+          {mode === 'terminal' && (
+            <Terminal
+              key="terminal"
+              onBuildComplete={handleBuildComplete}
+              onExit={handleTerminalExit}
+              onThemeChange={handleThemeChange}
+            />
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* SVG filters for sketch effect */}
+      <svg className="hidden" aria-hidden="true">
+        <defs>
+          <filter id="pencil-sketch" x="-2%" y="-2%" width="104%" height="104%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" result="sketch" />
+          </filter>
+        </defs>
+      </svg>
     </>
   );
 }

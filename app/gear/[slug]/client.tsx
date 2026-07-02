@@ -7,12 +7,13 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import type { GearItem, GearCategory } from '@/lib/gear-data';
 import { SiNvidia, SiIntel } from 'react-icons/si';
 import { FaBolt } from 'react-icons/fa';
-import GearLoader from '@/app/Components/game/loader';
+import PageLoader from '@/app/Components/page-loader';
 import RogHero from '@/app/Components/game/RogHero';
 import ProductGallery from '@/app/Components/game/ProductGallery';
 import SpecBars from '@/app/Components/game/SpecBars';
 import PerformanceMetrics from '@/app/Components/game/PerformanceMetrics';
 import ConnectivityTerminal from '@/app/Components/game/ConnectivityTerminal';
+import NeonGlitch from '@/app/Components/neon-glitch';
 
 const catPalette: Record<GearCategory, { base: string; rgb: [number, number, number] }> = {
   system:     { base: '#10B981', rgb: [16, 185, 129] },
@@ -146,7 +147,8 @@ export default function GearDetailClient({
     <>
       <AnimatePresence mode="wait">
         {loading && (
-          <GearLoader
+          <PageLoader
+            theme="gear"
             onComplete={() => setLoading(false)}
             logs={[
               `INITIALIZING_${item.category.toUpperCase()}_MODULE...`,
@@ -238,41 +240,43 @@ export default function GearDetailClient({
                       boxShadow: `0 0 30px -8px rgba(${pr},${pg},${pb},0.12)`,
                     }}
                   >
-                    {/* Top accent border */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-[2px] opacity-60"
-                      style={{ backgroundColor: palette.base }}
-                    />
-                    <div
-                      className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{
-                        background: `linear-gradient(to right, transparent, rgba(${pr},${pg},${pb},0.4), transparent)`,
-                      }}
-                    />
-                    {s.icon && <div className="text-xl mb-2 flex justify-center" style={{ color: palette.base }}>{s.icon}</div>}
-                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
-                    <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
-                    {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
+                    <NeonGlitch className="w-full h-full">
+                      {/* Top accent border */}
+                      <div
+                        className="absolute top-0 left-0 right-0 h-[2px] opacity-60"
+                        style={{ backgroundColor: palette.base }}
+                      />
+                      <div
+                        className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background: `linear-gradient(to right, transparent, rgba(${pr},${pg},${pb},0.4), transparent)`,
+                        }}
+                      />
+                      {s.icon && <div className="text-xl mb-2 flex justify-center" style={{ color: palette.base }}>{s.icon}</div>}
+                      <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
+                      <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
+                      {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
 
-                    {item.slug === 'glorious-model-o' && s.label === 'WEIGHT' && (
-                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                        <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-xl min-w-[100px]">
-                          <div className="relative h-[80px]">
-                            <pre className="animate-arms-up absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
+                      {item.slug === 'glorious-model-o' && s.label === 'WEIGHT' && (
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                          <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-xl min-w-[100px]">
+                            <div className="relative h-[80px]">
+                              <pre className="animate-arms-up absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
 >{`  \\ | /
    \\|/
     67
   /   \\`}</pre>
-                            <pre className="animate-arms-down absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
+                              <pre className="animate-arms-down absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
 >{`  / | \\
  /  |  \\
     67
   /   \\`}</pre>
+                            </div>
                           </div>
+                          <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700" />
                         </div>
-                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700" />
-                      </div>
-                    )}
+                      )}
+                    </NeonGlitch>
                   </motion.div>
                 ))}
               </div>
@@ -302,11 +306,13 @@ export default function GearDetailClient({
                     transition={{ delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     className="rog-card p-4 text-center"
                   >
-                    <div className="text-lg md:text-2xl font-black tabular-nums" style={{ color: palette.base }}>
-                      {b.score.toLocaleString()}
-                      {b.unit && <span className="text-[10px] text-zinc-600 ml-0.5">{b.unit}</span>}
-                    </div>
-                    <div className="rog-spec-label text-center mt-1">{b.label}</div>
+                    <NeonGlitch>
+                      <div className="text-lg md:text-2xl font-black tabular-nums" style={{ color: palette.base }}>
+                        {b.score.toLocaleString()}
+                        {b.unit && <span className="text-[10px] text-zinc-600 ml-0.5">{b.unit}</span>}
+                      </div>
+                      <div className="rog-spec-label text-center mt-1">{b.label}</div>
+                    </NeonGlitch>
                   </motion.div>
                 ))}
               </div>

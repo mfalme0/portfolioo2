@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
 import { usePerformance } from '../../Context/performance';
 import CountUp from '../count-up';
@@ -52,14 +52,11 @@ const stats = [
   { value: null, label: 'End-to-End Delivery', suffix: '', text: 'Full Stack' },
 ];
 
-export function Hero() {
+export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
   const { accent } = useTheme();
   const { reducedEffects } = usePerformance();
   const [mounted, setMounted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-
-  const { scrollY } = useScroll();
-  const heroParallax = useTransform(scrollY, [0, 800], [0, -80]);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -107,7 +104,7 @@ export function Hero() {
         />
       </div>
 
-      <motion.div style={{ y: reducedEffects ? 0 : heroParallax }} className="relative z-10 mx-auto max-w-7xl px-8 md:px-14 pt-[16vh] md:pt-[18vh]">
+      <motion.div className="relative z-10 mx-auto max-w-7xl px-8 md:px-14 pt-[16vh] md:pt-[18vh]">
         <div className="max-w-full">
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
@@ -181,15 +178,15 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
           className="mt-14 flex flex-col sm:flex-row gap-4 items-start"
         >
-          <Link
-            href="#projects"
+          <button
+            onClick={() => onNavigate?.(5)}
             className="rog-btn-primary group relative overflow-hidden rounded-xl px-7 py-3.5 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           >
             <span className="relative flex items-center gap-2">
               View My Work
               <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </span>
-          </Link>
+          </button>
           <Link
             href="https://github.com/mfalme0"
             target="_blank"

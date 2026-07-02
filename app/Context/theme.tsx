@@ -1,25 +1,12 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { themeConfig, Theme as ThemeType } from '@/lib/theme-config';
 
-export type Theme = 'light' | 'dark';
+export type Theme = ThemeType;
 
-type TimePeriod = 'night' | 'morning' | 'midday' | 'evening';
-
-const timeColors: Record<TimePeriod, { accent: string; accentRGB: string; label: string }> = {
-  night:   { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
-  morning: { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
-  midday:  { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
-  evening: { accent: '#E8A33D', accentRGB: '232,163,61', label: 'amber' },
-};
-
-function getTimePeriod(): TimePeriod {
-  const h = new Date().getHours();
-  if (h >= 6 && h < 12) return 'morning';
-  if (h >= 12 && h < 17) return 'midday';
-  if (h >= 17 && h < 20) return 'evening';
-  return 'night';
-}
+const ACCENT = themeConfig.accent.default;
+const ACCENT_RGB = themeConfig.accent.rgb;
 
 function migrateTheme(stored: string | null): Theme {
   if (stored === 'loki' || stored === 'dark') return 'dark';
@@ -27,27 +14,9 @@ function migrateTheme(stored: string | null): Theme {
   return 'dark';
 }
 
-const baseThemes = {
-  light: {
-    background: '#F5F3EE',
-    foreground: '#1A1A1A',
-    surface: '#FFFFFF',
-    cardBg: 'rgba(232,163,61,0.04)',
-    border: 'rgba(0,0,0,0.08)',
-  },
-  dark: {
-    background: '#10151C',
-    foreground: '#ECE9E1',
-    surface: '#1A222C',
-    cardBg: 'rgba(232,163,61,0.03)',
-    border: 'rgba(236,233,225,0.06)',
-  },
-};
-
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
-  period: TimePeriod;
   accent: string;
   accentRGB: string;
   background: string;
@@ -57,19 +26,16 @@ interface ThemeContextType {
   border: string;
 }
 
-const now = getTimePeriod();
-
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'dark',
   toggleTheme: () => {},
-  period: now,
-  ...timeColors[now],
-  ...baseThemes.dark,
+  accent: ACCENT,
+  accentRGB: ACCENT_RGB,
+  ...themeConfig.colors.dark,
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
-  const [period, setPeriod] = useState<TimePeriod>(getTimePeriod);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -78,33 +44,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(next);
     localStorage.setItem('theme', next);
     setMounted(true);
-    document.documentElement.style.setProperty('--color-accent', timeColors[getTimePeriod()].accent);
-  }, []);
-
-  useEffect(() => {
-    const updatePeriod = () => setPeriod(getTimePeriod());
-    updatePeriod();
-    const timer = setInterval(updatePeriod, 60_000);
-    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
     localStorage.setItem('theme', theme);
     document.documentElement.dataset.theme = theme;
-    document.documentElement.dataset.period = period;
-    document.documentElement.style.setProperty('--color-accent', timeColors[period].accent);
-  }, [theme, mounted, period]);
+  }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
     setTheme(t => t === 'light' ? 'dark' : 'light');
   }, []);
 
-  const tc = timeColors[period];
-  const bc = baseThemes[theme];
+  const colors = themeConfig.colors[theme];
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, period, ...tc, ...bc }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, accent: ACCENT, accentRGB: ACCENT_RGB, ...colors }}>
       {children}
     </ThemeContext.Provider>
   );

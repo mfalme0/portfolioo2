@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import Header from '../Components/header';
 import Footer from '../Components/footer';
-import HomelabLoader from '../Components/homelab/loader';
+import PageLoader from '../Components/page-loader';
 import ServiceModal from '../Components/homelab/ServiceModal';
 import { homelabItems } from '@/lib/homelab-data';
 import type { HomelabItem, HomelabService } from '@/lib/homelab-data';
@@ -37,7 +37,7 @@ function ServiceIcon({ name, icon, size = 'md' }: { name: string; icon?: string;
           border: `1px solid hsla(${hue}, 70%, 55%, 0.15)`,
         }}
       >
-        <img src={icon} alt={name} className="w-4/5 h-4/5 object-contain" />
+        <Image src={icon} alt={name} width={32} height={32} className="w-4/5 h-4/5 object-contain" />
       </div>
     );
   }
@@ -306,7 +306,7 @@ export default function HomelabPage() {
   return (
     <div className="bg-background min-h-screen text-[#fafafa] selection:bg-[#a78bfa] selection:text-[#020202]">
       <AnimatePresence mode="wait">
-        {loading && <HomelabLoader onComplete={() => setLoading(false)} />}
+        {loading && <PageLoader theme="homelab" onComplete={() => setLoading(false)} />}
       </AnimatePresence>
 
       <div className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
@@ -325,7 +325,7 @@ export default function HomelabPage() {
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col gap-2">
                 <span className="text-[9px] font-mono tracking-[0.4em] uppercase text-zinc-600">
-                  // SERVER_FARM_MANIFEST
+                  {'// SERVER_FARM_MANIFEST'}
                 </span>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
                   THE HOMELAB

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { HomelabService } from '@/lib/homelab-data';
 
@@ -57,7 +58,7 @@ export default function ServiceModal({
               <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl overflow-hidden"
                 style={{ backgroundColor: `rgba(255,255,255,0.04)`, border: '1px solid rgba(255,255,255,0.08)' }}
               >
-                <img src={service.icon} alt={service.name} className="w-6 h-6 object-contain" />
+                <Image src={service.icon!} alt={service.name} width={24} height={24} className="w-6 h-6 object-contain" />
               </span>
             )}
             <div className="flex-1 min-w-0">
