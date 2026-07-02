@@ -20,13 +20,37 @@ export default function OgImage() {
           fontFamily: 'system-ui, sans-serif',
         }}
       >
-        <div style={{ fontSize: 96, fontWeight: 300, letterSpacing: '-0.04em', marginBottom: 20 }}>
-          Joseph <span style={{ color: '#E8A33D', fontWeight: 700 }}>Gitau</span>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 96,
+            fontWeight: 300,
+            letterSpacing: '-0.04em',
+            marginBottom: 20,
+          }}
+        >
+          <div style={{ display: 'flex' }}>Joseph </div>
+          <div style={{ display: 'flex', color: '#E8A33D', fontWeight: 700 }}>Gitau</div>
         </div>
-        <div style={{ fontSize: 28, color: '#9BA3B0', letterSpacing: '0.05em' }}>
-          Full-Stack Engineer & Systems Architect
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 28,
+            color: '#9BA3B0',
+            letterSpacing: '0.05em',
+          }}
+        >
+          Full-Stack Engineer &amp; Systems Architect
         </div>
-        <div style={{ marginTop: 40, display: 'flex', gap: 16, fontSize: 16, color: '#6B7280' }}>
+        <div
+          style={{
+            display: 'flex',
+            marginTop: 40,
+            gap: 16,
+            fontSize: 16,
+            color: '#6B7280',
+          }}
+        >
           React · Next.js · Node.js · C# · Docker
         </div>
       </div>
