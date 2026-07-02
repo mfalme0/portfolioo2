@@ -41,14 +41,14 @@ function postBeep() {
 const LOGS: Record<LoaderTheme, string[]> = {
   home: [''],
   gear: [
-    'INITIALIZING_PERIPHERAL_DATABASE...',
-    'DETECTING_INPUT_DEVICES...',
-    'CALIBRATING_HERO_SENSORS...',
-    'SYNCING_AULA_F75_FIRMWARE...',
-    'ESTABLISHING_AUDIO_UPLINK (DTS:X)...',
-    'OPTIMIZING_REFRESH_RATES (180Hz)...',
-    'VERIFYING_UPS_VOLTAGE...',
-    'LOADOUT_CONFIGURATION_VALIDATED.',
+    'POST: Initializing system...',
+    'Memory Test: 32768K OK',
+    'CPU: AMD Ryzen 9 7945HX @ 2.50GHz',
+    'SATA: NVMe WD_BLACK SN850X 1TB',
+    'USB: Detected 5 devices... OK',
+    'Fan Control: Initializing... OK',
+    'ACPI: Enumerating... OK',
+    'VANGUARD: Boot sequence complete.',
   ],
   homelab: [
     'Award Modular BIOS v4.51PG, An Energy Star Ally',
@@ -84,7 +84,7 @@ const LOGS: Record<LoaderTheme, string[]> = {
     'DETECTING_INPUT_DEVICES...',
     'CALIBRATING_HERO_SENSORS...',
     'SYNCING_AULA_F75_FIRMWARE...',
-    'ESTABLISHING_AUDIO_UPLINK (DTS:X)...',
+    'ESTABLISHING_AUDIO_UPLINK (24-bit/96kHz)...',
     'OPTIMIZING_REFRESH_RATES (180Hz)...',
     'VERIFYING_UPS_VOLTAGE...',
     'LOADOUT_CONFIGURATION_VALIDATED.',
@@ -93,7 +93,7 @@ const LOGS: Record<LoaderTheme, string[]> = {
 
 const DEFAULTS: Record<LoaderTheme, { duration: number; version: string; label: string }> = {
   home: { duration: 2000, version: '', label: '' },
-  gear: { duration: 2400, version: 'V.2.1.0', label: 'ARMOURY_CRATE::BOOT_SEQ' },
+  gear: { duration: 2400, version: 'V.2.1.0', label: 'VANGUARD::BOOT_SEQ' },
   homelab: { duration: 3000, version: '', label: '' },
   lan: { duration: 2500, version: 'V.2.0.4', label: 'SYSTEM_BOOT' },
 };
@@ -218,6 +218,11 @@ export default function PageLoader({
   const [glitching, setGlitching] = useState(false);
   const glitchTriggeredRef = useRef(false);
 
+  const [shwing, setShwing] = useState(false);
+  const shwingRef = useRef(false);
+
+  const [powerFlash, setPowerFlash] = useState(false);
+
   const [sensors, setSensors] = useState({ cpu: 42, gpu: 38, fan: 2100 });
 
   const [showWelcome, setShowWelcome] = useState(false);
@@ -242,21 +247,106 @@ export default function PageLoader({
   const [peersFound, setPeersFound] = useState(0);
   const [serverIndex, setServerIndex] = useState(0);
 
-  const isGlitching = glitching && (theme === 'gear' || theme === 'lan');
+  const isGlitching = glitching && theme === 'lan';
 
   /* Big glitch at ~70% for gear */
+
+  /* Dramatic "shwing" sweep during monogram swing-in */
   useEffect(() => {
-    if (progress >= 68 && progress <= 72 && !glitchTriggeredRef.current && !reduceMotion && theme === 'gear') {
-      glitchTriggeredRef.current = true;
-      setGlitching(true);
-      const id = setTimeout(() => setGlitching(false), 250);
-      return () => clearTimeout(id);
+    if (theme !== 'gear' || reduceMotion || shwingRef.current) return;
+    if (pct >= 8 && pct < 25) {
+      shwingRef.current = true;
+      setShwing(true);
+      const id1 = setTimeout(() => setShwing(false), 500);
+      const id2 = setTimeout(() => setPowerFlash(true), 300);
+      const id3 = setTimeout(() => setPowerFlash(false), 800);
+      return () => { clearTimeout(id1); clearTimeout(id2); clearTimeout(id3); };
     }
-  }, [progress, theme, reduceMotion]);
+  }, [theme, pct, reduceMotion]);
+
+  /* Power-up beep for gear completion */
+  const powerBeepRef = useRef(false);
+  useEffect(() => {
+    if (theme !== 'gear' || pct < 100 || powerBeepRef.current || reduceMotion) return;
+    powerBeepRef.current = true;
+    try {
+      const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!Ctor) return;
+      const ctx = new Ctor();
+      ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      const t = ctx.currentTime;
+      osc.frequency.setValueAtTime(60, t);
+      osc.frequency.exponentialRampToValueAtTime(1800, t + 0.3);
+      gain.gain.setValueAtTime(0.12, t);
+      gain.gain.setValueAtTime(0.12, t + 0.28);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+      osc.start(t);
+      osc.stop(t + 0.45);
+      /* second harmonic */
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(120, t);
+      osc2.frequency.exponentialRampToValueAtTime(3600, t + 0.25);
+      gain2.gain.setValueAtTime(0.04, t);
+      gain2.gain.setValueAtTime(0.04, t + 0.23);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      osc2.start(t);
+      osc2.stop(t + 0.35);
+    } catch {}
+  }, [theme, pct, reduceMotion]);
+
+  /* Metallic "shing" when monogram swings in */
+  const shingRef = useRef(false);
+  useEffect(() => {
+    if (theme !== 'gear' || shingRef.current || reduceMotion) return;
+    if (pct >= 5 && pct < 25) {
+      shingRef.current = true;
+      try {
+        const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (!Ctor) return;
+        const ctx = new Ctor();
+        ctx.resume();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        const t = ctx.currentTime;
+        osc.frequency.setValueAtTime(800, t);
+        osc.frequency.exponentialRampToValueAtTime(3200, t + 0.06);
+        osc.frequency.exponentialRampToValueAtTime(1800, t + 0.15);
+        gain.gain.setValueAtTime(0.08, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+        osc.start(t);
+        osc.stop(t + 0.2);
+        /* second harmonic — brighter */
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(2400, t);
+        osc2.frequency.exponentialRampToValueAtTime(6400, t + 0.05);
+        osc2.frequency.exponentialRampToValueAtTime(3600, t + 0.12);
+        gain2.gain.setValueAtTime(0.04, t);
+        gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        osc2.start(t);
+        osc2.stop(t + 0.18);
+      } catch {}
+    }
+  }, [theme, pct, reduceMotion]);
 
   /* Random mini-glitches throughout gear/lan loading */
   useEffect(() => {
-    if (theme !== 'gear' && theme !== 'lan' || reduceMotion) return;
+    if (theme !== 'lan' || reduceMotion) return;
     const id = setInterval(() => {
       if (pctRef.current < 20 || pctRef.current >= 98) return;
       if (Math.random() < 0.35) {
@@ -595,156 +685,269 @@ export default function PageLoader({
         }}
       >
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-        {/* Synthwave grid */}
-        <div className="absolute inset-0 pointer-events-none synthwave-grid opacity-[0.25]" />
-        <div className="absolute inset-0 pointer-events-none synthwave-flare" />
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,0,128,0.04),transparent_55%)]" />
+        {theme !== 'gear' && (
+          <>
+            <div className="absolute inset-0 pointer-events-none synthwave-grid opacity-[0.25]" />
+            <div className="absolute inset-0 pointer-events-none synthwave-flare" />
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,0,128,0.04),transparent_55%)]" />
+          </>
+        )}
         {theme === 'lan' && (
           <div className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{
             backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
             backgroundSize: '44px 44px',
           }} />
         )}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.10]" style={{
-          backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,1) 50%)',
-          backgroundSize: '100% 6px',
-        }} />
+        {theme !== 'gear' && (
+          <div className="absolute inset-0 pointer-events-none opacity-[0.10]" style={{
+            backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,1) 50%)',
+            backgroundSize: '100% 6px',
+          }} />
+        )}
 
-        <div className="relative z-10 w-full max-w-xl rounded-xl border border-white/10 bg-black/60 backdrop-blur-md overflow-hidden"
-          style={{ boxShadow: '0 0 80px rgb(var(--accent-rgb) / 0.08)' }}>
-          {theme === 'gear' && !reduceMotion && (
-            <div className="absolute inset-0 pointer-events-none z-10" style={{ overflow: 'hidden' }}>
+        {theme === 'gear' ? (
+          <div className="relative z-10 w-full max-w-lg">
+            {/* Shwing sweep beam */}
+            {shwing && (
               <motion.div
-                className="absolute left-0 right-0 h-[2px]"
+                className="absolute inset-0 z-20 pointer-events-none"
+                initial={{ clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
+                animate={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  background: 'linear-gradient(90deg, transparent, rgb(var(--accent-rgb) / 0.15), transparent)',
+                  background: 'linear-gradient(90deg, transparent 0%, rgb(var(--accent-rgb) / 0.06) 25%, rgb(var(--accent-rgb) / 0.10) 50%, rgb(var(--accent-rgb) / 0.06) 75%, transparent 100%)',
                 }}
-                animate={{ top: ['-2%', '102%'] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
               />
-            </div>
-          )}
-
-          <div className="flex items-end justify-between px-6 pt-6 pb-4 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5">
-                <FaTerminal className={reduceMotion ? '' : 'animate-pulse'} />
-              </span>
-              <div className="leading-tight">
-                <div className={`text-[11px] tracking-[0.35em] text-white/70 uppercase font-bold ${isGlitching ? 'chromatic-split' : ''}`}
-                  data-text={isGlitching ? DEFAULTS[theme].label : undefined}>
-                  {DEFAULTS[theme].label}
-                </div>
-                {theme === 'gear' && (
-                  <div className={`text-[10px] tracking-[0.25em] text-white/40 uppercase ${isGlitching ? 'chromatic-split' : ''}`}
-                    data-text={isGlitching ? 'ROG device initialization' : undefined}>
-                    ROG device initialization
-                  </div>
-                )}
-              </div>
-            </div>
-            {activeVersion && (
-              <div className={`text-[10px] tracking-[0.3em] text-white/35 uppercase ${isGlitching ? 'chromatic-split' : ''}`}
-                data-text={isGlitching ? activeVersion : undefined}>
-                {activeVersion}
-              </div>
             )}
+
+            {/* Power-on flash */}
+            {powerFlash && (
+              <motion.div
+                className="absolute inset-0 z-20 pointer-events-none"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                style={{ background: 'rgb(var(--accent-rgb) / 0.08)' }}
+              />
+            )}
+
+            {/* === GEAR — BIOS BOOT SPLASH === */}
+            <div className="flex flex-col items-center pt-16 pb-8">
+              {/* JG monogram swings in */}
+              <motion.div
+                initial={{ y: -140, rotate: -15, opacity: 0, scale: 0.6 }}
+                animate={{ y: 0, rotate: 0, opacity: 1, scale: 1 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 160,
+                  damping: 10,
+                  mass: 1.1,
+                }}
+                className="text-7xl md:text-8xl font-black tracking-tighter leading-none"
+                style={{ color: 'var(--accent-default)' }}
+              >
+                JG
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.35 }}
+                className="text-[13px] tracking-[0.4em] text-white/75 uppercase font-bold mt-4"
+              >
+                {DEFAULTS.gear.label}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.3 }}
+                className="text-[10px] tracking-[0.25em] text-white/40 uppercase mt-1"
+              >
+                system initialization
+              </motion.div>
+            </div>
+
+            <div className="px-6 pb-10">
+              {/* Percentage + status */}
+              <div className="flex items-end justify-between mb-3">
+                <div className="text-4xl md:text-5xl font-black tracking-tighter text-white tabular-nums">
+                  <motion.span
+                    key={pct}
+                    initial={reduceMotion ? undefined : { scale: 1.35 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {pct < 10 ? `0${pct}` : pct}
+                  </motion.span>
+                  <span className="text-white/35">%</span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-white/40">
+                  {pct >= 100 ? (
+                    <><FaCheck style={{ color: 'var(--accent-default)' }} /> READY</>
+                  ) : (
+                    <><FaCog className={reduceMotion ? '' : 'animate-spin'} /> PROCESSING</>
+                  )}
+                </div>
+              </div>
+
+              {/* Clean progress bar — no glow, no border */}
+              <div className="w-full h-[3px] overflow-hidden"
+                style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <motion.div
+                  className="h-full"
+                  style={{
+                    background: 'var(--accent-default)',
+                    width: `${progress}%`,
+                    transition: 'width 0.15s ease-out',
+                  }}
+                />
+              </div>
+
+              {/* POST messages */}
+              <div className="mt-8 rounded-sm border border-white/[0.06] bg-black/40 overflow-hidden">
+                <div className="px-3 py-1.5 border-b border-white/[0.06] flex items-center justify-between">
+                  <span className="text-[9px] tracking-[0.3em] uppercase text-white/40">POST</span>
+                  <span className="text-[9px] tracking-[0.3em] uppercase text-white/30">node: active</span>
+                </div>
+                <div className="px-3 py-3 flex gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] text-white/30 mb-1.5">
+                      <span className="opacity-50">&gt;</span> {prevLine}
+                    </div>
+                    <div className="text-[11px] text-white/80 flex items-center gap-2">
+                      <span className="inline-flex h-[3px] w-[3px] rounded-full shrink-0" style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.8)' }} />
+                      <span className="tracking-wide">
+                        <span className="opacity-50">&gt;</span>{' '}
+                        {typed}
+                        {!reduceMotion && (
+                          <motion.span
+                            className="inline-block w-[1.5px] h-[12px] ml-0.5 align-middle"
+                            style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.8)' }}
+                            animate={{ opacity: [1, 0] }}
+                            transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                          />
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-6 flex items-center justify-between text-[9px] tracking-[0.25em] uppercase">
+                <span className="text-white/25">Press DEL to enter setup</span>
+                <button type="button" onClick={handleSkip}
+                  className="px-3 py-1 rounded-sm border border-white/[0.06] bg-white/[0.03] text-white/40 hover:text-white/70 hover:bg-white/[0.06] transition text-[9px]">
+                  skip &gt;
+                </button>
+              </div>
+            </div>
           </div>
-
-          <div className="px-6 py-6">
-            <div className="flex items-end justify-between mb-4">
-              <div className="text-5xl md:text-6xl font-black tracking-tighter text-white tabular-nums">
-                <motion.span
-                  key={pct}
-                  initial={reduceMotion ? undefined : { scale: 1.35 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
-                  className={`inline-block ${isGlitching ? 'chromatic-split' : ''}`}
-                  data-text={`${pct < 10 ? `0${pct}` : pct}`}
-                >
-                  {pct < 10 ? `0${pct}` : pct}
-                </motion.span>
-                <span className={`text-white/35 ${isGlitching ? 'chromatic-split' : ''}`}
-                  data-text="%">%</span>
-              </div>
-              <div className={`flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-white/40 ${isGlitching ? 'chromatic-split' : ''}`}
-                data-text={isGlitching ? (pct >= 100 ? 'READY' : 'PROCESSING') : undefined}>
-                {pct >= 100 ? (
-                  <><FaCheck style={{ color: 'var(--accent-default)' }} /> READY</>
-                ) : (
-                  <><FaCog className={reduceMotion ? '' : 'animate-spin'} /> PROCESSING</>
-                )}
-              </div>
-            </div>
-
-            <div className="w-full h-2 rounded-full overflow-hidden border border-white/10 neon-glow-magenta"
-              style={{ background: 'rgba(255,255,255,0.05)' }}>
-              <motion.div
-                className="h-full"
-                style={{
-                  background: `linear-gradient(90deg, #FF0080, #FF00FF, #00FFFF)`,
-                  width: `${progress}%`,
-                  boxShadow: barGlow,
-                  transition: 'width 0.15s ease-out',
-                }}
-              />
-            </div>
-
-            {theme === 'gear' && !reduceMotion && (
-              <div className="mt-3 flex gap-4 text-[9px] font-mono tracking-wider justify-center"
-                style={{ color: 'rgba(255,255,255,0.3)' }}>
-                <span>CPU: {sensors.cpu}°C</span>
-                <span>GPU: {sensors.gpu}°C</span>
-                <span>FAN: {sensors.fan}RPM</span>
-              </div>
-            )}
-
-            <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.03] overflow-hidden">
-              <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between">
-                <span className="text-[10px] tracking-[0.25em] uppercase text-white/45">
-                  {theme === 'lan' ? 'network_scan' : 'system_logs'}
+        ) : (
+          <div className="relative z-10 w-full max-w-xl rounded-xl border border-white/10 bg-black/60 backdrop-blur-md overflow-hidden"
+            style={{ boxShadow: '0 0 80px rgb(var(--accent-rgb) / 0.08)' }}>
+            {/* === LAN: NETWORK SCAN === */}
+            <div className="flex items-end justify-between px-6 pt-6 pb-4 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                  <FaTerminal className={reduceMotion ? '' : 'animate-pulse'} />
                 </span>
-                <span className="text-[10px] tracking-[0.25em] uppercase text-white/35">
-                  {theme === 'lan' ? 'scanning...' : 'node: active'}
-                </span>
-              </div>
-              <div className="px-4 py-4 flex gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className={`text-[11px] text-white/35 mb-2 ${isGlitching ? 'chromatic-split' : ''}`}
-                    data-text={isGlitching ? `> ${prevLine}` : undefined}>
-                    <span className="opacity-70">&gt;</span> {prevLine}
-                  </div>
-                  <div className="text-[12px] text-white flex items-center gap-2">
-                    <span className="inline-flex h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)', boxShadow: '0 0 18px rgb(var(--accent-rgb) / 0.35)' }} />
-                    <span className={`font-bold tracking-wide ${isGlitching ? 'chromatic-split' : ''}`}
-                      data-text={`> ${typed}`}>
-                      <span className="opacity-70">&gt;</span>{' '}
-                      {typed}
-                      {!reduceMotion && (
-                        <motion.span
-                          className="inline-block w-[2px] h-[14px] ml-0.5 align-middle"
-                          style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)' }}
-                          animate={{ opacity: [1, 0] }}
-                          transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                        />
-                      )}
-                    </span>
+                <div className="leading-tight">
+                  <div className={`text-[11px] tracking-[0.35em] text-white/70 uppercase font-bold ${isGlitching ? 'chromatic-split' : ''}`}
+                    data-text={isGlitching ? DEFAULTS.lan.label : undefined}>
+                    {DEFAULTS.lan.label}
                   </div>
                 </div>
-                {theme === 'lan' && !reduceMotion && (
-                  <div className="shrink-0 text-[9px] leading-relaxed text-right font-mono"
-                    style={{ color: 'rgba(255,255,255,0.15)' }}>
-                    <div className="text-[7px] tracking-[0.2em] uppercase mb-1 text-white/10">servers</div>
-                    {LAN_SERVERS.slice(serverIndex, serverIndex + 5).map((s, i) => (
-                      <div key={i} className={i === 0 ? 'text-white/30' : ''}>{s}</div>
-                    ))}
-                  </div>
-                )}
               </div>
+              {activeVersion && (
+                <div className={`text-[10px] tracking-[0.3em] text-white/35 uppercase ${isGlitching ? 'chromatic-split' : ''}`}
+                  data-text={isGlitching ? activeVersion : undefined}>
+                  {activeVersion}
+                </div>
+              )}
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-[10px] uppercase tracking-[0.25em] text-white/35">
-              {theme === 'lan' ? (
+            <div className="px-6 py-6">
+              <div className="flex items-end justify-between mb-4">
+                <div className="text-5xl md:text-6xl font-black tracking-tighter text-white tabular-nums">
+                  <motion.span
+                    key={pct}
+                    initial={reduceMotion ? undefined : { scale: 1.35 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                    className={`inline-block ${isGlitching ? 'chromatic-split' : ''}`}
+                    data-text={`${pct < 10 ? `0${pct}` : pct}`}
+                  >
+                    {pct < 10 ? `0${pct}` : pct}
+                  </motion.span>
+                  <span className={`text-white/35 ${isGlitching ? 'chromatic-split' : ''}`}
+                    data-text="%">%</span>
+                </div>
+                <div className={`flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-white/40 ${isGlitching ? 'chromatic-split' : ''}`}
+                  data-text={isGlitching ? (pct >= 100 ? 'READY' : 'PROCESSING') : undefined}>
+                  {pct >= 100 ? (
+                    <><FaCheck style={{ color: 'var(--accent-default)' }} /> READY</>
+                  ) : (
+                    <><FaCog className={reduceMotion ? '' : 'animate-spin'} /> PROCESSING</>
+                  )}
+                </div>
+              </div>
+
+              <div className="w-full h-2 rounded-full overflow-hidden border border-white/10 neon-glow-magenta"
+                style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <motion.div
+                  className="h-full"
+                  style={{
+                    background: 'linear-gradient(90deg, #FF0080, #FF00FF, #00FFFF)',
+                    width: `${progress}%`,
+                    boxShadow: barGlow,
+                    transition: 'width 0.15s ease-out',
+                  }}
+                />
+              </div>
+
+              <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.03] overflow-hidden">
+                <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between">
+                  <span className="text-[10px] tracking-[0.25em] uppercase text-white/45">network_scan</span>
+                  <span className="text-[10px] tracking-[0.25em] uppercase text-white/35">scanning...</span>
+                </div>
+                <div className="px-4 py-4 flex gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-[11px] text-white/35 mb-2 ${isGlitching ? 'chromatic-split' : ''}`}
+                      data-text={isGlitching ? `> ${prevLine}` : undefined}>
+                      <span className="opacity-70">&gt;</span> {prevLine}
+                    </div>
+                    <div className="text-[12px] text-white flex items-center gap-2">
+                      <span className="inline-flex h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)', boxShadow: '0 0 18px rgb(var(--accent-rgb) / 0.35)' }} />
+                      <span className={`font-bold tracking-wide ${isGlitching ? 'chromatic-split' : ''}`}
+                        data-text={`> ${typed}`}>
+                        <span className="opacity-70">&gt;</span>{' '}
+                        {typed}
+                        {!reduceMotion && (
+                          <motion.span
+                            className="inline-block w-[2px] h-[14px] ml-0.5 align-middle"
+                            style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)' }}
+                            animate={{ opacity: [1, 0] }}
+                            transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                          />
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  {!reduceMotion && (
+                    <div className="shrink-0 text-[9px] leading-relaxed text-right font-mono"
+                      style={{ color: 'rgba(255,255,255,0.15)' }}>
+                      <div className="text-[7px] tracking-[0.2em] uppercase mb-1 text-white/10">servers</div>
+                      {LAN_SERVERS.slice(serverIndex, serverIndex + 5).map((s, i) => (
+                        <div key={i} className={i === 0 ? 'text-white/30' : ''}>{s}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-[10px] uppercase tracking-[0.25em] text-white/35">
                 <div className="flex gap-4">
                   <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>
                     {pingResult || 'PING: scanning...'}
@@ -753,20 +956,14 @@ export default function PageLoader({
                     PEERS: {peersFound}/8
                   </span>
                 </div>
-              ) : (
-                <div className="flex gap-4">
-                  <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>mem: ok</span>
-                  <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>io: ok</span>
-                  <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>gpu: ok</span>
-                </div>
-              )}
-              <button type="button" onClick={handleSkip}
-                className="px-3 py-1 rounded-md border border-white/10 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition">
-                skip
-              </button>
+                <button type="button" onClick={handleSkip}
+                  className="px-3 py-1 rounded-md border border-white/10 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition">
+                  skip
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </motion.div>
     </AnimatePresence>
   );
