@@ -12,6 +12,7 @@ import Skills from './Components/main/skills';
 import Education from './Components/main/education';
 import End from './Components/end';
 import CanvasPlayground from './Components/main/canvas-playground';
+import VideoShowcase from './Components/main/video-showcase';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from './Context/theme';
 import { RevealCard } from './Components/reveal-card';
@@ -24,7 +25,7 @@ const SECTION_NAMES = [
   'Personal', 'Skills', 'Education', 'Contact',
 ];
 
-const TOTAL_SECTIONS = 8;
+const TOTAL_SECTIONS = 9;
 const MOBILE_BP = '(max-width: 767px)';
 
 function useMediaQuery(query: string) {
@@ -72,6 +73,7 @@ function MobileLayout({ goTo }: { goTo: (i: number) => void }) {
       <Section id="skills"><Skills /></Section>
       <Section id="education"><Education /></Section>
       <Section id="playground"><CanvasPlayground /></Section>
+      <Section id="showcase"><VideoShowcase /></Section>
       <Section id="contact"><End /></Section>
     </main>
   );
@@ -327,7 +329,8 @@ export default function HomePage() {
     if (i === 4) return <RevealCard {...props} title="Personal"><PersonalProjects /></RevealCard>;
     if (i === 5) return <RevealCard {...props} title="Skills"><Skills /></RevealCard>;
     if (i === 6) return <RevealCard {...props} title="Education"><Education /></RevealCard>;
-    if (i === 7) return <RevealCard {...props} title="Contact"><End /></RevealCard>;
+    if (i === 7) return <VideoShowcase />;
+    if (i === 8) return <RevealCard {...props} title="Contact"><End /></RevealCard>;
     return null;
   }, [currentSection, goTo]);
 
