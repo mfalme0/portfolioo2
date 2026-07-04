@@ -5,20 +5,24 @@ import { themeConfig, Theme as ThemeType } from '@/lib/theme-config';
 
 export type Theme = ThemeType;
 
-const ACCENT = themeConfig.accent.default;
-const ACCENT_RGB = themeConfig.accent.rgb;
+const themeKeys: Theme[] = ['dark', 'light', 'synth'];
 
 function migrateTheme(stored: string | null): Theme {
   if (stored === 'loki' || stored === 'dark') return 'dark';
   if (stored === 'light') return 'light';
+  if (stored === 'synth') return 'synth';
   return 'dark';
 }
+
+const defaultTheme = migrateTheme(null);
+const defaultColors = themeConfig.themes[defaultTheme];
 
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
   accent: string;
   accentRGB: string;
+  accentSecondary: string;
   background: string;
   foreground: string;
   surface: string;
@@ -27,15 +31,14 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
+  theme: defaultTheme,
   toggleTheme: () => {},
-  accent: ACCENT,
-  accentRGB: ACCENT_RGB,
-  ...themeConfig.colors.dark,
+  ...defaultColors,
+  ...defaultColors.colors,
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -53,13 +56,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
-    setTheme(t => t === 'light' ? 'dark' : 'light');
+    setTheme(t => {
+      const idx = themeKeys.indexOf(t);
+      return themeKeys[(idx + 1) % themeKeys.length];
+    });
   }, []);
 
-  const colors = themeConfig.colors[theme];
+  const t = themeConfig.themes[theme];
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, accent: ACCENT, accentRGB: ACCENT_RGB, ...colors }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        toggleTheme,
+        accent: t.accent,
+        accentRGB: t.accentRGB,
+        accentSecondary: t.accentSecondary,
+        ...t.colors,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

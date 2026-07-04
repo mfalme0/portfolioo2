@@ -133,6 +133,7 @@ export default function Terminal({ onBuildComplete, onExit, onThemeChange }: Ter
   const [historyIdx, setHistoryIdx] = useState(-1);
   const [building, setBuilding] = useState(false);
   const [buildProgress, setBuildProgress] = useState(0);
+  const [showError, setShowError] = useState(false);
   const [startTime] = useState(Date.now());
   const inputRef = useRef<HTMLInputElement>(null);
   const outputRef = useRef<HTMLDivElement>(null);
@@ -164,6 +165,9 @@ export default function Terminal({ onBuildComplete, onExit, onThemeChange }: Ter
     if (building) return;
     setBuilding(true);
     setBuildProgress(0);
+    setShowError(false);
+
+    const simulateError = Math.random() < 0.15;
 
     const steps = [
       { progress: 5, delay: 300, text: '> portfolioo@0.1.0 dev' },
@@ -172,41 +176,61 @@ export default function Terminal({ onBuildComplete, onExit, onThemeChange }: Ter
       { progress: 20, delay: 1100, text: '  ▲ Next.js 16.0.10' },
       { progress: 25, delay: 1300, text: '  - Local: http://localhost:3000' },
       { progress: 30, delay: 1600, text: '' },
-      { progress: 35, delay: 1900, text: '✓ Ready in 2.3s' },
-      { progress: 40, delay: 2200, text: '✓ Compiled successfully in 487ms' },
-      { progress: 45, delay: 2600, text: '' },
-      { progress: 50, delay: 2900, text: 'Building sections...' },
-      { progress: 55, delay: 3300, text: '  ✓ Hero (3 modules)' },
-      { progress: 60, delay: 3700, text: '  ✓ About Me (5 modules)' },
-      { progress: 65, delay: 4100, text: '  ✓ Experience (4 modules)' },
-      { progress: 70, delay: 4500, text: '  ✓ Tech Stack (2 modules)' },
-      { progress: 75, delay: 4900, text: '  ✓ Languages (1 module)' },
-      { progress: 80, delay: 5300, text: '  ✓ Projects (6 modules)' },
-      { progress: 85, delay: 5700, text: '  ✓ Testimonials (2 modules)' },
-      { progress: 90, delay: 6100, text: '  ✓ GitHub (3 modules)' },
-      { progress: 95, delay: 6500, text: '  ✓ End / Contact (4 modules)' },
-      { progress: 100, delay: 7000, text: '' },
+      { progress: 35, delay: 1900, text: simulateError ? '✗ Failed to compile in 2.1s' : '✓ Ready in 2.3s', type: simulateError ? 'error' as const : 'success' as const },
+      { progress: 40, delay: 2200, text: simulateError ? '✗ Module not found: ./app/page.tsx' : '✓ Compiled successfully in 487ms', type: simulateError ? 'error' as const : 'success' as const },
     ];
+
+    if (!simulateError) {
+      steps.push(
+        { progress: 45, delay: 2600, text: '' },
+        { progress: 50, delay: 2900, text: 'Building sections...' },
+        { progress: 55, delay: 3300, text: '  ✓ Hero (3 modules)' },
+        { progress: 60, delay: 3700, text: '  ✓ About Me (5 modules)' },
+        { progress: 65, delay: 4100, text: '  ✓ Experience (4 modules)' },
+        { progress: 70, delay: 4500, text: '  ✓ Tech Stack (2 modules)' },
+        { progress: 75, delay: 4900, text: '  ✓ Languages (1 module)' },
+        { progress: 80, delay: 5300, text: '  ✓ Projects (6 modules)' },
+        { progress: 85, delay: 5700, text: '  ✓ Testimonials (2 modules)' },
+        { progress: 90, delay: 6100, text: '  ✓ GitHub (3 modules)' },
+        { progress: 95, delay: 6500, text: '  ✓ End / Contact (4 modules)' },
+        { progress: 100, delay: 7000, text: '' },
+      );
+    }
 
     steps.forEach((step) => {
       setTimeout(() => {
         setBuildProgress(step.progress);
         if (step.text) {
-          const type: LineType = step.text.startsWith('✓') ? 'success' : 'output';
+          const type: LineType = step.type ?? (step.text.startsWith('✓') ? 'success' : step.text.startsWith('✗') ? 'error' : 'output');
           addLine(step.text, type);
         }
       }, step.delay);
     });
 
-    setTimeout(() => {
-      addLine('✓ All sections compiled successfully (2048 modules)', 'success');
-      addLine('', 'output');
-      addLine('⚡ Opening portfolio in dark mode...', 'highlight');
+    if (simulateError) {
       setTimeout(() => {
+        addLine('', 'output');
+        addLine('╔══════════════════════════════════════════╗', 'error');
+        addLine('║  BUILD FAILED                           ║', 'error');
+        addLine('║  Check the terminal output for errors.  ║', 'error');
+        addLine('║  Run npm run dev again to retry.        ║', 'error');
+        addLine('╚══════════════════════════════════════════╝', 'error');
+        addLine('', 'output');
+        addLine('Process exited with code 1', 'error');
         setBuilding(false);
-        onBuildComplete();
-      }, 800);
-    }, 7300);
+        setShowError(true);
+      }, 2500);
+    } else {
+      setTimeout(() => {
+        addLine('✓ All sections compiled successfully (2048 modules)', 'success');
+        addLine('', 'output');
+        addLine('⚡ Opening portfolio in dark mode...', 'highlight');
+        setTimeout(() => {
+          setBuilding(false);
+          onBuildComplete();
+        }, 800);
+      }, 7300);
+    }
   }, [building, addLine, onBuildComplete]);
 
   const handleCommand = useCallback((cmd: string) => {
@@ -460,6 +484,17 @@ export default function Terminal({ onBuildComplete, onExit, onThemeChange }: Ter
             <span className="text-[11px] text-[rgba(51,255,51,0.4)] font-mono">
               Building... {buildProgress}%
             </span>
+          </div>
+        )}
+        {!building && showError && (
+          <div className="mt-4 flex items-center gap-3">
+            <span className="text-[11px] text-[#ff4444] font-mono">Build failed.</span>
+            <button
+              onClick={runBuild}
+              className="text-[11px] px-3 py-1 rounded font-mono border border-[rgba(255,68,68,0.3)] text-[#ff4444] hover:bg-[rgba(255,68,68,0.1)] transition-all"
+            >
+              Retry build
+            </button>
           </div>
         )}
       </div>

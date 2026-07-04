@@ -1,24 +1,68 @@
 export const themeConfig = {
-  colors: {
+  themes: {
     dark: {
-      background: '#10151C',
-      foreground: '#ECE9E1',
-      surface: '#1A222C',
-      cardBg: 'rgba(232,163,61,0.03)',
-      border: 'rgba(236,233,225,0.06)',
+      accent: '#E8A33D',
+      accentRGB: '232 163 61',
+      accentSecondary: '#C2542C',
+      colors: {
+        background: '#10151C',
+        foreground: '#ECE9E1',
+        surface: '#1A222C',
+        cardBg: 'rgba(232,163,61,0.03)',
+        border: 'rgba(236,233,225,0.06)',
+      },
+      cssVars: {
+        '--ink': '#10151C',
+        '--surface': '#1A222C',
+        '--slate': '#2B3640',
+        '--bone': '#ECE9E1',
+        '--amber': '#E8A33D',
+        '--clay': '#C2542C',
+        '--muted': '#9BA3B0',
+      },
     },
     light: {
-      background: '#F5F3EE',
-      foreground: '#1A1A1A',
-      surface: '#FFFFFF',
-      cardBg: 'rgba(232,163,61,0.04)',
-      border: 'rgba(0,0,0,0.08)',
+      accent: '#D4902F',
+      accentRGB: '212 144 47',
+      accentSecondary: '#B84828',
+      colors: {
+        background: '#F5F3EE',
+        foreground: '#1A1A1A',
+        surface: '#FFFFFF',
+        cardBg: 'rgba(232,163,61,0.04)',
+        border: 'rgba(0,0,0,0.08)',
+      },
+      cssVars: {
+        '--ink': '#F5F3EE',
+        '--surface': '#FFFFFF',
+        '--slate': '#D4CFC5',
+        '--bone': '#1A1A1A',
+        '--amber': '#D4902F',
+        '--clay': '#B84828',
+        '--muted': '#8A857D',
+      },
     },
-  },
-  accent: {
-    default: '#E8A33D',
-    secondary: '#C2542C',
-    rgb: '232 163 61',
+    synth: {
+      accent: '#FF0080',
+      accentRGB: '255 0 128',
+      accentSecondary: '#00DFD6',
+      colors: {
+        background: '#0A0A16',
+        foreground: '#E8E8F0',
+        surface: '#121220',
+        cardBg: 'rgba(255,0,128,0.04)',
+        border: 'rgba(232,232,240,0.06)',
+      },
+      cssVars: {
+        '--ink': '#0A0A16',
+        '--surface': '#121220',
+        '--slate': '#252040',
+        '--bone': '#E8E8F0',
+        '--amber': '#FF0080',
+        '--clay': '#00DFD6',
+        '--muted': '#8888BB',
+      },
+    },
   },
   palettes: {
     homelab: {
@@ -44,5 +88,5 @@ export const themeConfig = {
   },
 } as const;
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'dark' | 'light' | 'synth';
 export type Palette = 'default' | 'homelab' | 'gear';

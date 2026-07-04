@@ -32,7 +32,7 @@ export default function End() {
   const year = useMemo(() => new Date().getFullYear(), []);
 
   return (
-    <div className="flex flex-col h-full bg-background overflow-y-auto">
+    <div className="flex flex-col min-h-dvh bg-background overflow-y-auto">
       {/* Hex grid background */}
       <div className="rog-hex-grid" />
 
