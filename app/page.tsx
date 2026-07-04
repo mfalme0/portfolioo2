@@ -4,14 +4,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Header from './Components/header';
 import PageLoader from './Components/page-loader';
 import { Hero } from './Components/main/hero';
-import TechStack from './Components/main/techstack';
-import ProgrammingLanguages from './Components/main/languages';
-import AboutMe from './Components/main/about';
+import Competencies from './Components/main/competencies';
 import { WorkExperience } from './Components/main/mboka';
 import { Projects } from './Components/main/projects';
-import Github from './Components/main/github';
+import PersonalProjects from './Components/main/personal-projects';
+import Skills from './Components/main/skills';
+import Education from './Components/main/education';
 import End from './Components/end';
-import Testimonials from './Components/main/testimonials';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from './Context/theme';
 import { RevealCard } from './Components/reveal-card';
@@ -21,17 +20,16 @@ type ViewMode = 'sketch' | 'terminal' | 'dark';
 
 const SECTION_NAMES = [
   'Hero',
-  'About Me',
+  'Competencies',
   'Experience',
-  'Tech Stack',
-  'Languages',
   'Projects',
-  'Testimonials',
-  'GitHub',
-  'End',
+  'Personal',
+  'Skills',
+  'Education',
+  'Contact',
 ];
 
-const TOTAL_SECTIONS = 9;
+const TOTAL_SECTIONS = 8;
 
 export default function HomePage() {
   const { accent } = useTheme();
@@ -92,7 +90,6 @@ export default function HomePage() {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100dvh';
-
     return () => {
       document.body.style.overflow = '';
       document.body.style.height = '';
@@ -117,7 +114,6 @@ export default function HomePage() {
 
   const isPastHero = currentSection > 0;
 
-  // Keyboard shortcut: Ctrl+` toggles terminal mode
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === '`') {
@@ -165,7 +161,6 @@ export default function HomePage() {
             >
               <Header currentSection={currentSection} onNavigate={goTo} />
 
-              {/* Scroll progress bar */}
               <div className="fixed top-0 left-0 right-0 z-[100] h-[2px] pointer-events-none">
                 <div
                   className="h-full transition-all duration-[0.8s] ease-[cubic-bezier(0.32,0.08,0.24,1)]"
@@ -184,15 +179,13 @@ export default function HomePage() {
                     transform: `translateX(-${currentSection * 100}vw)`,
                   }}
                 >
-                  {/* Hero — no card */}
                   <section id="hero" className="h-dvh w-dvw flex-shrink-0 relative z-10">
                     <Hero onNavigate={goTo} />
                   </section>
 
-                  {/* Reveal sections — each wrapped in a card that slides away */}
-                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="about-me">
-                    <RevealCard index={0} isOpen={currentSection >= 1} title="About Me">
-                      <AboutMe />
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="competencies">
+                    <RevealCard index={0} isOpen={currentSection >= 1} title="Competencies">
+                      <Competencies />
                     </RevealCard>
                   </div>
 
@@ -202,45 +195,38 @@ export default function HomePage() {
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="techstack">
-                    <RevealCard index={2} isOpen={currentSection >= 3} title="Tech Stack">
-                      <TechStack />
-                    </RevealCard>
-                  </div>
-
-                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="languages">
-                    <RevealCard index={3} isOpen={currentSection >= 4} title="Languages">
-                      <ProgrammingLanguages />
-                    </RevealCard>
-                  </div>
-
                   <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="projects">
-                    <RevealCard index={4} isOpen={currentSection >= 5} title="Projects">
+                    <RevealCard index={2} isOpen={currentSection >= 3} title="Projects">
                       <Projects />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="testimonials">
-                    <RevealCard index={5} isOpen={currentSection >= 6} title="Testimonials">
-                      <Testimonials />
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="personal">
+                    <RevealCard index={3} isOpen={currentSection >= 4} title="Personal">
+                      <PersonalProjects />
                     </RevealCard>
                   </div>
 
-                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="github">
-                    <RevealCard index={6} isOpen={currentSection >= 7} title="GitHub">
-                      <Github />
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="skills">
+                    <RevealCard index={4} isOpen={currentSection >= 5} title="Skills">
+                      <Skills />
+                    </RevealCard>
+                  </div>
+
+                  <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden" id="education">
+                    <RevealCard index={5} isOpen={currentSection >= 6} title="Education">
+                      <Education />
                     </RevealCard>
                   </div>
 
                   <div className="h-dvh w-dvw flex-shrink-0 overflow-hidden">
-                    <RevealCard index={7} isOpen={currentSection >= 8} title="End">
+                    <RevealCard index={6} isOpen={currentSection >= 7} title="Contact">
                       <End />
                     </RevealCard>
                   </div>
                 </div>
               </main>
 
-              {/* Section dots navigation */}
               <div className="fixed right-7 top-1/2 -translate-y-1/2 z-[80] flex flex-col items-center gap-[10px]">
                 {Array.from({ length: TOTAL_SECTIONS }, (_, i) => (
                   <button
@@ -267,7 +253,6 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Section counter */}
               <AnimatePresence>
                 {isPastHero && (
                   <motion.div
@@ -285,7 +270,6 @@ export default function HomePage() {
                 )}
               </AnimatePresence>
 
-              {/* Scroll prompt — fades out past hero */}
               <AnimatePresence>
                 {!isPastHero && (
                   <motion.div
@@ -335,7 +319,6 @@ export default function HomePage() {
           )}
         </AnimatePresence>
 
-        {/* Mode toggle button */}
         <motion.button
           onClick={toggleMode}
           className="mode-toggle-btn"
@@ -358,7 +341,6 @@ export default function HomePage() {
           )}
         </motion.button>
 
-        {/* Terminal overlay */}
         <AnimatePresence>
           {mode === 'terminal' && (
             <Terminal
@@ -371,7 +353,6 @@ export default function HomePage() {
         </AnimatePresence>
       </div>
 
-      {/* SVG filters for sketch effect */}
       <svg className="hidden" aria-hidden="true">
         <defs>
           <filter id="pencil-sketch" x="-2%" y="-2%" width="104%" height="104%">

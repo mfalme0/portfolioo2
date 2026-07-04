@@ -6,34 +6,44 @@ import { useTheme } from '../../Context/theme';
 
 const experiences = [
   {
-    company: 'SteadFast Academy',
-    role: 'Head of IT',
+    company: 'Steadfast Academy',
+    role: 'Engineering Team Lead & Head of IT',
     duration: 'APR 2025 — Present',
-    description: 'Leading technological strategy and managing digital infrastructure. Automating workflows via internal tools and implementing DevOps practices across the institution.',
+    location: 'Nairobi, Kenya',
+    highlights: [
+      'Designed and built notification delivery capabilities within an in-house ERP system — real-time push, in-app alerts, and multi-channel messaging across mobile and web, including event triggers, delivery confirmation, and channel fallback logic.',
+      'Implemented authentication flows including password-based login and on-device biometric verification, securing access to sensitive institutional data.',
+      'Built a real-time chat and messaging subsystem handling message delivery, presence, and read-receipt patterns at institutional scale.',
+      'Architected and developed a full-stack ERP system consolidating student records, attendance, finance, and communication workflows.',
+      'Wrote Bash automation scripts and CI/CD pipelines that reduced deployment errors by 45% and reclaimed 15+ hours per week.',
+      'Managed Azure cloud infrastructure end-to-end, cutting cloud operating costs by 20%.',
+      'Delivered 99.9% uptime through proactive monitoring, scheduled maintenance, and disciplined incident response with root-cause analysis.',
+      'Deployed and maintained containerised services using Docker and Kubernetes, improving uptime by 50% and reducing latency by 30%.',
+      'Designed a high-availability storage architecture on TrueNAS supporting 10TB+ of institutional data.',
+      'Led a cross-functional engineering team; specced, built, and maintained on-premises server and network infrastructure from the ground up.',
+    ],
   },
   {
     company: 'Gituamba Girls',
-    role: 'IT Consultant',
-    duration: 'SEP 2024 — Present',
-    description: 'Managing cybersecurity and network optimisation for a 500+ device environment. Security audits, infrastructure monitoring, and community-focused tech deployment.',
+    role: 'Software Consultant',
+    duration: 'JAN 2024 — MAR 2025',
+    location: 'Kenya',
+    highlights: [
+      'Designed and built a full-stack school management system as a solo developer (C#, Python), covering student records, finance, attendance, and academic reporting — owning delivery end-to-end from design through deployment.',
+      'Developed RESTful APIs and database schemas (PostgreSQL/MySQL) serving daily school operations.',
+      'Wrote automation scripts that reduced manual administrative work by 4 hours/week.',
+      'Managed deployment and maintenance on cloud/on-prem infrastructure end-to-end.',
+    ],
   },
   {
-    company: 'VisionFund Kenya',
-    role: 'Software Engineer',
+    company: 'VisionFund Kenya (MicroFinance)',
+    role: 'Software Engineering Intern',
     duration: 'OCT 2023 — DEC 2023',
-    description: 'Architected microservice-based internal tools for loan processing. Migrated legacy systems to cloud-native architecture within a high-velocity financial environment.',
-  },
-  {
-    company: 'IEBC',
-    role: 'Data Clerk',
-    duration: 'AUG 2023',
-    description: 'Coordinated KIEMS voter lookup processes during national elections, maintaining 100% data retrieval accuracy across 200+ polling stations.',
-  },
-  {
-    company: 'Tangible Air',
-    role: 'Network Associate',
-    duration: 'APR 2021 — AUG 2021',
-    description: 'Network maintenance and technical support for ISP operations. Infrastructure upgrades and equipment management.',
+    location: 'Kenya',
+    highlights: [
+      'Built internal automation tools in C# and Node.js and refactored MySQL database schemas, cutting query response times by 15% on critical financial reporting systems.',
+      'Contributed to backend maintenance and debugging on live production financial systems, developing habits of careful, low-risk, well-documented changes within a regulated, high-accountability environment.',
+    ],
   },
 ];
 
@@ -75,7 +85,7 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={{ once: true, margin: '-40px' }}
       className="flex gap-4 md:gap-6"
     >
       <div className="flex flex-col items-center pt-1 shrink-0">
@@ -94,18 +104,23 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
             borderColor: expanded ? 'var(--border-hover)' : undefined,
           }}
         >
-          <div className="flex items-start justify-between mb-1">
+          <div className="flex items-start justify-between mb-2">
             <span className="text-[9px] font-semibold tracking-[0.12em] uppercase" style={{ color: 'var(--color-muted)' }}>
               {exp.duration}
             </span>
-            <motion.span
-              animate={{ rotate: expanded ? 45 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="text-base font-light leading-none"
-              style={{ color: 'var(--color-muted)' }}
-            >
-              +
-            </motion.span>
+            <div className="flex items-center gap-2">
+              <span className="text-[8px] font-medium" style={{ color: 'var(--color-muted)' }}>
+                {exp.location}
+              </span>
+              <motion.span
+                animate={{ rotate: expanded ? 45 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-base font-light leading-none"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                +
+              </motion.span>
+            </div>
           </div>
           <h3 className="text-sm font-semibold tracking-[0.03em] uppercase mb-0.5" style={{ color: accent }}>
             {exp.role}
@@ -121,9 +136,14 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-              {exp.description}
-            </p>
+            <ul className="space-y-2">
+              {exp.highlights.map((h, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs leading-relaxed" style={{ color: 'var(--color-muted)' }}>
+                  <span className="mt-[5px] w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: `${accent}60` }} />
+                  {h}
+                </li>
+              ))}
+            </ul>
           </motion.div>
         </div>
       </div>
@@ -133,10 +153,10 @@ function ExpCard({ exp, index, expanded, onClick, accent }: {
 
 export function WorkExperience() {
   const { accent } = useTheme();
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background overflow-x-hidden vintage-frame" id="experience">
+    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background overflow-x-hidden vintage-frame">
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-[30%] right-[-5%] h-[450px] w-[450px] rounded-full blur-[250px]"
@@ -171,9 +191,9 @@ export function WorkExperience() {
               viewport={{ once: true }}
               className="apple-heading-compact"
             >
-              Where I&apos;ve{' '}
+              Production{' '}
               <span className="font-bold" style={{ color: accent }}>
-                Made Impact.
+                Experience.
               </span>
             </motion.h2>
           </div>
@@ -185,9 +205,8 @@ export function WorkExperience() {
               viewport={{ once: true }}
               className="apple-subtitle text-sm leading-relaxed"
             >
-              From financial services to education — I&apos;ve delivered across
-              industries. Each role sharpened my ability to ship reliable software
-              in high-stakes environments.
+              From education technology to microfinance — building and operating
+              production backend systems at scale.
             </motion.p>
           </div>
         </div>

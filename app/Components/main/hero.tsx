@@ -7,11 +7,11 @@ import { useTheme } from '../../Context/theme';
 import { usePerformance } from '../../Context/performance';
 import CountUp from '../count-up';
 
-const roles = [
-  'Full-Stack Engineer',
-  'Systems Architect',
-  'React Native Developer',
-  'DevOps & Infrastructure',
+const titles = [
+  'Software Engineer',
+  'Backend Systems',
+  'Identity & Notification',
+  'Cloud Reliability',
 ];
 
 function TypewriterLine() {
@@ -20,14 +20,14 @@ function TypewriterLine() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const current = roles[index];
+    const current = titles[index];
     const timer = setTimeout(() => {
       if (!deleting) {
         if (char < current.length) setChar(char + 1);
         else setTimeout(() => setDeleting(true), 2000);
       } else {
         if (char > 0) setChar(char - 1);
-        else { setDeleting(false); setIndex((index + 1) % roles.length); }
+        else { setDeleting(false); setIndex((index + 1) % titles.length); }
       }
     }, deleting ? 20 : 40);
     return () => clearTimeout(timer);
@@ -35,7 +35,7 @@ function TypewriterLine() {
 
   return (
     <span className="relative">
-      <span>{roles[index].substring(0, char)}</span>
+      <span>{titles[index].substring(0, char)}</span>
       <motion.span
         animate={{ opacity: [1, 0] }}
         transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -48,8 +48,8 @@ function TypewriterLine() {
 
 const stats = [
   { value: 3, label: 'Years Engineering', suffix: '+' },
-  { value: 20, label: 'Projects Shipped', suffix: '+' },
-  { value: null, label: 'End-to-End Delivery', suffix: '', text: 'Full Stack' },
+  { value: 99.9, label: 'Uptime Delivered', suffix: '%' },
+  { value: null, label: 'Systems Thinking', suffix: '', text: 'Full Stack' },
 ];
 
 export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
@@ -104,8 +104,23 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
         />
       </div>
 
-      <motion.div className="relative z-10 mx-auto max-w-7xl px-8 md:px-14 pt-[16vh] md:pt-[18vh]">
-        <div className="max-w-full">
+      <motion.div className="relative z-10 mx-auto max-w-7xl px-8 md:px-14 pt-[14vh] md:pt-[16vh]">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-3 flex items-center gap-3"
+        >
+          <span className="text-[10px] font-semibold tracking-[0.15em] uppercase" style={{ color: 'var(--color-muted)' }}>
+            Nairobi, Kenya
+          </span>
+          <span className="w-1 h-1 rounded-full" style={{ backgroundColor: `${accent}60` }} />
+          <span className="text-[10px] font-medium tracking-[0.1em]" style={{ color: accent }}>
+            +254 799 148 737
+          </span>
+        </motion.div>
+
+        <motion.div className="max-w-full">
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -113,25 +128,25 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
             className="text-[clamp(2.5rem,9vw,7rem)] font-extrabold leading-[0.9] tracking-[-0.04em]"
             style={{ color: 'var(--color-foreground)' }}
           >
-            Joseph<br />
+            Joseph{' '}
             <span
               className="relative"
               style={{ color: accent }}
             >
-              Gitau
+              Gitau Chege
               <span
                 className="absolute -bottom-[2px] left-0 right-0 h-[3px] rounded-full"
                 style={{ background: `linear-gradient(90deg, ${accent}, ${accent}40, transparent)` }}
               />
             </span>
           </motion.h1>
-        </div>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 max-w-2xl"
+          className="mt-6 max-w-3xl"
         >
           <div className="flex items-center gap-4 mb-4">
             <div
@@ -143,9 +158,10 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
             </span>
           </div>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-            I architect and ship production-grade software across the full stack —
-            from React and Next.js frontends to C# and Node.js backends,
-            containerised with Docker and deployed on Linux.
+            3+ years building and operating production backend systems at scale in C#, Python, JavaScript/TypeScript, and C++.
+            Designed notification and messaging capabilities — real-time push, in-app, multi-channel — alongside password and
+            biometric authentication flows. Delivered 99.9% uptime on mission-critical services through disciplined incident
+            response and live-site monitoring. Applies systems thinking across web, mobile, embedded, and game platforms.
           </p>
         </motion.div>
 
@@ -153,7 +169,7 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-16 grid grid-cols-3 gap-8 md:gap-16 max-w-lg"
+          className="mt-10 grid grid-cols-3 gap-8 md:gap-16 max-w-lg"
         >
           {stats.map((s, i) => (
             <motion.div
@@ -176,14 +192,14 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-14 flex flex-col sm:flex-row gap-4 items-start"
+          className="mt-10 flex flex-col sm:flex-row gap-3 items-start"
         >
           <button
-            onClick={() => onNavigate?.(5)}
+            onClick={() => onNavigate?.(3)}
             className="rog-btn-primary group relative overflow-hidden rounded-xl px-7 py-3.5 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
           >
             <span className="relative flex items-center gap-2">
-              View My Work
+              View Projects
               <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </span>
           </button>
@@ -219,8 +235,6 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
           </a>
         </motion.div>
 
-
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -233,7 +247,7 @@ export function Hero({ onNavigate }: { onNavigate?: (index: number) => void }) {
               style={{ background: `linear-gradient(90deg, ${accent}60, transparent)` }}
             />
             <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: `${accent}60` }}>
-              Est. 2023
+              joseph.gitau.c@gmail.com
             </span>
           </div>
         </motion.div>

@@ -96,8 +96,8 @@ export default function End() {
           </h2>
 
           <p className="text-sm leading-relaxed mx-auto mb-12 max-w-lg" style={{ color: 'var(--color-muted)' }}>
-            Whether it&apos;s a full-scale application, a design system, or
-            architectural guidance — let&apos;s build something together.
+            Building production backend systems at scale — from identity and
+            notification platforms to cloud-native infrastructure.
           </p>
 
           {/* Contact form */}
@@ -190,11 +190,11 @@ export default function End() {
                   <text x="12" y="14" textAnchor="middle" fill={accent} fontSize="7" fontWeight="bold" fontFamily="monospace">R</text>
                 </svg>
                 <span className="text-sm font-extrabold tracking-tight" style={{ color: accent }}>
-                  J.GITAU
+                  JG.CHEGE
                 </span>
               </div>
               <p className="text-xs font-medium leading-relaxed max-w-xs" style={{ color: 'var(--color-muted)' }}>
-                Full-stack engineer building production-grade software across the entire technology stack.
+                Software engineer — backend systems, identity & notification platforms, cloud reliability. Nairobi, Kenya.
               </p>
               <div className="flex items-center gap-4 mt-2">
                 {socials.map((s) => (
@@ -248,11 +248,11 @@ export default function End() {
               style={{ background: `linear-gradient(90deg, transparent, ${accent}30, transparent)` }}
             />
             <div className="flex items-center gap-4">
-              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Craft</span>
+              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Architect</span>
               <span className="w-1 h-1 rounded-full" style={{ backgroundColor: `${accent}40` }} />
-              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Code</span>
+              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Build</span>
               <span className="w-1 h-1 rounded-full" style={{ backgroundColor: `${accent}40` }} />
-              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Ship</span>
+              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Operate</span>
             </div>
             <div className="flex-1 h-[1px]"
               style={{ background: `linear-gradient(90deg, transparent, ${accent}30, transparent)` }}

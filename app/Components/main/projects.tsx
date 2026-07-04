@@ -1,106 +1,95 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
-import project1 from '../Images/better.jpeg';
-import project3 from '../Images/ndai.jpeg';
-import project4 from '../Images/archie.jpeg';
-import ganji from '../Images/ganji.png';
-import { FiGithub, FiArrowUpRight } from 'react-icons/fi';
+import React from 'react';
+import { FiArrowUpRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
 
-const categories = ['ALL', 'APP_MOBILE', 'APP_FINTECH', 'WEB_SYSTEM', 'WEB_SECURITY'] as const;
-type Category = (typeof categories)[number];
-
 const projects = [
-  { title: 'Better Farm', subtitle: 'AI-Powered Agriculture',
-    description: 'Farming AI assistant with specialised neural-chat architecture for agricultural optimisation. Real-time crop insights, pest detection, and yield prediction.',
-    image: project1, category: 'APP_MOBILE' as Category, github: 'https://github.com/mfalme0/betterFarm' },
-  { title: 'Ganji', subtitle: 'Financial Ledger System',
-    description: 'High-fidelity expense tracking and asset management platform. Real-time reconciliation, multi-account support, and analytics dashboards.',
-    image: ganji, category: 'APP_FINTECH' as Category, github: 'https://github.com/mfalme0/ganji' },
-  { title: 'Ndai', subtitle: 'Vehicle Management',
-    description: 'Comprehensive logistics monitoring suite. Fleet tracking, maintenance scheduling, driver management, and operational analytics.',
-    image: project3, category: 'WEB_SYSTEM' as Category, github: 'https://github.com/mfalme0/ndai.com' },
-  { title: 'Archie', subtitle: 'Secure File Archival',
-    description: 'High-security file archival protocol with distributed retrieval. End-to-end encryption, version control, and granular access policies.',
-    image: project4, category: 'WEB_SECURITY' as Category, github: 'https://github.com/mfalme0/Archiewebapp' },
+  {
+    title: 'In-House ERP',
+    subtitle: 'Steadfast Academy',
+    category: 'Full-Stack',
+    period: '2024–2025',
+    description: 'Designed and shipped a full-stack ERP application end-to-end — from requirements through deployment — consolidating student records, attendance, finance, and communication workflows, with notification and messaging capabilities serving the entire institution.',
+    highlights: ['Notification delivery (push, in-app)', 'Multi-channel messaging', 'Student records & finance', 'Real-time chat subsystem'],
+    link: null,
+  },
+  {
+    title: 'Notification & Auth Infrastructure',
+    subtitle: 'Steadfast Academy',
+    category: 'Backend',
+    period: '2025',
+    description: 'Designed and implemented real-time notification delivery (push, in-app) and authentication (password + biometric) subsystems within the ERP mobile and web platform, serving hundreds of daily active users.',
+    highlights: ['Push & in-app notifications', 'Password + biometric auth', 'Channel fallback logic', 'Event-driven delivery'],
+    link: null,
+  },
+  {
+    title: 'BetterFarm',
+    subtitle: 'AgriTech Platform',
+    category: 'Cloud-Native',
+    period: '2024',
+    description: 'Lead architect for a cloud-native backend system on Azure; integrated real-time data pipelines and deployed scalable backend services using high-availability design principles for agricultural optimisation.',
+    highlights: ['Azure cloud-native', 'Real-time data pipelines', 'High-availability design', 'Scalable microservices'],
+    link: 'https://github.com/mfalme0/betterFarm',
+  },
 ];
 
 function ProjectCard({ project, index, accent }: { project: typeof projects[0]; index: number; accent: string }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true, margin: '-80px' }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      viewport={{ once: true, margin: '-60px' }}
       className="group cursor-default"
     >
-      <div className="apple-card-flat overflow-hidden">
-        {/* Image container */}
-        <div className="relative h-36 md:h-40 w-full overflow-hidden">
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            loading="lazy"
-            className="object-cover transition-all duration-700 ease-out"
-            style={{
-              filter: hovered ? 'none' : 'grayscale(0.4) brightness(0.85)',
-              transform: hovered ? 'scale(1.03)' : 'scale(1)',
-            }}
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
-          {/* Overlay gradient */}
-          <div
-            className="absolute inset-0 transition-opacity duration-500"
-            style={{
-              background: `linear-gradient(180deg, transparent 40%, var(--bg) 100%)`,
-            }}
-          />
-          {/* Category badge */}
-          <div className="absolute top-4 left-4">
-            <span className="apple-tag-subtle text-[9px]">
-              {project.category.replace('_', ' ')}
+      <div className="apple-card-flat overflow-hidden p-5 md:p-6">
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <span className="text-[9px] font-semibold tracking-[0.12em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                {project.period}
+              </span>
+              <span className="apple-tag text-[8px]">{project.category}</span>
+            </div>
+            <h3 className="text-xl font-semibold tracking-tight mt-1" style={{ color: 'var(--color-foreground)' }}>
+              {project.title}
+            </h3>
+            <span className="text-[11px] font-medium" style={{ color: accent }}>
+              {project.subtitle}
             </span>
           </div>
+          {project.link && (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+              className="block transition-all duration-300 hover:opacity-60"
+              aria-label={`View ${project.title} source`}
+            >
+              <FiArrowUpRight className="text-lg" style={{ color: 'var(--color-muted)' }} />
+            </a>
+          )}
         </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-5">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <span className="text-[10px] font-semibold tracking-[0.05em] uppercase mb-1 block" style={{ color: accent }}>
-                {project.subtitle}
-              </span>
-              <h3 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
-                {project.title}
-              </h3>
-            </div>
-            <motion.div
-              animate={{ x: hovered ? 2 : 0, y: hovered ? -2 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <FiArrowUpRight className="text-base" style={{ color: 'var(--color-muted)' }} />
-            </motion.div>
-          </div>
-          <p className="text-sm leading-relaxed mb-4 line-clamp-2" style={{ color: 'var(--color-muted)' }}>
-            {project.description}
-          </p>
+        <p className="text-xs leading-relaxed mb-4" style={{ color: 'var(--color-muted)' }}>
+          {project.description}
+        </p>
 
-          {/* Footer */}
-          <div className="flex items-center gap-6 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-            <a href={project.github} target="_blank" rel="noreferrer"
-              className="flex items-center gap-2 text-xs font-medium transition-all hover:opacity-60"
-              style={{ color: 'var(--color-foreground)' }}>
-              <FiGithub className="text-sm" /> View Source
-            </a>
-          </div>
+        <div className="flex flex-wrap gap-1.5 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+          {project.highlights.map((h) => (
+            <span
+              key={h}
+              className="text-[8px] font-semibold px-2.5 py-1 rounded-full tracking-[0.05em] uppercase"
+              style={{
+                backgroundColor: `${accent}0a`,
+                color: accent,
+              }}
+            >
+              {h}
+            </span>
+          ))}
         </div>
       </div>
     </motion.article>
@@ -109,11 +98,9 @@ function ProjectCard({ project, index, accent }: { project: typeof projects[0]; 
 
 export function Projects() {
   const { accent } = useTheme();
-  const [activeCategory, setActiveCategory] = useState<Category>('ALL');
-  const filtered = activeCategory === 'ALL' ? projects : projects.filter((p) => p.category === activeCategory);
 
   return (
-    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background vintage-frame" id="projects">
+    <section className="section-grid relative w-full pt-20 md:pt-24 pb-12 md:pb-16 bg-background vintage-frame">
       <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -129,7 +116,7 @@ export function Projects() {
             className="h-[2px] w-8 rounded-full origin-left"
             style={{ background: accent }}
           />
-          <span className="apple-eyebrow">Projects</span>
+          <span className="apple-eyebrow">Professional</span>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-10">
@@ -141,9 +128,9 @@ export function Projects() {
               viewport={{ once: true }}
               className="apple-heading-compact"
             >
-              What I&apos;ve{' '}
+              Selected{' '}
               <span className="font-bold" style={{ color: accent }}>
-                Built.
+                Projects.
               </span>
             </motion.h2>
           </div>
@@ -152,36 +139,16 @@ export function Projects() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="apple-subtitle"
+              className="apple-subtitle text-sm"
             >
-              Production applications spanning fintech, agriculture, security, and
-              logistics. Every project ships with clean architecture and a strong
-              focus on user experience.
+              Production systems and platforms I&apos;ve architected and delivered —
+              from requirements through deployment.
             </motion.p>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className="px-5 py-2 text-[10px] font-semibold tracking-[0.06em] uppercase rounded-full border transition-all duration-300 active:scale-[0.97]"
-              style={{
-                backgroundColor: activeCategory === cat ? accent : 'transparent',
-                borderColor: activeCategory === cat ? accent : 'var(--color-border)',
-                color: activeCategory === cat ? '#ffffff' : 'var(--color-muted)',
-              }}
-            >
-              {cat.replace('_', ' ')}
-            </button>
-          ))}
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((project, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {projects.map((project, i) => (
             <ProjectCard key={project.title} project={project} index={i} accent={accent} />
           ))}
         </div>

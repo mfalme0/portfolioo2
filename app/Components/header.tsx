@@ -16,11 +16,11 @@ interface NavLink {
 
 const portfolioNavLinks: NavLink[] = [
   { name: 'Hero', href: '#hero', index: 0 },
-  { name: 'About', href: '#about-me', index: 1 },
-  { name: 'Work', href: '#experience', index: 2 },
-  { name: 'Tech', href: '#techstack', index: 3 },
-  { name: 'Languages', href: '#languages', index: 4 },
-  { name: 'Projects', href: '#projects', index: 5 },
+  { name: 'Competencies', href: '#competencies', index: 1 },
+  { name: 'Experience', href: '#experience', index: 2 },
+  { name: 'Projects', href: '#projects', index: 3 },
+  { name: 'Personal', href: '#personal', index: 4 },
+  { name: 'Skills', href: '#skills', index: 5 },
 ];
 
 const gearNavLinks: NavLink[] = [

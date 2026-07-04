@@ -21,17 +21,17 @@ const baseUrl = "https://josephgitauc.vercel.app";
 
 export const metadata: Metadata = {
   title: {
-    default: "Joseph Gitau — Full-Stack Engineer & Systems Architect",
-    template: "%s — Joseph Gitau",
+    default: "Joseph Gitau Chege — Software Engineer, Backend Systems & Cloud Reliability",
+    template: "%s — Joseph Gitau Chege",
   },
   description:
-    "Full-stack engineer and systems architect in Nairobi, Kenya. Building production-grade software across React, Next.js, Node.js, C#, .NET, and cloud infrastructure. 3+ years of end-to-end delivery.",
+    "Software engineer with 3+ years building production backend systems at scale in C#, Python, TypeScript, and C++. Specializing in identity & notification platforms, cloud reliability, and high-availability architectures. Nairobi, Kenya.",
   keywords: [
-    "full-stack engineer", "software developer", "React developer",
-    "Next.js", "Node.js", "TypeScript", "C#", ".NET", "Docker",
-    "Nairobi", "Kenya", "portfolio", "web developer",
-    "systems architect", "DevOps", "cloud infrastructure",
-    "Joseph Gitau", "mfalme0", "React Native",
+    "software engineer", "backend systems", "identity platform",
+    "notification services", "C#", "Python", "TypeScript", "Azure",
+    "Docker", "Kubernetes", "Nairobi", "Kenya", "portfolio",
+    "cloud reliability", "DevOps", "incident response",
+    "Joseph Gitau Chege", "mfalme0", "API development",
   ],
   authors: [{ name: "Joseph Gitau", url: "https://github.com/mfalme0" }],
   creator: "Joseph Gitau",
@@ -40,18 +40,18 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Joseph Gitau",
-    title: "Joseph Gitau — Full-Stack Engineer & Systems Architect",
+    siteName: "Joseph Gitau Chege",
+    title: "Joseph Gitau Chege — Software Engineer, Backend Systems & Cloud Reliability",
     description:
-      "Full-stack engineer and systems architect in Nairobi. Building production-grade software across React, Next.js, Node.js, C#, and cloud infrastructure.",
+      "Software engineer with 3+ years building production backend systems at scale. Specializing in identity & notification platforms, cloud reliability, and high-availability architectures.",
     url: baseUrl,
-    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau — Full-Stack Engineer" }],
+    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau Chege — Software Engineer" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Joseph Gitau — Full-Stack Engineer & Systems Architect",
+    title: "Joseph Gitau Chege — Software Engineer, Backend Systems & Cloud Reliability",
     description:
-      "Full-stack engineer and systems architect in Nairobi. Building production-grade software across React, Next.js, Node.js, C#, and cloud infrastructure.",
+      "Software engineer with 3+ years building production backend systems at scale. Specializing in identity & notification platforms, cloud reliability, and high-availability architectures.",
     images: [`${baseUrl}/opengraph-image.png`],
   },
   robots: {
@@ -90,12 +90,13 @@ export default function RootLayout({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
-            name: "Joseph Gitau",
+            name: "Joseph Gitau Chege",
             url: "https://josephgitauc.vercel.app",
-            jobTitle: "Full-Stack Engineer",
+            jobTitle: "Software Engineer — Backend Systems",
             knowsAbout: [
-              "React", "Next.js", "TypeScript", "Node.js",
-              "C#", ".NET", "Docker", "Cloud Infrastructure",
+              "C#", "Python", "TypeScript", "C++", "Azure",
+              "Docker", "Kubernetes", "Identity Platforms",
+              "Notification Services", "Cloud Reliability",
             ],
             sameAs: [
               "https://github.com/mfalme0",
