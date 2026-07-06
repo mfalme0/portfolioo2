@@ -368,7 +368,12 @@ export default function VideoShowcase() {
           >
             <ShakeWrap active={shake}>
               <SpeedLines />
-              <div className="absolute inset-0 flex items-center justify-center">
+
+              {HITS.map((hit, i) => (
+                <SlamText key={hit.text} {...hit} delay={i * 0.6} />
+              ))}
+
+              <div className="absolute inset-0 flex items-center justify-center z-20">
                 <motion.div
                   animate={{
                     scale: beat % 2 === 0 ? [1, 1.03, 1] : 1,
@@ -393,10 +398,6 @@ export default function VideoShowcase() {
                   </div>
                 </motion.div>
               </div>
-
-              {HITS.map((hit, i) => (
-                <SlamText key={hit.text} {...hit} delay={i * 0.6} />
-              ))}
             </ShakeWrap>
           </motion.div>
         )}
