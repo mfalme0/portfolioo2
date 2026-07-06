@@ -83,10 +83,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{
           __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='loki'||t==='dark')document.documentElement.dataset.theme=t==='loki'?'dark':'dark';else if(t==='light')document.documentElement.dataset.theme='light';else if(t==='synth')document.documentElement.dataset.theme='synth';else document.documentElement.dataset.theme='dark'}catch(e){document.documentElement.dataset.theme='dark'}})()`
         }} />
-      </head>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
@@ -105,7 +104,8 @@ export default function RootLayout({
             ],
           }),
         }}
-      />
+        />
+      </head>
       <Analytics />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
