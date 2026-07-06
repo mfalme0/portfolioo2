@@ -29,10 +29,10 @@ function hexToRgb(hex: string) {
 
 const sections: { id: string; label: string; hint: string; filter: GearCategory; icon: string }[] = [
   { id: 'rigs', label: 'SYSTEMS', hint: 'PRIMARY + SECONDARY', filter: 'system', icon: '⊞' },
+  { id: 'display', label: 'DISPLAY', hint: 'MAIN MONITOR', filter: 'display', icon: '⊡' },
   { id: 'keyboards', label: 'KEYBOARDS', hint: 'ACTIVE + RETIRED', filter: 'keyboard', icon: '⌨' },
   { id: 'mice', label: 'MICE', hint: 'COMPETITIVE + DAILY + LEGACY', filter: 'mouse', icon: '◇' },
   { id: 'audio', label: 'AUDIO', hint: 'IEMS + HEADSET', filter: 'audio', icon: '♫' },
-  { id: 'display', label: 'DISPLAY', hint: 'MAIN MONITOR', filter: 'display', icon: '⊡' },
   { id: 'power', label: 'POWER', hint: 'UPS + PROTECTION', filter: 'power', icon: '⚡' },
   { id: 'controllers', label: 'CONTROLLERS', hint: 'PS4 + XBOX ONE', filter: 'controller', icon: '⊕' },
 ];
@@ -50,7 +50,6 @@ const cardVariants = {
 function GearCard({ item }: { item: GearItem }) {
   const c = catColors[item.category];
   const [r, g, b] = hexToRgb(c.base);
-  const isWide = item.category === 'system' || item.category === 'display';
   const shadowColor = `rgba(${r},${g},${b},0.08)`;
   const borderColor = `rgba(${r},${g},${b},0.15)`;
   const borderHover = `rgba(${r},${g},${b},0.35)`;
@@ -60,7 +59,7 @@ function GearCard({ item }: { item: GearItem }) {
   return (
     <motion.div
       variants={cardVariants}
-      className={`relative ${isWide ? 'md:col-span-2 lg:col-span-2' : ''} ${isRetired ? 'grayscale opacity-50' : ''}`}
+      className={`relative ${isRetired ? 'grayscale opacity-50' : ''}`}
     >
       <SpotlightCard accent={c.base}>
         <Link href={`/gear/${item.slug}`} className="block group h-full">
@@ -95,8 +94,8 @@ function GearCard({ item }: { item: GearItem }) {
                   <Image
                     src={item.image}
                     alt={item.name}
-                    width={isWide ? 360 : 260}
-                    height={isWide ? 220 : 160}
+                    width={260}
+                    height={160}
                     className="object-contain max-h-full w-auto transition-all duration-500"
                     style={{ filter: `drop-shadow(0 8px 24px ${shadowColor})` }}
                   />
