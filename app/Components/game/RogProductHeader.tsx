@@ -13,7 +13,7 @@ export default function RogProductHeader({
   name,
   category,
   tabs,
-  accent = '#FF003C',
+  accent = '#ffffff',
 }: {
   name: string;
   category: string;

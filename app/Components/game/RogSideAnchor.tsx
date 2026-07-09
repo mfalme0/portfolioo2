@@ -8,7 +8,7 @@ interface AnchorItem {
   label: string;
 }
 
-export default function RogSideAnchor({ items, accent = '#FF003C' }: { items: AnchorItem[]; accent?: string }) {
+export default function RogSideAnchor({ items, accent = '#ffffff' }: { items: AnchorItem[]; accent?: string }) {
   const [active, setActive] = useState(items[0]?.id ?? '');
 
   useEffect(() => {

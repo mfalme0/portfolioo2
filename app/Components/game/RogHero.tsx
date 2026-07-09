@@ -3,20 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import type { GearItem } from '@/lib/gear-data';
-import { SiNvidia, SiIntel, SiAmd } from 'react-icons/si';
 import ActiveService from './ActiveService';
 import TiltShowcase from './TiltShowcase';
-
-function getCpuIcon(name: string) {
-  if (name.includes('Intel')) return <SiIntel className="text-blue-500" />;
-  if (name.includes('Ryzen') || name.includes('AMD')) return <SiAmd className="text-orange-500" />;
-  return null;
-}
-
-function getGpuIcon(name: string) {
-  if (name.includes('RTX') || name.includes('GTX')) return <SiNvidia className="text-emerald-500" />;
-  return null;
-}
 
 function extractCpuInfo(item: GearItem) {
   const cpu = item.specs.find(s => s.label === 'CPU');
@@ -44,7 +32,7 @@ function extractRamInfo(item: GearItem) {
   return { name: ram.value, gb: isNaN(gb) ? 0 : gb };
 }
 
-export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; accent?: string }) {
+export default function RogHero({ item }: { item: GearItem }) {
   const isSystem = item.category === 'system';
   const cpuInfo = isSystem ? extractCpuInfo(item) : null;
   const gpuInfo = isSystem ? extractGpuInfo(item) : null;
@@ -78,17 +66,16 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
       <div className="rog-hex-overlay" />
       <div className="rog-scanline" />
 
-      {/* Atmospheric glow using category accent — parallaxes on scroll */}
+      {/* Subtle parallax white glows */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={reduceMotion ? undefined : { y: bgY }}
       >
-        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[120px]" style={{ backgroundColor: `${accent}0a` }} />
-        <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full blur-[100px]" style={{ backgroundColor: `${accent}08` }} />
-        {/* ROG signature diagonal slash */}
+        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[120px] bg-white/[0.03]" />
+        <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full blur-[100px] bg-white/[0.02]" />
         <div
-          className="absolute -left-24 top-[38%] w-[160%] h-40 -rotate-6 opacity-70"
-          style={{ background: `linear-gradient(90deg, transparent, ${accent}14, transparent)` }}
+          className="absolute -left-24 top-[38%] w-[160%] h-40 -rotate-6 opacity-30"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)' }}
         />
       </motion.div>
 
@@ -109,7 +96,7 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
             <span key={tag} className="rog-tag text-[9px]">{tag}</span>
           ))}
           {item.status === 'retired' && (
-            <span className="rog-tag border-red-900/50 text-red-400 bg-red-950/20">RETIRED</span>
+            <span className="rog-tag border-zinc-700/50 text-zinc-400 bg-zinc-900/20">RETIRED</span>
           )}
           {item.status === 'active' && <ActiveService />}
         </motion.div>
@@ -121,13 +108,12 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-3xl"
         >
-          {/* modelLabel — small, mono, accent */}
           {item.modelLabel && (
-            <span className="text-[9px] font-mono tracking-wider mb-2 block" style={{ color: `${accent}cc` }}>
+            <span className="text-[9px] font-mono tracking-wider mb-2 block text-white/50">
               {item.modelLabel}
             </span>
           )}
-          <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-3 block" style={{ color: accent }}>
+          <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-3 block text-white/60">
             ROG · {item.category.toUpperCase()}
           </span>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] mb-4">
@@ -137,12 +123,12 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
           </h1>
           <div className="h-6 md:h-7 flex items-center">
             <span className="text-xs md:text-sm font-mono text-zinc-500 tracking-wider">
-              <span style={{ color: accent }}>&gt;</span> {typed}
-              <span className="inline-block w-[2px] h-4 ml-1 animate-pulse" style={{ backgroundColor: accent }} />
+              <span className="text-white/80">&gt;</span> {typed}
+              <span className="inline-block w-[2px] h-4 ml-1 animate-pulse bg-white/80" />
             </span>
           </div>
 
-          {/* Quick-jump spec chips — ROG's icon strip w/ hover tooltip */}
+          {/* Quick-jump spec chips */}
           {item.specs.some((s) => s.icon) && (
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -154,17 +140,15 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
                 <button
                   key={s.label}
                   type="button"
-                  onClick={() => document.getElementById('specs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="group relative flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5"
-                  style={{ borderColor: `${accent}25`, backgroundColor: `${accent}0a` }}
+                  onClick={() => document.getElementById('tech-specs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="group relative flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 transition-all duration-300 hover:border-white/20 hover:-translate-y-0.5"
                 >
-                  <span className="text-sm leading-none">{s.icon}</span>
+                  <span className="text-sm leading-none text-white/60">{s.icon}</span>
                   <span className="text-[9px] font-bold tracking-[0.1em] uppercase text-zinc-400 group-hover:text-white transition-colors">
                     {s.label}
                   </span>
                   <span
-                    className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap rounded-md border px-2 py-1 text-[9px] font-mono opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1"
-                    style={{ borderColor: `${accent}30`, backgroundColor: 'rgba(0,0,0,0.9)', color: '#fff' }}
+                    className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap rounded-md border border-white/10 bg-black/90 px-2 py-1 text-[9px] font-mono opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1 text-white"
                   >
                     {s.value}
                   </span>
@@ -184,15 +168,12 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
             className="relative flex justify-center items-center"
           >
             <div className="relative w-full max-w-lg">
-              {/* Atmospheric glow behind device */}
               <div
                 className="absolute inset-0 blur-[60px] rounded-full"
-                style={{
-                  background: `radial-gradient(ellipse at center, ${accent}1a, transparent 70%)`,
-                }}
+                style={{ background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.06), transparent 70%)' }}
               />
-              <TiltShowcase src={item.image} alt={item.name} accent={accent} priority />
-              {/* Status bar (footerLeft / footerRight) */}
+              <TiltShowcase src={item.image} alt={item.name} accent="#ffffff" />
+              {/* Status bar */}
               {(item.footerLeft || item.footerRight) && (
                 <div className="absolute -bottom-1 left-0 right-0 flex items-center justify-between px-4 py-1.5 rounded-b-lg border-t border-white/[0.06] bg-black/40 backdrop-blur-sm">
                   {item.footerLeft ? (
@@ -204,8 +185,8 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
                 </div>
               )}
               {/* Corner accents */}
-              <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2" style={{ borderColor: `${accent}66` }} />
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2" style={{ borderColor: `${accent}66` }} />
+              <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-white/20" />
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-white/20" />
             </div>
           </motion.div>
 
@@ -217,9 +198,9 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
             className="space-y-3"
           >
             {isSystem && cpuInfo && (
-              <div className="rog-card p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accent}22` }}>
-                <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-xl">
-                  {getCpuIcon(cpuInfo.name)}
+              <div className="rog-card p-4 flex items-center gap-4 transition-all duration-300 border-white/[0.08]">
+                <div className="w-10 h-10 rounded-lg bg-white/[0.06] flex items-center justify-center text-xl text-white/60">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="rog-spec-label text-[9px]">PROCESSOR</div>
@@ -233,9 +214,9 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
             )}
 
             {isSystem && gpuInfo && (
-              <div className="rog-card p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accent}22` }}>
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl">
-                  {getGpuIcon(gpuInfo.name)}
+              <div className="rog-card p-4 flex items-center gap-4 transition-all duration-300 border-white/[0.08]">
+                <div className="w-10 h-10 rounded-lg bg-white/[0.06] flex items-center justify-center text-xl text-white/60">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="rog-spec-label text-[9px]">GRAPHICS</div>
@@ -249,9 +230,9 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
             )}
 
             {isSystem && ramInfo && (
-              <div className="rog-card p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accent}22` }}>
-                <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl">
-                  <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <div className="rog-card p-4 flex items-center gap-4 transition-all duration-300 border-white/[0.08]">
+                <div className="w-10 h-10 rounded-lg bg-white/[0.06] flex items-center justify-center text-xl text-white/60">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                   </svg>
                 </div>
@@ -266,8 +247,8 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
             )}
 
             {!isSystem && item.specs.slice(0, 3).map((s) => (
-              <div key={s.label} className="rog-card p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accent}22` }}>
-                {s.icon && <div className="text-xl w-8 flex justify-center">{s.icon}</div>}
+              <div key={s.label} className="rog-card p-4 flex items-center gap-4 transition-all duration-300 border-white/[0.08]">
+                {s.icon && <div className="text-xl w-8 flex justify-center text-white/60">{s.icon}</div>}
                 <div className="flex-1 min-w-0">
                   <div className="rog-spec-label text-[9px]">{s.label}</div>
                   <div className="text-sm font-semibold">{s.value}</div>
@@ -280,7 +261,7 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
                 initial={{ opacity: 0, y: 10 }}
                 animate={showContent ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="rog-price-tag mt-4"
+                className="rog-price-tag mt-4 border-white/[0.08] bg-white/[0.03]"
               >
                 <span className="text-[9px] font-black tracking-[0.3em] text-white/40 uppercase">PRICE</span>
                 <span className="text-lg font-black text-white">{item.price}</span>

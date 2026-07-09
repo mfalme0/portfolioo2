@@ -4,9 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import type { GearItem, GearCategory } from '@/lib/gear-data';
-import { SiNvidia, SiIntel } from 'react-icons/si';
-import { FaBolt, FaArrowRight } from 'react-icons/fa';
+import type { GearItem } from '@/lib/gear-data';
 import PageLoader from '@/app/Components/page-loader';
 import RogHero from '@/app/Components/game/RogHero';
 import ProductGallery from '@/app/Components/game/ProductGallery';
@@ -15,18 +13,10 @@ import PerformanceMetrics from '@/app/Components/game/PerformanceMetrics';
 import ConnectivityTerminal from '@/app/Components/game/ConnectivityTerminal';
 import RogSideAnchor from '@/app/Components/game/RogSideAnchor';
 import RogProductHeader from '@/app/Components/game/RogProductHeader';
-import TiltShowcase from '@/app/Components/game/TiltShowcase';
 import ActiveService from '@/app/Components/game/ActiveService';
+import CategorySpotlight from '@/app/Components/game/CategorySpotlight';
 
-const catPalette: Record<GearCategory, { base: string; rgb: [number, number, number] }> = {
-  system:     { base: '#10B981', rgb: [16, 185, 129] },
-  keyboard:   { base: '#ec4899', rgb: [236, 72, 153] },
-  mouse:      { base: '#06b6d4', rgb: [6, 182, 212] },
-  audio:      { base: '#8B5CF6', rgb: [139, 92, 246] },
-  display:    { base: '#38BDF8', rgb: [56, 189, 248] },
-  power:      { base: '#F59E0B', rgb: [245, 158, 11] },
-  controller: { base: '#6366f1', rgb: [99, 102, 241] },
-};
+const SPOTLIGHT_CATEGORIES = new Set(['display', 'keyboard', 'mouse', 'audio', 'controller']);
 
 function extractCpuInfo(item: GearItem) {
   const cpu = item.specs.find(s => s.label === 'CPU');
@@ -90,21 +80,6 @@ function RevealSection({ children, className = '' }: { children: React.ReactNode
   );
 }
 
-function SectionBg({ palette }: { palette: typeof catPalette[GearCategory] }) {
-  const [r, g, b] = palette.rgb;
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{ background: `radial-gradient(ellipse 70% 50% at 50% 0%, rgba(${r},${g},${b},0.04) 0%, transparent 70%)` }}
-      />
-      <div className="absolute inset-0 opacity-[0.015]"
-        style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${r},${g},${b},0.15) 2px, rgba(${r},${g},${b},0.15) 3px)` }}
-      />
-    </div>
-  );
-}
-
 export default function GearDetailClient({
   item,
   related,
@@ -117,8 +92,6 @@ export default function GearDetailClient({
   const isSystem = item.category === 'system';
   const cpuInfo = isSystem ? extractCpuInfo(item) : null;
   const gpuInfo = isSystem ? extractGpuInfo(item) : null;
-  const palette = catPalette[item.category];
-  const [pr, pg, pb] = palette.rgb;
 
   useEffect(() => {
     const text = item.subtitle || '';
@@ -143,19 +116,29 @@ export default function GearDetailClient({
 
   const perfMetrics = isSystem && cpuInfo
     ? [
-        { label: 'CORES', value: cpuInfo.cores, suffix: '', icon: <SiIntel className="text-blue-400" /> },
-        { label: 'THREADS', value: cpuInfo.threads, suffix: '', icon: <SiIntel className="text-blue-400" /> },
-        { label: 'CLOCK', value: cpuInfo.ghz, suffix: 'GHz', decimals: 1 as const, icon: <FaBolt className="text-yellow-400" /> },
-        ...(gpuInfo ? [{ label: 'VRAM', value: gpuInfo.vram, suffix: 'GB', icon: <SiNvidia className="text-emerald-400" /> }] : []),
+        { label: 'CORES', value: cpuInfo.cores, suffix: '' },
+        { label: 'THREADS', value: cpuInfo.threads, suffix: '' },
+        { label: 'CLOCK', value: cpuInfo.ghz, suffix: 'GHz', decimals: 1 as const },
+        ...(gpuInfo ? [{ label: 'VRAM', value: gpuInfo.vram, suffix: 'GB' }] : []),
       ]
     : [];
 
-  // Section navigation items matching ROG product page pattern
+  const showSpotlight = SPOTLIGHT_CATEGORIES.has(item.category);
+  const spotlightLabel: Record<string, string> = {
+    display: 'Panel',
+    keyboard: 'Switch & Feel',
+    mouse: 'Sensor & Grip',
+    audio: 'Sound',
+    controller: 'Input Layout',
+  };
+
   const sections = [
     { id: 'overview', label: 'Overview' },
+    ...(showSpotlight ? [{ id: 'spotlight', label: spotlightLabel[item.category] || 'Spotlight' }] : []),
     { id: 'specs', label: isSystem ? 'Performance' : 'Specs' },
     ...(item.gallery && item.gallery.length > 0 ? [{ id: 'gallery', label: 'Gallery' }] : []),
     ...(isSystem && item.benchmarks && item.benchmarks.length > 0 ? [{ id: 'benchmarks', label: 'Benchmarks' }] : []),
+    { id: 'tech-specs', label: 'Tech Specs' },
     { id: 'story', label: 'Story' },
     ...(item.connectivity && item.connectivity.length > 0 ? [{ id: 'connectivity', label: 'Connectivity' }] : []),
     ...(related.length > 0 ? [{ id: 'related', label: 'Related' }] : []),
@@ -172,14 +155,12 @@ export default function GearDetailClient({
               `INITIALIZING_${item.category.toUpperCase()}_MODULE...`,
               `LOADING_${item.name.replace(/\s+/g, '_')}_FIRMWARE...`,
               'CALIBRATING_PERFORMANCE_PROFILES...',
-              'SYNCING_RGB_CHANNELS...',
               'ESTABLISHING_DEVICE_UPLINK...',
               'OPTIMIZING_LATENCY_PARAMETERS...',
               'VERIFYING_SYSTEM_INTEGRITY...',
               `${item.name.replace(/\s+/g, '_')}_READY.`,
             ]}
             version={`V.${item.slug.replace(/[^0-9]/g, '')}.0` || 'V.2.1.0'}
-            accent={palette.base}
           />
         )}
       </AnimatePresence>
@@ -188,10 +169,12 @@ export default function GearDetailClient({
         name={item.name}
         category={item.category}
         tabs={sections}
-        accent={palette.base}
       />
 
-      <main className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+      <main
+        className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}
+        style={{ '--accent-rgb': '255 255 255' } as React.CSSProperties}
+      >
         {/* Breadcrumbs */}
         <nav className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
           <ol className="flex items-center gap-2 text-[10px] font-mono tracking-wider">
@@ -208,11 +191,11 @@ export default function GearDetailClient({
         </nav>
 
         {/* Side Anchor Navigation */}
-        <RogSideAnchor items={sections} accent={palette.base} />
+        <RogSideAnchor items={sections} />
 
         {/* ═══ OVERVIEW / KV HERO ═══ */}
         <section id="overview">
-          <RogHero item={item} accent={palette.base} />
+          <RogHero item={item} />
         </section>
 
         {/* ROG-style brand strip */}
@@ -232,7 +215,7 @@ export default function GearDetailClient({
             <div className="flex items-center gap-2">
               {item.status === 'active' && <ActiveService label="ACTIVE" />}
               {item.price && (
-                <span className="text-[9px] font-bold font-mono" style={{ color: palette.base }}>
+                <span className="text-[9px] font-bold font-mono text-white/60">
                   {item.price}
                 </span>
               )}
@@ -250,23 +233,9 @@ export default function GearDetailClient({
               <div className="rog-ksp-grid">
                 {item.specs.slice(0, 6).map((spec, i) => (
                   <RevealSection key={spec.label}>
-                    <div
-                      className="group flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:-translate-y-0.5"
-                      style={{
-                        borderColor: `rgba(${pr},${pg},${pb},0.08)`,
-                        background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)`,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = `rgba(${pr},${pg},${pb},0.25)`;
-                        e.currentTarget.style.boxShadow = `0 0 30px -8px rgba(${pr},${pg},${pb},0.1)`;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = `rgba(${pr},${pg},${pb},0.08)`;
-                        e.currentTarget.style.boxShadow = '';
-                      }}
-                    >
+                    <div className="group flex items-center gap-4 p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all duration-300 hover:border-white/[0.15] hover:-translate-y-0.5">
                       {spec.icon && (
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-lg" style={{ background: `rgba(${pr},${pg},${pb},0.08)` }}>
+                        <div className="w-10 h-10 rounded-lg bg-white/[0.06] flex items-center justify-center shrink-0 text-lg text-white/60">
                           {spec.icon}
                         </div>
                       )}
@@ -277,7 +246,6 @@ export default function GearDetailClient({
                           <span className="text-[7px] font-mono text-zinc-600 uppercase tracking-wider">{spec.tag}</span>
                         )}
                       </div>
-                      <FaArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-40 group-hover:translate-x-0 transition-all" style={{ color: palette.base }} />
                     </div>
                   </RevealSection>
                 ))}
@@ -286,9 +254,15 @@ export default function GearDetailClient({
           </section>
         )}
 
-        {/* ═══ SPECS / PERFORMANCE ═══ */}
+        {/* ═══ CATEGORY SPOTLIGHT ═══ */}
+        {showSpotlight && (
+          <div id="spotlight">
+            <CategorySpotlight item={item} />
+          </div>
+        )}
+
+        {/* ═══ PERFORMANCE / SPECS ═══ */}
         <section id="specs" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
-          <SectionBg palette={palette} />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <RevealSection>
               <div className="rog-strix-eyebrow mb-4">{isSystem ? 'Performance Profile' : 'Specifications'}</div>
@@ -305,10 +279,10 @@ export default function GearDetailClient({
             {isSystem && specBars.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <RevealSection>
-                  <SpecBars bars={specBars} title="HARDWARE UTILIZATION" accent={palette.base} />
+                  <SpecBars bars={specBars} title="HARDWARE UTILIZATION" />
                 </RevealSection>
                 <RevealSection>
-                  <PerformanceMetrics metrics={perfMetrics} title="SYSTEM METRICS" accent={palette.base} />
+                  <PerformanceMetrics metrics={perfMetrics} title="SYSTEM METRICS" />
                 </RevealSection>
               </div>
             ) : (
@@ -320,19 +294,11 @@ export default function GearDetailClient({
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-50px' }}
                     transition={{ delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative overflow-hidden rounded-lg border p-4 text-center transition-all duration-300 group"
-                    style={{
-                      borderColor: `rgba(${pr},${pg},${pb},0.12)`,
-                      background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.04), transparent)`,
-                    }}
-                    whileHover={{
-                      borderColor: `rgba(${pr},${pg},${pb},0.3)`,
-                      boxShadow: `0 0 30px -8px rgba(${pr},${pg},${pb},0.12)`,
-                    }}
+                    className="relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] p-4 text-center transition-all duration-300 group hover:border-white/[0.2]"
                   >
-                    <div className="absolute top-0 left-0 right-0 h-[2px] opacity-60" style={{ backgroundColor: palette.base }} />
-                    {s.icon && <div className="text-xl mb-2 flex justify-center" style={{ color: palette.base }}>{s.icon}</div>}
-                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/10" />
+                    {s.icon && <div className="text-xl mb-2 flex justify-center text-white/50">{s.icon}</div>}
+                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase text-white/40">{s.label}</div>
                     <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
                     {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
                   </motion.div>
@@ -347,7 +313,7 @@ export default function GearDetailClient({
                   onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })}
                   className="rog-read-more"
                 >
-                  Read more about this device <FaArrowRight className="w-3 h-3" />
+                  Read more about this device <span className="w-3 h-3 inline-flex items-center justify-center">&rarr;</span>
                 </button>
               </div>
             </RevealSection>
@@ -357,7 +323,6 @@ export default function GearDetailClient({
         {/* ═══ BENCHMARKS ═══ */}
         {isSystem && item.benchmarks && item.benchmarks.length > 0 && (
           <section id="benchmarks" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
-            <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
                 <div className="rog-strix-eyebrow mb-4">Benchmarks</div>
@@ -377,17 +342,13 @@ export default function GearDetailClient({
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-50px' }}
                     transition={{ delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative overflow-hidden rounded-lg border p-4 text-center"
-                    style={{
-                      borderColor: `rgba(${pr},${pg},${pb},0.1)`,
-                      background: `linear-gradient(180deg, rgba(${pr},${pg},${pb},0.03), transparent)`,
-                    }}
+                    className="relative overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] p-4 text-center"
                   >
-                    <div className="text-lg md:text-2xl font-black tabular-nums" style={{ color: palette.base }}>
+                    <div className="text-lg md:text-2xl font-black tabular-nums text-white">
                       {b.score.toLocaleString()}
                       {b.unit && <span className="text-[10px] text-zinc-600 ml-0.5">{b.unit}</span>}
                     </div>
-                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase mt-1" style={{ color: `rgba(${pr},${pg},${pb},0.5)` }}>{b.label}</div>
+                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase mt-1 text-white/40">{b.label}</div>
                   </motion.div>
                 ))}
               </div>
@@ -398,7 +359,6 @@ export default function GearDetailClient({
         {/* ═══ GALLERY ═══ */}
         {item.gallery && item.gallery.length > 0 && (
           <section id="gallery" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
-            <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
                 <div className="rog-strix-eyebrow mb-4">Gallery</div>
@@ -414,9 +374,70 @@ export default function GearDetailClient({
           </section>
         )}
 
+        {/* ═══ TECH SPECS ═══ */}
+        <section id="tech-specs" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <RevealSection>
+              <div className="rog-strix-eyebrow mb-4">Technical Specifications</div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                Full Spec Sheet
+              </h2>
+              <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                Complete hardware specifications and technical data for the {item.name}.
+              </p>
+            </RevealSection>
+
+            <RevealSection>
+              <div className="border border-white/[0.06] rounded-lg overflow-hidden">
+                <table className="w-full text-left">
+                  <tbody>
+                    {item.specs.map((spec, i) => (
+                      <tr key={spec.label} className={i % 2 === 0 ? 'bg-white/[0.02]' : ''}>
+                        <td className="px-4 py-3 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 w-1/3 border-b border-white/[0.04]">
+                          <div className="flex items-center gap-2">
+                            {spec.icon && <span className="text-xs text-white/40">{spec.icon}</span>}
+                            {spec.label}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-white/80 border-b border-white/[0.04]">
+                          {spec.value}
+                          {spec.tag && <span className="ml-2 text-[9px] font-mono text-zinc-600 uppercase tracking-wider">{spec.tag}</span>}
+                        </td>
+                      </tr>
+                    ))}
+                    {item.category === 'system' && cpuInfo && (
+                      <tr className="bg-white/[0.02]">
+                        <td className="px-4 py-3 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 border-b border-white/[0.04]">CORES / THREADS</td>
+                        <td className="px-4 py-3 text-sm text-white/80 border-b border-white/[0.04]">{cpuInfo.cores}C / {cpuInfo.threads}T</td>
+                      </tr>
+                    )}
+                    {item.category === 'system' && gpuInfo && (
+                      <tr>
+                        <td className="px-4 py-3 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 border-b border-white/[0.04]">GPU VRAM / TGP</td>
+                        <td className="px-4 py-3 text-sm text-white/80 border-b border-white/[0.04]">{gpuInfo.vram}GB / {gpuInfo.tdp}W</td>
+                      </tr>
+                    )}
+                    {item.price && (
+                      <tr className="bg-white/[0.02]">
+                        <td className="px-4 py-3 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40 border-b border-white/[0.04]">PRICE PAID</td>
+                        <td className="px-4 py-3 text-sm text-white/80 border-b border-white/[0.04]">{item.price}{item.purchaseYear ? <span className="ml-2 text-[9px] font-mono text-zinc-600">— {item.purchaseYear}</span> : ''}</td>
+                      </tr>
+                    )}
+                    {item.status && (
+                      <tr>
+                        <td className="px-4 py-3 text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">STATUS</td>
+                        <td className="px-4 py-3 text-sm text-white/80">{item.status === 'active' ? 'Active Service' : 'Retired'}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </RevealSection>
+          </div>
+        </section>
+
         {/* ═══ STORY ═══ */}
         <section id="story" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
-          <SectionBg palette={palette} />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
               <div className="lg:col-span-3">
@@ -431,13 +452,7 @@ export default function GearDetailClient({
 
                   {item.price && (
                     <div className="mt-8 flex items-center gap-4">
-                      <span
-                        className="text-[8px] font-bold tracking-[0.2em] uppercase px-2 py-1 rounded border"
-                        style={{
-                          borderColor: `rgba(${pr},${pg},${pb},0.2)`,
-                          color: `rgba(${pr},${pg},${pb},0.7)`,
-                        }}
-                      >
+                      <span className="text-[8px] font-bold tracking-[0.2em] uppercase px-2 py-1 rounded border border-white/10 text-white/50">
                         PRICE PAID
                       </span>
                       <span className="text-lg font-black text-white tracking-tight">{item.price}</span>
@@ -452,8 +467,8 @@ export default function GearDetailClient({
               <div className="lg:col-span-2 space-y-8">
                 {item.pros && item.pros.length > 0 && (
                   <RevealSection>
-                    <h4 className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-400 mb-4 flex items-center gap-2">
-                      <span className="w-4 h-[1px] bg-emerald-400/50" />
+                    <h4 className="text-[10px] font-black tracking-[0.3em] uppercase text-zinc-400 mb-4 flex items-center gap-2">
+                      <span className="w-4 h-[1px] bg-white/20" />
                       PROS
                     </h4>
                     <ul className="space-y-3">
@@ -466,7 +481,7 @@ export default function GearDetailClient({
                           transition={{ delay: i * 0.1, duration: 0.3 }}
                           className="relative pl-4 text-xs text-zinc-400 font-mono leading-relaxed"
                         >
-                          <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full bg-emerald-400/60" />
+                          <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full bg-white/30" />
                           {pro}
                         </motion.li>
                       ))}
@@ -476,8 +491,8 @@ export default function GearDetailClient({
 
                 {item.cons && item.cons.length > 0 && (
                   <RevealSection>
-                    <h4 className="text-[10px] font-black tracking-[0.3em] uppercase text-rose-400 mb-4 flex items-center gap-2">
-                      <span className="w-4 h-[1px] bg-rose-400/50" />
+                    <h4 className="text-[10px] font-black tracking-[0.3em] uppercase text-zinc-500 mb-4 flex items-center gap-2">
+                      <span className="w-4 h-[1px] bg-white/20" />
                       CONS
                     </h4>
                     <ul className="space-y-3">
@@ -490,7 +505,7 @@ export default function GearDetailClient({
                           transition={{ delay: i * 0.1, duration: 0.3 }}
                           className="relative pl-4 text-xs text-zinc-400 font-mono leading-relaxed"
                         >
-                          <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full bg-rose-400/60" />
+                          <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full bg-white/30" />
                           {con}
                         </motion.li>
                       ))}
@@ -505,7 +520,6 @@ export default function GearDetailClient({
         {/* ═══ CONNECTIVITY ═══ */}
         {item.connectivity && item.connectivity.length > 0 && (
           <section id="connectivity" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
-            <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                 <RevealSection>
@@ -528,11 +542,6 @@ export default function GearDetailClient({
         {/* ═══ RELATED GEAR ═══ */}
         {related.length > 0 && (
           <section id="related" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
-            <div className="absolute inset-0 opacity-[0.015]"
-              style={{
-                backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(${pr},${pg},${pb},0.3) 4px, rgba(${pr},${pg},${pb},0.3) 5px)`,
-              }}
-            />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
                 <div className="rog-strix-eyebrow mb-4">Complete the Setup</div>
@@ -545,54 +554,36 @@ export default function GearDetailClient({
               </RevealSection>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {related.map((r, i) => {
-                  const rPalette = catPalette[r.category];
-                  const rBorder = `rgba(${rPalette.rgb[0]},${rPalette.rgb[1]},${rPalette.rgb[2]},0.1)`;
-                  const rHoverBorder = `rgba(${rPalette.rgb[0]},${rPalette.rgb[1]},${rPalette.rgb[2]},0.3)`;
-                  const rGlow = `rgba(${rPalette.rgb[0]},${rPalette.rgb[1]},${rPalette.rgb[2]},0.1)`;
-                  return (
-                    <motion.div
-                      key={r.slug}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-50px' }}
-                      transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                {related.map((r, i) => (
+                  <motion.div
+                    key={r.slug}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-50px' }}
+                    transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Link
+                      href={`/gear/${r.slug}`}
+                      className="group relative overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.01] p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-white/[0.15]"
                     >
-                      <Link
-                        href={`/gear/${r.slug}`}
-                        className="group relative overflow-hidden rounded-lg border p-6 flex flex-col items-center text-center transition-all duration-300"
-                        style={{
-                          borderColor: rBorder,
-                          background: `linear-gradient(180deg, rgba(${rPalette.rgb[0]},${rPalette.rgb[1]},${rPalette.rgb[2]},0.03), transparent)`,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = rHoverBorder;
-                          e.currentTarget.style.boxShadow = `0 0 30px -8px ${rGlow}`;
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = rBorder;
-                          e.currentTarget.style.boxShadow = '';
-                        }}
-                      >
-                        <div className="w-full h-32 relative mb-4 flex items-center justify-center">
-                          <Image
-                            src={r.image}
-                            alt={r.name}
-                            width={200}
-                            height={120}
-                            className="object-contain max-h-full opacity-70 group-hover:opacity-100 transition-opacity duration-300"
-                          />
-                        </div>
-                        <h4 className="text-xs font-black uppercase tracking-wider text-white/70 group-hover:text-white transition-colors">
-                          {r.name}
-                        </h4>
-                        <span className="text-[9px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">
-                          {r.category}
-                        </span>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                      <div className="w-full h-32 relative mb-4 flex items-center justify-center">
+                        <Image
+                          src={r.image}
+                          alt={r.name}
+                          width={200}
+                          height={120}
+                          className="object-contain max-h-full opacity-70 group-hover:opacity-100 transition-opacity duration-300"
+                        />
+                      </div>
+                      <h4 className="text-xs font-black uppercase tracking-wider text-white/70 group-hover:text-white transition-colors">
+                        {r.name}
+                      </h4>
+                      <span className="text-[9px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">
+                        {r.category}
+                      </span>
+                    </Link>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </section>
@@ -603,10 +594,9 @@ export default function GearDetailClient({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
             <Link
               href="/gear"
-              className="inline-flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase transition-colors duration-300 group"
-              style={{ color: `rgba(${pr},${pg},${pb},0.5)` }}
+              className="inline-flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-white/30 transition-colors duration-300 group hover:text-white/60"
             >
-              <span className="group-hover:-translate-x-1 transition-transform duration-300" style={{ color: palette.base }}>&larr;</span>
+              <span className="group-hover:-translate-x-1 transition-transform duration-300">&larr;</span>
               BACK TO ALL GEAR
             </Link>
           </div>
