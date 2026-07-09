@@ -141,6 +141,37 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
               <span className="inline-block w-[2px] h-4 ml-1 animate-pulse" style={{ backgroundColor: accent }} />
             </span>
           </div>
+
+          {/* Quick-jump spec chips — ROG's icon strip w/ hover tooltip */}
+          {item.specs.some((s) => s.icon) && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={showContent ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-wrap items-center gap-2 mt-6"
+            >
+              {item.specs.filter((s) => s.icon).slice(0, 6).map((s) => (
+                <button
+                  key={s.label}
+                  type="button"
+                  onClick={() => document.getElementById('specs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="group relative flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5"
+                  style={{ borderColor: `${accent}25`, backgroundColor: `${accent}0a` }}
+                >
+                  <span className="text-sm leading-none">{s.icon}</span>
+                  <span className="text-[9px] font-bold tracking-[0.1em] uppercase text-zinc-400 group-hover:text-white transition-colors">
+                    {s.label}
+                  </span>
+                  <span
+                    className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap rounded-md border px-2 py-1 text-[9px] font-mono opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1"
+                    style={{ borderColor: `${accent}30`, backgroundColor: 'rgba(0,0,0,0.9)', color: '#fff' }}
+                  >
+                    {s.value}
+                  </span>
+                </button>
+              ))}
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Main showcase */}

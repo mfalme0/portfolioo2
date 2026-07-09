@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import type { GearItem, GearCategory } from '@/lib/gear-data';
 import { SiNvidia, SiIntel } from 'react-icons/si';
-import { FaBolt } from 'react-icons/fa';
+import { FaBolt, FaArrowRight } from 'react-icons/fa';
 import PageLoader from '@/app/Components/page-loader';
 import RogHero from '@/app/Components/game/RogHero';
 import ProductGallery from '@/app/Components/game/ProductGallery';
 import SpecBars from '@/app/Components/game/SpecBars';
 import PerformanceMetrics from '@/app/Components/game/PerformanceMetrics';
 import ConnectivityTerminal from '@/app/Components/game/ConnectivityTerminal';
-import NeonGlitch from '@/app/Components/neon-glitch';
-import SectionNav from '@/app/Components/game/SectionNav';
-import GearTicker from '@/app/Components/game/GearTicker';
-import DiagonalDivider from '@/app/Components/game/DiagonalDivider';
+import RogSideAnchor from '@/app/Components/game/RogSideAnchor';
+import RogProductHeader from '@/app/Components/game/RogProductHeader';
+import TiltShowcase from '@/app/Components/game/TiltShowcase';
+import ActiveService from '@/app/Components/game/ActiveService';
 
 const catPalette: Record<GearCategory, { base: string; rgb: [number, number, number] }> = {
   system:     { base: '#10B981', rgb: [16, 185, 129] },
@@ -96,14 +96,10 @@ function SectionBg({ palette }: { palette: typeof catPalette[GearCategory] }) {
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <div
         className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse 70% 50% at 50% 0%, rgba(${r},${g},${b},0.05) 0%, transparent 70%)`,
-        }}
+        style={{ background: `radial-gradient(ellipse 70% 50% at 50% 0%, rgba(${r},${g},${b},0.04) 0%, transparent 70%)` }}
       />
-      <div className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${r},${g},${b},0.2) 2px, rgba(${r},${g},${b},0.2) 3px)`,
-        }}
+      <div className="absolute inset-0 opacity-[0.015]"
+        style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${r},${g},${b},0.15) 2px, rgba(${r},${g},${b},0.15) 3px)` }}
       />
     </div>
   );
@@ -117,11 +113,23 @@ export default function GearDetailClient({
   related: GearItem[];
 }) {
   const [loading, setLoading] = useState(true);
+  const [typedSubtitle, setTypedSubtitle] = useState('');
   const isSystem = item.category === 'system';
   const cpuInfo = isSystem ? extractCpuInfo(item) : null;
   const gpuInfo = isSystem ? extractGpuInfo(item) : null;
   const palette = catPalette[item.category];
   const [pr, pg, pb] = palette.rgb;
+
+  useEffect(() => {
+    const text = item.subtitle || '';
+    let i = 0;
+    const id = setInterval(() => {
+      i += 2;
+      setTypedSubtitle(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, 30);
+    return () => clearInterval(id);
+  }, [item.subtitle]);
 
   const specBars = isSystem
     ? item.specs.map((s) => {
@@ -129,11 +137,7 @@ export default function GearDetailClient({
           CPU: 95, GPU: 88, RAM: 90, STORAGE: 72,
           DISPLAY: 92, NETWORK: 85, COOLING: 80,
         };
-        return {
-          label: s.label,
-          value: s.value,
-          percent: pctMap[s.label] || 70,
-        };
+        return { label: s.label, value: s.value, percent: pctMap[s.label] || 70 };
       })
     : [];
 
@@ -146,12 +150,14 @@ export default function GearDetailClient({
       ]
     : [];
 
-  const navItems = [
+  // Section navigation items matching ROG product page pattern
+  const sections = [
     { id: 'overview', label: 'Overview' },
     { id: 'specs', label: isSystem ? 'Performance' : 'Specs' },
     ...(item.gallery && item.gallery.length > 0 ? [{ id: 'gallery', label: 'Gallery' }] : []),
     ...(isSystem && item.benchmarks && item.benchmarks.length > 0 ? [{ id: 'benchmarks', label: 'Benchmarks' }] : []),
     { id: 'story', label: 'Story' },
+    ...(item.connectivity && item.connectivity.length > 0 ? [{ id: 'connectivity', label: 'Connectivity' }] : []),
     ...(related.length > 0 ? [{ id: 'related', label: 'Related' }] : []),
   ];
 
@@ -178,6 +184,13 @@ export default function GearDetailClient({
         )}
       </AnimatePresence>
 
+      <RogProductHeader
+        name={item.name}
+        category={item.category}
+        tabs={sections}
+        accent={palette.base}
+      />
+
       <main className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
         {/* Breadcrumbs */}
         <nav className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
@@ -194,34 +207,102 @@ export default function GearDetailClient({
           </ol>
         </nav>
 
-        <SectionNav items={navItems} accent={palette.base} />
+        {/* Side Anchor Navigation */}
+        <RogSideAnchor items={sections} accent={palette.base} />
 
-        <div id="overview">
+        {/* ═══ OVERVIEW / KV HERO ═══ */}
+        <section id="overview">
           <RogHero item={item} accent={palette.base} />
+        </section>
+
+        {/* ROG-style brand strip */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between border-t border-b border-white/5 py-3">
+            <div className="flex items-center gap-3">
+              <span className="text-[8px] font-bold tracking-[0.3em] text-zinc-600 uppercase">ROG</span>
+              <div className="w-px h-4 bg-white/10" />
+              <span className="text-[8px] font-mono tracking-wider text-zinc-600 uppercase">{item.category}</span>
+              {item.modelLabel && (
+                <>
+                  <div className="w-px h-4 bg-white/10" />
+                  <span className="text-[8px] font-mono text-zinc-700">{item.modelLabel}</span>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {item.status === 'active' && <ActiveService label="ACTIVE" />}
+              {item.price && (
+                <span className="text-[9px] font-bold font-mono" style={{ color: palette.base }}>
+                  {item.price}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
 
-        <GearTicker label={`${item.category.toUpperCase()} SERIES  ◆  ${item.modelLabel ? item.modelLabel.replace(/\/\//g, '').trim() : item.name}  ◆  REPUBLIC OF GEAR`} accent={palette.base} />
-
-        {item.gallery && item.gallery.length > 0 && (
-          <div id="gallery">
-            <ProductGallery images={item.gallery} name={item.name} />
-          </div>
+        {/* ═══ KSP GRID — Key Selling Points ═══ */}
+        {item.specs.length > 0 && (
+          <section className="relative w-full py-10 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <RevealSection>
+                <div className="rog-strix-eyebrow mb-6">Key Specifications</div>
+              </RevealSection>
+              <div className="rog-ksp-grid">
+                {item.specs.slice(0, 6).map((spec, i) => (
+                  <RevealSection key={spec.label}>
+                    <div
+                      className="group flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:-translate-y-0.5"
+                      style={{
+                        borderColor: `rgba(${pr},${pg},${pb},0.08)`,
+                        background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = `rgba(${pr},${pg},${pb},0.25)`;
+                        e.currentTarget.style.boxShadow = `0 0 30px -8px rgba(${pr},${pg},${pb},0.1)`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = `rgba(${pr},${pg},${pb},0.08)`;
+                        e.currentTarget.style.boxShadow = '';
+                      }}
+                    >
+                      {spec.icon && (
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-lg" style={{ background: `rgba(${pr},${pg},${pb},0.08)` }}>
+                          {spec.icon}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="rog-spec-label">{spec.label}</div>
+                        <div className="rog-spec-value text-sm truncate">{spec.value}</div>
+                        {spec.tag && (
+                          <span className="text-[7px] font-mono text-zinc-600 uppercase tracking-wider">{spec.tag}</span>
+                        )}
+                      </div>
+                      <FaArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-40 group-hover:translate-x-0 transition-all" style={{ color: palette.base }} />
+                    </div>
+                  </RevealSection>
+                ))}
+              </div>
+            </div>
+          </section>
         )}
 
-        <DiagonalDivider accent={palette.base} />
+        {/* ═══ SPECS / PERFORMANCE ═══ */}
+        <section id="specs" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+          <SectionBg palette={palette} />
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <RevealSection>
+              <div className="rog-strix-eyebrow mb-4">{isSystem ? 'Performance Profile' : 'Specifications'}</div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                {isSystem ? 'Hardware Utilization' : 'Full Specifications'}
+              </h2>
+              <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                {isSystem
+                  ? 'Real-world performance metrics and hardware utilization benchmarks for your workflow.'
+                  : 'Detailed technical specifications and measurements for this device.'}
+              </p>
+            </RevealSection>
 
-        {/* System: Performance Profile (SpecBars + Metrics) */}
-        {isSystem && specBars.length > 0 && (
-          <section id="specs" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
-            <SectionBg palette={palette} />
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <RevealSection>
-                <div className="flex items-center gap-4 mb-10">
-                  <div className="h-[2px] w-8 rounded-full" style={{ backgroundColor: palette.base }} />
-                  <span className="text-[9px] tracking-[0.5em] text-zinc-500 uppercase font-bold">Performance Profile</span>
-                </div>
-              </RevealSection>
-
+            {isSystem && specBars.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <RevealSection>
                   <SpecBars bars={specBars} title="HARDWARE UTILIZATION" accent={palette.base} />
@@ -230,21 +311,7 @@ export default function GearDetailClient({
                   <PerformanceMetrics metrics={perfMetrics} title="SYSTEM METRICS" accent={palette.base} />
                 </RevealSection>
               </div>
-            </div>
-          </section>
-        )}
-
-        {/* Non-system: Spec Bento Grid */}
-        {!isSystem && (
-          <section id="specs" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
-            <SectionBg palette={palette} />
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <RevealSection>
-                <h3 className="text-[11px] font-black tracking-[0.3em] uppercase text-white/50 mb-8">
-                  <span style={{ color: palette.base }}>◆</span> {item.specTitle}
-                </h3>
-              </RevealSection>
-
+            ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {item.specs.map((s, i) => (
                   <motion.div
@@ -263,60 +330,43 @@ export default function GearDetailClient({
                       boxShadow: `0 0 30px -8px rgba(${pr},${pg},${pb},0.12)`,
                     }}
                   >
-                    <NeonGlitch className="w-full h-full">
-                      {/* Top accent border */}
-                      <div
-                        className="absolute top-0 left-0 right-0 h-[2px] opacity-60"
-                        style={{ backgroundColor: palette.base }}
-                      />
-                      <div
-                        className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        style={{
-                          background: `linear-gradient(to right, transparent, rgba(${pr},${pg},${pb},0.4), transparent)`,
-                        }}
-                      />
-                      {s.icon && <div className="text-xl mb-2 flex justify-center" style={{ color: palette.base }}>{s.icon}</div>}
-                      <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
-                      <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
-                      {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
-
-                      {item.slug === 'glorious-model-o' && s.label === 'WEIGHT' && (
-                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                          <div className="relative bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-xl min-w-[100px]">
-                            <div className="relative h-[80px]">
-                              <pre className="animate-arms-up absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
->{`  \\ | /
-   \\|/
-    67
-  /   \\`}</pre>
-                              <pre className="animate-arms-down absolute inset-0 text-[10px] leading-relaxed text-cyan-400 font-mono text-center whitespace-pre flex items-center justify-center"
->{`  / | \\
- /  |  \\
-    67
-  /   \\`}</pre>
-                            </div>
-                          </div>
-                          <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-zinc-700" />
-                        </div>
-                      )}
-                    </NeonGlitch>
+                    <div className="absolute top-0 left-0 right-0 h-[2px] opacity-60" style={{ backgroundColor: palette.base }} />
+                    {s.icon && <div className="text-xl mb-2 flex justify-center" style={{ color: palette.base }}>{s.icon}</div>}
+                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
+                    <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
+                    {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
                   </motion.div>
                 ))}
               </div>
-            </div>
-          </section>
-        )}
+            )}
 
-        {/* Benchmarks (systems only) */}
+            <RevealSection>
+              <div className="mt-8">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="rog-read-more"
+                >
+                  Read more about this device <FaArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </RevealSection>
+          </div>
+        </section>
+
+        {/* ═══ BENCHMARKS ═══ */}
         {isSystem && item.benchmarks && item.benchmarks.length > 0 && (
-          <section id="benchmarks" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
+          <section id="benchmarks" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
-                <div className="flex items-center gap-4 mb-10">
-                  <div className="h-[2px] w-8 rounded-full" style={{ backgroundColor: palette.base }} />
-                  <span className="text-[9px] tracking-[0.5em] text-zinc-500 uppercase font-bold">Benchmarks</span>
-                </div>
+                <div className="rog-strix-eyebrow mb-4">Benchmarks</div>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                  Synthetic Performance
+                </h2>
+                <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                  Standardized benchmark scores measuring real-world processing, graphics, and system capabilities.
+                </p>
               </RevealSection>
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -327,15 +377,17 @@ export default function GearDetailClient({
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-50px' }}
                     transition={{ delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="rog-card p-4 text-center"
+                    className="relative overflow-hidden rounded-lg border p-4 text-center"
+                    style={{
+                      borderColor: `rgba(${pr},${pg},${pb},0.1)`,
+                      background: `linear-gradient(180deg, rgba(${pr},${pg},${pb},0.03), transparent)`,
+                    }}
                   >
-                    <NeonGlitch>
-                      <div className="text-lg md:text-2xl font-black tabular-nums" style={{ color: palette.base }}>
-                        {b.score.toLocaleString()}
-                        {b.unit && <span className="text-[10px] text-zinc-600 ml-0.5">{b.unit}</span>}
-                      </div>
-                      <div className="rog-spec-label text-center mt-1">{b.label}</div>
-                    </NeonGlitch>
+                    <div className="text-lg md:text-2xl font-black tabular-nums" style={{ color: palette.base }}>
+                      {b.score.toLocaleString()}
+                      {b.unit && <span className="text-[10px] text-zinc-600 ml-0.5">{b.unit}</span>}
+                    </div>
+                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase mt-1" style={{ color: `rgba(${pr},${pg},${pb},0.5)` }}>{b.label}</div>
                   </motion.div>
                 ))}
               </div>
@@ -343,18 +395,36 @@ export default function GearDetailClient({
           </section>
         )}
 
-        <DiagonalDivider accent={palette.base} flip />
+        {/* ═══ GALLERY ═══ */}
+        {item.gallery && item.gallery.length > 0 && (
+          <section id="gallery" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+            <SectionBg palette={palette} />
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <RevealSection>
+                <div className="rog-strix-eyebrow mb-4">Gallery</div>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                  A Closer Look
+                </h2>
+                <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                  Detailed views of the {item.name} from every angle.
+                </p>
+              </RevealSection>
+              <ProductGallery images={item.gallery} name={item.name} />
+            </div>
+          </section>
+        )}
 
-        {/* Story + Pros/Cons */}
-        <section id="story" className="relative w-full py-20 bg-background overflow-hidden scroll-mt-32">
+        {/* ═══ STORY ═══ */}
+        <section id="story" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <SectionBg palette={palette} />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
               <div className="lg:col-span-3">
                 <RevealSection>
-                  <h3 className="text-[11px] font-black tracking-[0.3em] uppercase text-white/50 mb-6">
-                    <span style={{ color: palette.base }}>◆</span> THE STORY
-                  </h3>
+                  <div className="rog-strix-eyebrow mb-4">The Story</div>
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-6">
+                    Why It&apos;s in My Setup
+                  </h2>
                   <p className="text-sm md:text-base text-zinc-400 leading-relaxed font-mono">
                     {item.story}
                   </p>
@@ -396,7 +466,6 @@ export default function GearDetailClient({
                           transition={{ delay: i * 0.1, duration: 0.3 }}
                           className="relative pl-4 text-xs text-zinc-400 font-mono leading-relaxed"
                         >
-                          {/* Left border accent */}
                           <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full bg-emerald-400/60" />
                           {pro}
                         </motion.li>
@@ -428,25 +497,37 @@ export default function GearDetailClient({
                     </ul>
                   </RevealSection>
                 )}
-
-                {/* Connectivity Terminal */}
-                {item.connectivity && item.connectivity.length > 0 && (
-                  <RevealSection>
-                    <h4 className="text-[10px] font-black tracking-[0.3em] uppercase text-zinc-500 mb-4 flex items-center gap-2">
-                      <span className="w-4 h-[1px] bg-zinc-600/50" />
-                      CONNECTIVITY
-                    </h4>
-                    <ConnectivityTerminal slug={item.slug} connectivity={item.connectivity} />
-                  </RevealSection>
-                )}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Related Gear */}
+        {/* ═══ CONNECTIVITY ═══ */}
+        {item.connectivity && item.connectivity.length > 0 && (
+          <section id="connectivity" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+            <SectionBg palette={palette} />
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <RevealSection>
+                  <div className="rog-strix-eyebrow mb-4">I/O & Ports</div>
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                    Connectivity
+                  </h2>
+                  <p className="text-sm text-zinc-500 font-mono max-w-xl mb-6">
+                    All ports, connectors, and wireless interfaces available on this device.
+                  </p>
+                </RevealSection>
+                <RevealSection>
+                  <ConnectivityTerminal slug={item.slug} connectivity={item.connectivity} />
+                </RevealSection>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ═══ RELATED GEAR ═══ */}
         {related.length > 0 && (
-          <section id="related" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
+          <section id="related" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <div className="absolute inset-0 opacity-[0.015]"
               style={{
                 backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(${pr},${pg},${pb},0.3) 4px, rgba(${pr},${pg},${pb},0.3) 5px)`,
@@ -454,10 +535,13 @@ export default function GearDetailClient({
             />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
-                <div className="flex items-center gap-4 mb-10">
-                  <div className="h-[2px] w-8 rounded-full" style={{ backgroundColor: palette.base }} />
-                  <span className="text-[9px] tracking-[0.5em] text-zinc-500 uppercase font-bold">Related Gear</span>
-                </div>
+                <div className="rog-strix-eyebrow mb-4">Complete the Setup</div>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                  Related Gear
+                </h2>
+                <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                  More {item.category} equipment from the collection.
+                </p>
               </RevealSection>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

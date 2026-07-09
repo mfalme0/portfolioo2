@@ -6,11 +6,13 @@ import Image from 'next/image';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import type { HomelabItem } from '@/lib/homelab-data';
 import { GiProcessor } from 'react-icons/gi';
-import { FaMemory, FaHdd, FaTerminal, FaCube, FaServer } from 'react-icons/fa';
+import { FaMemory, FaHdd, FaTerminal, FaCube, FaServer, FaArrowRight } from 'react-icons/fa';
 import PageLoader from '@/app/Components/page-loader';
 import ServiceCard from '@/app/Components/homelab/ServiceCard';
 import ActiveService from '@/app/Components/game/ActiveService';
-import NeonGlitch from '@/app/Components/neon-glitch';
+import RogSideAnchor from '@/app/Components/game/RogSideAnchor';
+import RogProductHeader from '@/app/Components/game/RogProductHeader';
+import ConnectivityTerminal from '@/app/Components/game/ConnectivityTerminal';
 
 const accentColor = '#EF4444';
 const accentRgb: [number, number, number] = [239, 68, 68];
@@ -49,14 +51,10 @@ function SectionBg() {
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <div
         className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse 70% 50% at 50% 0%, rgba(${r},${g},${b},0.05) 0%, transparent 70%)`,
-        }}
+        style={{ background: `radial-gradient(ellipse 70% 50% at 50% 0%, rgba(${r},${g},${b},0.04) 0%, transparent 70%)` }}
       />
-      <div className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${r},${g},${b},0.2) 2px, rgba(${r},${g},${b},0.2) 3px)`,
-        }}
+      <div className="absolute inset-0 opacity-[0.015]"
+        style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${r},${g},${b},0.15) 2px, rgba(${r},${g},${b},0.15) 3px)` }}
       />
     </div>
   );
@@ -91,6 +89,14 @@ export default function HomelabDetailClient({
   const servicesActive = item.services.filter(s => s.status === 'active');
   const servicesPassive = item.services.filter(s => s.status === 'passive');
 
+  const sections = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'specs', label: 'Specs' },
+    { id: 'services', label: 'Services' },
+    { id: 'story', label: 'Story' },
+    ...(related.length > 0 ? [{ id: 'related', label: 'Related' }] : []),
+  ];
+
   return (
     <>
       <AnimatePresence mode="wait">
@@ -101,6 +107,13 @@ export default function HomelabDetailClient({
           />
         )}
       </AnimatePresence>
+
+      <RogProductHeader
+        name={item.name}
+        category="SERVER"
+        tabs={sections}
+        accent={accentColor}
+      />
 
       <main className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
         {/* Breadcrumbs */}
@@ -114,11 +127,12 @@ export default function HomelabDetailClient({
           </ol>
         </nav>
 
-        {/* Hero */}
-        <section className="relative min-h-screen bg-background text-[#fafafa] font-sans overflow-hidden">
+        <RogSideAnchor items={sections} accent={accentColor} />
+
+        {/* ═══ KV HERO ═══ */}
+        <section id="overview" className="relative min-h-screen bg-background text-[#fafafa] font-sans overflow-hidden">
           <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[120px]" style={{ backgroundColor: `${accentColor}0a` }} />
           <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full blur-[100px]" style={{ backgroundColor: `${accentColor}08` }} />
-
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-60" />
 
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex flex-col justify-center">
@@ -193,59 +207,51 @@ export default function HomelabDetailClient({
                 transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="space-y-3"
               >
-                <NeonGlitch>
-                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-xl">
-                      <GiProcessor className="text-blue-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">PROCESSOR</div>
-                      <div className="text-sm font-semibold truncate">{item.cpu}</div>
-                      <div className="flex gap-3 mt-1">
-                        <span className="text-[10px] font-mono text-zinc-500">{item.cpu.includes('i5-6500') ? '4C / 4T' : '2C / 4T'}</span>
-                      </div>
+                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22`, background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)` }}>
+                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-xl">
+                    <GiProcessor className="text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">PROCESSOR</div>
+                    <div className="text-sm font-semibold truncate">{item.cpu}</div>
+                    <div className="flex gap-3 mt-1">
+                      <span className="text-[10px] font-mono text-zinc-500">{item.cpu.includes('i5-6500') ? '4C / 4T' : '2C / 4T'}</span>
                     </div>
                   </div>
-                </NeonGlitch>
+                </div>
 
-                <NeonGlitch>
-                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                    <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl">
-                      <FaMemory className="text-purple-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">MEMORY</div>
-                      <div className="text-sm font-semibold">{item.ram}</div>
-                    </div>
+                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22`, background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)` }}>
+                  <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-xl">
+                    <FaMemory className="text-purple-400" />
                   </div>
-                </NeonGlitch>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">MEMORY</div>
+                    <div className="text-sm font-semibold">{item.ram}</div>
+                  </div>
+                </div>
 
-                <NeonGlitch>
-                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                    <div className="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-xl">
-                      <FaHdd className="text-yellow-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">STORAGE</div>
-                      <div className="text-sm font-semibold">{item.storage}</div>
-                    </div>
+                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22`, background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)` }}>
+                  <div className="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-xl">
+                    <FaHdd className="text-yellow-400" />
                   </div>
-                </NeonGlitch>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">STORAGE</div>
+                    <div className="text-sm font-semibold">{item.storage}</div>
+                  </div>
+                </div>
 
-                <NeonGlitch>
-                  <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22` }}>
-                    <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-xl">
-                      <FaTerminal className="text-red-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">OPERATING SYSTEM</div>
-                      <div className="text-sm font-semibold">{item.os}</div>
-                      <div className="flex gap-3 mt-1">
-                        <span className="text-[10px] font-mono text-zinc-500">{item.dockerWrapper}</span>
-                      </div>
+                <div className="rounded-lg border p-4 flex items-center gap-4 transition-all duration-300" style={{ borderColor: `${accentColor}22`, background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)` }}>
+                  <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-xl">
+                    <FaTerminal className="text-red-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[9px] tracking-[0.2em] text-zinc-500 uppercase font-bold">OPERATING SYSTEM</div>
+                    <div className="text-sm font-semibold">{item.os}</div>
+                    <div className="flex gap-3 mt-1">
+                      <span className="text-[10px] font-mono text-zinc-500">{item.dockerWrapper}</span>
                     </div>
                   </div>
-                </NeonGlitch>
+                </div>
               </motion.div>
             </div>
 
@@ -261,14 +267,83 @@ export default function HomelabDetailClient({
           </div>
         </section>
 
-        {/* Full Spec Bento Grid */}
-        <section className="relative w-full py-16 bg-background overflow-hidden">
+        {/* ROG-style brand strip */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between border-t border-b border-white/5 py-3">
+            <div className="flex items-center gap-3">
+              <span className="text-[8px] font-bold tracking-[0.3em] text-zinc-600 uppercase">HOMELAB</span>
+              <div className="w-px h-4 bg-white/10" />
+              <span className="text-[8px] font-mono tracking-wider text-zinc-600 uppercase">{item.model}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ActiveService label="ACTIVE" />
+              {item.price && (
+                <span className="text-[9px] font-bold font-mono" style={{ color: accentColor }}>
+                  {item.price}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ KSP GRID — Key Specs ═══ */}
+        {item.specs.length > 0 && (
+          <section className="relative w-full py-10 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <RevealSection>
+                <div className="rog-strix-eyebrow mb-6">Key Specifications</div>
+              </RevealSection>
+              <div className="rog-ksp-grid">
+                {item.specs.slice(0, 6).map((spec, i) => (
+                  <RevealSection key={spec.label}>
+                    <div
+                      className="group flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:-translate-y-0.5"
+                      style={{
+                        borderColor: `rgba(${pr},${pg},${pb},0.08)`,
+                        background: `linear-gradient(135deg, rgba(${pr},${pg},${pb},0.03), transparent)`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = `rgba(${pr},${pg},${pb},0.25)`;
+                        e.currentTarget.style.boxShadow = `0 0 30px -8px rgba(${pr},${pg},${pb},0.1)`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = `rgba(${pr},${pg},${pb},0.08)`;
+                        e.currentTarget.style.boxShadow = '';
+                      }}
+                    >
+                      {spec.icon && (
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-lg" style={{ background: `rgba(${pr},${pg},${pb},0.08)` }}>
+                          {spec.icon}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[8px] tracking-[0.2em] uppercase font-semibold" style={{ color: `rgba(${pr},${pg},${pb},0.5)` }}>{spec.label}</div>
+                        <div className="text-sm font-semibold text-white/90 truncate">{spec.value}</div>
+                        {spec.tag && (
+                          <span className="text-[7px] font-mono text-zinc-600 uppercase tracking-wider">{spec.tag}</span>
+                        )}
+                      </div>
+                      <FaArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-40 group-hover:translate-x-0 transition-all" style={{ color: accentColor }} />
+                    </div>
+                  </RevealSection>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ═══ SPECS ═══ */}
+        <section id="specs" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <SectionBg />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <RevealSection>
-              <h3 className="text-[11px] font-black tracking-[0.3em] uppercase text-white/50 mb-8">
-                <span style={{ color: accentColor }}>◆</span> {item.specTitle}
-              </h3>
+              <div className="rog-strix-eyebrow mb-4">Full Specifications</div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                Machine Details
+              </h2>
+              <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                Complete hardware and software specifications for this node.
+              </p>
             </RevealSection>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -289,40 +364,48 @@ export default function HomelabDetailClient({
                     boxShadow: `0 0 30px -8px rgba(${pr},${pg},${pb},0.12)`,
                   }}
                 >
-                  <NeonGlitch className="w-full h-full">
-                    <div className="absolute top-0 left-0 right-0 h-[2px] opacity-60" style={{ backgroundColor: accentColor }} />
-                    <div
-                      className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(to right, transparent, rgba(${pr},${pg},${pb},0.4), transparent)` }}
-                    />
-                    {specIcon(s.label) && <div className="text-xl mb-2 flex justify-center">{specIcon(s.label)}</div>}
-                    <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
-                    <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
-                    {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
-                  </NeonGlitch>
+                  <div className="absolute top-0 left-0 right-0 h-[2px] opacity-60" style={{ backgroundColor: accentColor }} />
+                  {specIcon(s.label) && <div className="text-xl mb-2 flex justify-center">{specIcon(s.label)}</div>}
+                  <div className="text-[8px] font-bold tracking-[0.2em] uppercase" style={{ color: `rgba(${pr},${pg},${pb},0.6)` }}>{s.label}</div>
+                  <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
+                  {s.tag && <div className="text-[8px] font-mono text-zinc-600 mt-1 uppercase tracking-wider">{s.tag}</div>}
                 </motion.div>
               ))}
             </div>
+
+            <RevealSection>
+              <div className="mt-8">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="rog-read-more"
+                >
+                  View all services <FaArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </RevealSection>
           </div>
         </section>
 
-        {/* Services Section */}
-        <section className="relative w-full py-16 bg-background overflow-hidden border-t border-white/[0.03]">
+        {/* ═══ SERVICES ═══ */}
+        <section id="services" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <SectionBg />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <RevealSection>
-              <div className="flex items-center gap-4 mb-10">
-                <div className="h-[2px] w-8 rounded-full" style={{ backgroundColor: accentColor }} />
-                <span className="text-[9px] tracking-[0.5em] text-zinc-500 uppercase font-bold">Service Inventory</span>
-                <span className="text-[9px] font-mono text-zinc-600 tracking-wider">
-                  ({servicesActive.length} active{servicesPassive.length > 0 ? `, ${servicesPassive.length} passive` : ''})
-                </span>
-              </div>
+              <div className="rog-strix-eyebrow mb-4">Service Inventory</div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                Running Services
+              </h2>
+              <p className="text-sm text-zinc-500 font-mono max-w-xl mb-4">
+                All containerized workloads currently deployed on this node.
+              </p>
+              <span className="text-[9px] font-mono text-zinc-600 tracking-wider">
+                ({servicesActive.length} active{servicesPassive.length > 0 ? `, ${servicesPassive.length} passive` : ''})
+              </span>
             </RevealSection>
 
-            {/* Active services */}
             {servicesActive.length > 0 && (
-              <div className="mb-10">
+              <div className="mb-10 mt-8">
                 <RevealSection>
                   <h4 className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-400 mb-4 flex items-center gap-2">
                     <span className="w-4 h-[1px] bg-emerald-400/50" />
@@ -346,7 +429,6 @@ export default function HomelabDetailClient({
               </div>
             )}
 
-            {/* Passive services */}
             {servicesPassive.length > 0 && (
               <div>
                 <RevealSection>
@@ -374,16 +456,17 @@ export default function HomelabDetailClient({
           </div>
         </section>
 
-        {/* Story + Purchase Info */}
-        <section className="relative w-full py-20 bg-background overflow-hidden border-t border-white/[0.03]">
+        {/* ═══ STORY ═══ */}
+        <section id="story" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <SectionBg />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
               <div className="lg:col-span-3">
                 <RevealSection>
-                  <h3 className="text-[11px] font-black tracking-[0.3em] uppercase text-white/50 mb-6">
-                    <span style={{ color: accentColor }}>◆</span> THE STORY
-                  </h3>
+                  <div className="rog-strix-eyebrow mb-4">The Story</div>
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-6">
+                    How This Node Came to Be
+                  </h2>
                   <p className="text-sm md:text-base text-zinc-400 leading-relaxed font-mono">
                     {item.story}
                   </p>
@@ -450,9 +533,9 @@ export default function HomelabDetailClient({
           </div>
         </section>
 
-        {/* Related */}
+        {/* ═══ RELATED ═══ */}
         {related.length > 0 && (
-          <section className="relative w-full py-16 bg-background overflow-hidden border-t border-white/[0.03]">
+          <section id="related" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <div className="absolute inset-0 opacity-[0.015]"
               style={{
                 backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(${pr},${pg},${pb},0.3) 4px, rgba(${pr},${pg},${pb},0.3) 5px)`,
@@ -460,10 +543,13 @@ export default function HomelabDetailClient({
             />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
-                <div className="flex items-center gap-4 mb-10">
-                  <div className="h-[2px] w-8 rounded-full" style={{ backgroundColor: accentColor }} />
-                  <span className="text-[9px] tracking-[0.5em] text-zinc-500 uppercase font-bold">Other Nodes</span>
-                </div>
+                <div className="rog-strix-eyebrow mb-4">Other Nodes</div>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
+                  Related Machines
+                </h2>
+                <p className="text-sm text-zinc-500 font-mono max-w-xl mb-10">
+                  More servers in the homelab cluster.
+                </p>
               </RevealSection>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
