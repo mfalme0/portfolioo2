@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import type { GearItem } from '@/lib/gear-data';
 import { SiNvidia, SiIntel, SiAmd } from 'react-icons/si';
 import ActiveService from './ActiveService';
+import TiltShowcase from './TiltShowcase';
 
 function getCpuIcon(name: string) {
   if (name.includes('Intel')) return <SiIntel className="text-blue-500" />;
@@ -52,6 +52,13 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
   const [typed, setTyped] = useState('');
   const [showContent, setShowContent] = useState(false);
   const subtitleRef = useRef<string>(item.subtitle || '');
+  const heroRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   useEffect(() => {
     setShowContent(true);
@@ -66,18 +73,31 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
   }, []);
 
   return (
-    <section className="relative min-h-screen bg-background text-[#fafafa] font-sans overflow-hidden">
+    <section ref={heroRef} className="relative min-h-screen bg-background text-[#fafafa] font-sans overflow-hidden">
       <div className="rog-hex-grid" />
       <div className="rog-hex-overlay" />
       <div className="rog-scanline" />
 
-      {/* Atmospheric glow using category accent */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[120px]" style={{ backgroundColor: `${accent}0a` }} />
-      <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full blur-[100px]" style={{ backgroundColor: `${accent}08` }} />
+      {/* Atmospheric glow using category accent — parallaxes on scroll */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={reduceMotion ? undefined : { y: bgY }}
+      >
+        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-[120px]" style={{ backgroundColor: `${accent}0a` }} />
+        <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full blur-[100px]" style={{ backgroundColor: `${accent}08` }} />
+        {/* ROG signature diagonal slash */}
+        <div
+          className="absolute -left-24 top-[38%] w-[160%] h-40 -rotate-6 opacity-70"
+          style={{ background: `linear-gradient(90deg, transparent, ${accent}14, transparent)` }}
+        />
+      </motion.div>
 
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-60" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex flex-col justify-center">
+      <motion.div
+        className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex flex-col justify-center"
+        style={reduceMotion ? undefined : { y: contentY, opacity: contentOpacity }}
+      >
         {/* Tags + Active indicator */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -140,17 +160,7 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
                   background: `radial-gradient(ellipse at center, ${accent}1a, transparent 70%)`,
                 }}
               />
-              <div className="relative rog-float">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  width={600}
-                  height={400}
-                  className="w-full h-auto object-contain"
-                  style={{ filter: `drop-shadow(0 20px 40px ${accent}26)` }}
-                  priority
-                />
-              </div>
+              <TiltShowcase src={item.image} alt={item.name} accent={accent} priority />
               {/* Status bar (footerLeft / footerRight) */}
               {(item.footerLeft || item.footerRight) && (
                 <div className="absolute -bottom-1 left-0 right-0 flex items-center justify-between px-4 py-1.5 rounded-b-lg border-t border-white/[0.06] bg-black/40 backdrop-blur-sm">
@@ -261,7 +271,7 @@ export default function RogHero({ item, accent = '#10b981' }: { item: GearItem; 
           <span className="text-[8px] tracking-[0.4em] text-zinc-600 uppercase font-mono">Scroll</span>
           <div className="w-[1px] h-8 bg-gradient-to-b from-white/20 to-transparent" />
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

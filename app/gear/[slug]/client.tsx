@@ -14,6 +14,9 @@ import SpecBars from '@/app/Components/game/SpecBars';
 import PerformanceMetrics from '@/app/Components/game/PerformanceMetrics';
 import ConnectivityTerminal from '@/app/Components/game/ConnectivityTerminal';
 import NeonGlitch from '@/app/Components/neon-glitch';
+import SectionNav from '@/app/Components/game/SectionNav';
+import GearTicker from '@/app/Components/game/GearTicker';
+import DiagonalDivider from '@/app/Components/game/DiagonalDivider';
 
 const catPalette: Record<GearCategory, { base: string; rgb: [number, number, number] }> = {
   system:     { base: '#10B981', rgb: [16, 185, 129] },
@@ -143,6 +146,15 @@ export default function GearDetailClient({
       ]
     : [];
 
+  const navItems = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'specs', label: isSystem ? 'Performance' : 'Specs' },
+    ...(item.gallery && item.gallery.length > 0 ? [{ id: 'gallery', label: 'Gallery' }] : []),
+    ...(isSystem && item.benchmarks && item.benchmarks.length > 0 ? [{ id: 'benchmarks', label: 'Benchmarks' }] : []),
+    { id: 'story', label: 'Story' },
+    ...(related.length > 0 ? [{ id: 'related', label: 'Related' }] : []),
+  ];
+
   return (
     <>
       <AnimatePresence mode="wait">
@@ -161,6 +173,7 @@ export default function GearDetailClient({
               `${item.name.replace(/\s+/g, '_')}_READY.`,
             ]}
             version={`V.${item.slug.replace(/[^0-9]/g, '')}.0` || 'V.2.1.0'}
+            accent={palette.base}
           />
         )}
       </AnimatePresence>
@@ -181,15 +194,25 @@ export default function GearDetailClient({
           </ol>
         </nav>
 
-        <RogHero item={item} accent={palette.base} />
+        <SectionNav items={navItems} accent={palette.base} />
+
+        <div id="overview">
+          <RogHero item={item} accent={palette.base} />
+        </div>
+
+        <GearTicker label={`${item.category.toUpperCase()} SERIES  ◆  ${item.modelLabel ? item.modelLabel.replace(/\/\//g, '').trim() : item.name}  ◆  REPUBLIC OF GEAR`} accent={palette.base} />
 
         {item.gallery && item.gallery.length > 0 && (
-          <ProductGallery images={item.gallery} name={item.name} />
+          <div id="gallery">
+            <ProductGallery images={item.gallery} name={item.name} />
+          </div>
         )}
+
+        <DiagonalDivider accent={palette.base} />
 
         {/* System: Performance Profile (SpecBars + Metrics) */}
         {isSystem && specBars.length > 0 && (
-          <section className="relative w-full py-16 bg-background overflow-hidden">
+          <section id="specs" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
             <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
@@ -213,7 +236,7 @@ export default function GearDetailClient({
 
         {/* Non-system: Spec Bento Grid */}
         {!isSystem && (
-          <section className="relative w-full py-16 bg-background overflow-hidden">
+          <section id="specs" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
             <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
@@ -286,7 +309,7 @@ export default function GearDetailClient({
 
         {/* Benchmarks (systems only) */}
         {isSystem && item.benchmarks && item.benchmarks.length > 0 && (
-          <section className="relative w-full py-16 bg-background overflow-hidden">
+          <section id="benchmarks" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
             <SectionBg palette={palette} />
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
@@ -320,8 +343,10 @@ export default function GearDetailClient({
           </section>
         )}
 
+        <DiagonalDivider accent={palette.base} flip />
+
         {/* Story + Pros/Cons */}
-        <section className="relative w-full py-20 bg-background overflow-hidden">
+        <section id="story" className="relative w-full py-20 bg-background overflow-hidden scroll-mt-32">
           <SectionBg palette={palette} />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
@@ -421,7 +446,7 @@ export default function GearDetailClient({
 
         {/* Related Gear */}
         {related.length > 0 && (
-          <section className="relative w-full py-16 bg-background overflow-hidden">
+          <section id="related" className="relative w-full py-16 bg-background overflow-hidden scroll-mt-32">
             <div className="absolute inset-0 opacity-[0.015]"
               style={{
                 backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(${pr},${pg},${pb},0.3) 4px, rgba(${pr},${pg},${pb},0.3) 5px)`,

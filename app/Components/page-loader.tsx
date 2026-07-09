@@ -12,10 +12,18 @@ interface PageLoaderProps {
   logs?: string[];
   version?: string;
   durationMs?: number;
+  /** Optional hex accent (e.g. a gear item's category color) to override the site-wide theme accent for this instance. */
+  accent?: string;
 }
 
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
+}
+
+function hexToRgbString(hex: string): string {
+  const clean = hex.replace('#', '');
+  const v = parseInt(clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean, 16);
+  return `${(v >> 16) & 255}, ${(v >> 8) & 255}, ${v & 255}`;
 }
 
 function postBeep() {
@@ -120,6 +128,7 @@ export default function PageLoader({
   logs: customLogs,
   version: customVersion,
   durationMs: customDuration,
+  accent,
 }: PageLoaderProps) {
   const reduceMotion = useReducedMotion();
   const [progress, setProgress] = useState(0);
@@ -129,6 +138,11 @@ export default function PageLoader({
   const rafRef = useRef<number>(null);
   const doneRef = useRef(false);
   const pctRef = useRef(0);
+
+  // When an explicit accent (e.g. a gear item's category color) is passed, use it in
+  // place of the site-wide theme accent so the loader matches the page it's booting into.
+  const accentColor = accent || 'var(--color-accent)';
+  const accentRgbStr = accent ? hexToRgbString(accent) : 'var(--accent-rgb)';
 
   const activeLogs = customLogs ?? LOGS[theme];
   const activeDuration = customDuration ?? DEFAULTS[theme].duration;
@@ -478,6 +492,8 @@ export default function PageLoader({
 
 
   if (theme === 'home') {
+    const ringR = 34;
+    const circumference = 2 * Math.PI * ringR;
     return (
       <AnimatePresence>
         <motion.div
@@ -487,47 +503,30 @@ export default function PageLoader({
           style={{ backgroundColor: 'var(--color-background)' }}
         >
           <div className="flex flex-col items-center gap-6">
-            {reduceMotion ? (
-              <span className="text-5xl font-light tracking-tighter" style={{ color: 'var(--color-foreground)' }}>
-                JG
-              </span>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <motion.div className="flex items-center gap-3 overflow-hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                  <motion.span
-                    initial={{ y: 40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-6xl font-light tracking-[-0.04em]"
-                    style={{ color: 'var(--color-foreground)' }}
-                  >
-                    J
-                  </motion.span>
-                  <motion.span
-                    initial={{ y: 40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-6xl font-light tracking-[-0.04em]"
-                    style={{ color: 'var(--color-foreground)' }}
-                  >
-                    G
-                  </motion.span>
-                </motion.div>
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.6, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                  className="h-[2px] w-16 origin-center overflow-hidden rounded-full"
-                  style={{ backgroundColor: 'var(--accent-default)' }}
+            {/* Radial signal-acquisition ring — tracks real boot progress */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-20 h-20 flex items-center justify-center"
+            >
+              <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90">
+                <circle cx="40" cy="40" r={ringR} fill="none" stroke="var(--color-border)" strokeWidth="2" />
+                <circle
+                  cx="40" cy="40" r={ringR} fill="none"
+                  stroke={accentColor} strokeWidth="2" strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={circumference * (1 - pct / 100)}
+                  style={{
+                    transition: reduceMotion ? undefined : 'stroke-dashoffset 0.15s ease-out',
+                    filter: `drop-shadow(0 0 6px ${accentColor})`,
+                  }}
                 />
-              </div>
-            )}
-            <div className="w-32 h-[2px] overflow-hidden rounded-full" style={{ backgroundColor: 'var(--color-border)' }}>
-              <div
-                className="h-full w-full rounded-full"
-                style={{ width: `${pct}%`, backgroundColor: 'var(--accent-default)', transition: 'width 0.15s ease-out' }}
-              />
-            </div>
+              </svg>
+              <span className="absolute text-sm font-semibold tabular-nums tracking-tight" style={{ color: 'var(--color-foreground)' }}>
+                {pct}<span className="text-[10px] opacity-50">%</span>
+              </span>
+            </motion.div>
             <div className="flex flex-col items-center gap-2">
               <span className="text-[10px] font-medium tracking-[0.2em] uppercase" style={{ color: 'var(--color-muted)' }}>
                 Loading
@@ -537,7 +536,7 @@ export default function PageLoader({
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-[11px] font-normal tracking-[0.15em]"
-                  style={{ color: 'var(--accent-default)' }}
+                  style={{ color: accentColor }}
                 >
                   Welcome back.
                 </motion.span>
@@ -679,7 +678,7 @@ export default function PageLoader({
         className={`fixed inset-0 z-50 font-mono flex items-center justify-center p-6 overflow-hidden ${isGlitching ? 'chromatic-glitching scale-[1.01]' : ''}`}
         style={{
           backgroundColor: 'var(--bg)',
-          color: 'var(--accent-default)',
+          color: accentColor,
           transition: isGlitching ? 'all 0.05s' : undefined,
           filter: isGlitching ? 'invert(0.08) hue-rotate(90deg)' : undefined,
         }}
@@ -715,7 +714,7 @@ export default function PageLoader({
                 animate={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}
                 transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 style={{
-                  background: 'linear-gradient(90deg, transparent 0%, rgb(var(--accent-rgb) / 0.06) 25%, rgb(var(--accent-rgb) / 0.10) 50%, rgb(var(--accent-rgb) / 0.06) 75%, transparent 100%)',
+                  background: `linear-gradient(90deg, transparent 0%, rgb(${accentRgbStr} / 0.06) 25%, rgb(${accentRgbStr} / 0.10) 50%, rgb(${accentRgbStr} / 0.06) 75%, transparent 100%)`,
                 }}
               />
             )}
@@ -727,13 +726,13 @@ export default function PageLoader({
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                style={{ background: 'rgb(var(--accent-rgb) / 0.08)' }}
+                style={{ background: `rgb(${accentRgbStr} / 0.08)` }}
               />
             )}
 
             {/* === GEAR — BIOS BOOT SPLASH === */}
             <div className="flex flex-col items-center pt-16 pb-8">
-              {/* JG monogram swings in */}
+              {/* Hex power badge swings in */}
               <motion.div
                 initial={{ y: -140, rotate: -15, opacity: 0, scale: 0.6 }}
                 animate={{ y: 0, rotate: 0, opacity: 1, scale: 1 }}
@@ -743,10 +742,28 @@ export default function PageLoader({
                   damping: 10,
                   mass: 1.1,
                 }}
-                className="text-7xl md:text-8xl font-black tracking-tighter leading-none"
-                style={{ color: 'var(--accent-default)' }}
               >
-                JG
+                <svg width="84" height="84" viewBox="0 0 100 100" fill="none">
+                  <motion.path
+                    d="M50 4 L90 27 L90 73 L50 96 L10 73 L10 27 Z"
+                    stroke={accentColor}
+                    strokeWidth="4"
+                    strokeLinejoin="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                    style={{ filter: `drop-shadow(0 0 10px ${accentColor})` }}
+                  />
+                  <motion.path
+                    d="M50 32 L50 68 M34 50 L66 50"
+                    stroke={accentColor}
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ duration: 0.35, delay: 0.55 }}
+                  />
+                </svg>
               </motion.div>
 
               <motion.div
@@ -784,7 +801,7 @@ export default function PageLoader({
                 </div>
                 <div className="flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-white/40">
                   {pct >= 100 ? (
-                    <><FaCheck style={{ color: 'var(--accent-default)' }} /> READY</>
+                    <><FaCheck style={{ color: accentColor }} /> READY</>
                   ) : (
                     <><FaCog className={reduceMotion ? '' : 'animate-spin'} /> PROCESSING</>
                   )}
@@ -797,7 +814,7 @@ export default function PageLoader({
                 <motion.div
                   className="h-full"
                   style={{
-                    background: 'var(--accent-default)',
+                    background: accentColor,
                     width: `${progress}%`,
                     transition: 'width 0.15s ease-out',
                   }}
@@ -816,14 +833,14 @@ export default function PageLoader({
                       <span className="opacity-50">&gt;</span> {prevLine}
                     </div>
                     <div className="text-[11px] text-white/80 flex items-center gap-2">
-                      <span className="inline-flex h-[3px] w-[3px] rounded-full shrink-0" style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.8)' }} />
+                      <span className="inline-flex h-[3px] w-[3px] rounded-full shrink-0" style={{ backgroundColor: `rgb(${accentRgbStr} / 0.8)` }} />
                       <span className="tracking-wide">
                         <span className="opacity-50">&gt;</span>{' '}
                         {typed}
                         {!reduceMotion && (
                           <motion.span
                             className="inline-block w-[1.5px] h-[12px] ml-0.5 align-middle"
-                            style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.8)' }}
+                            style={{ backgroundColor: `rgb(${accentRgbStr} / 0.8)` }}
                             animate={{ opacity: [1, 0] }}
                             transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
                           />
@@ -846,7 +863,7 @@ export default function PageLoader({
           </div>
         ) : (
           <div className="relative z-10 w-full max-w-xl rounded-xl border border-white/10 bg-black/60 backdrop-blur-md overflow-hidden"
-            style={{ boxShadow: '0 0 80px rgb(var(--accent-rgb) / 0.08)' }}>
+            style={{ boxShadow: `0 0 80px rgb(${accentRgbStr} / 0.08)` }}>
             {/* === LAN: NETWORK SCAN === */}
             <div className="flex items-end justify-between px-6 pt-6 pb-4 border-b border-white/10">
               <div className="flex items-center gap-3">
@@ -887,7 +904,7 @@ export default function PageLoader({
                 <div className={`flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-white/40 ${isGlitching ? 'chromatic-split' : ''}`}
                   data-text={isGlitching ? (pct >= 100 ? 'READY' : 'PROCESSING') : undefined}>
                   {pct >= 100 ? (
-                    <><FaCheck style={{ color: 'var(--accent-default)' }} /> READY</>
+                    <><FaCheck style={{ color: accentColor }} /> READY</>
                   ) : (
                     <><FaCog className={reduceMotion ? '' : 'animate-spin'} /> PROCESSING</>
                   )}
@@ -919,7 +936,7 @@ export default function PageLoader({
                       <span className="opacity-70">&gt;</span> {prevLine}
                     </div>
                     <div className="text-[12px] text-white flex items-center gap-2">
-                      <span className="inline-flex h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)', boxShadow: '0 0 18px rgb(var(--accent-rgb) / 0.35)' }} />
+                      <span className="inline-flex h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: `rgb(${accentRgbStr} / 0.9)`, boxShadow: `0 0 18px rgb(${accentRgbStr} / 0.35)` }} />
                       <span className={`font-bold tracking-wide ${isGlitching ? 'chromatic-split' : ''}`}
                         data-text={`> ${typed}`}>
                         <span className="opacity-70">&gt;</span>{' '}
@@ -927,7 +944,7 @@ export default function PageLoader({
                         {!reduceMotion && (
                           <motion.span
                             className="inline-block w-[2px] h-[14px] ml-0.5 align-middle"
-                            style={{ backgroundColor: 'rgb(var(--accent-rgb) / 0.9)' }}
+                            style={{ backgroundColor: `rgb(${accentRgbStr} / 0.9)` }}
                             animate={{ opacity: [1, 0] }}
                             transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
                           />
@@ -949,10 +966,10 @@ export default function PageLoader({
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-[10px] uppercase tracking-[0.25em] text-white/35">
                 <div className="flex gap-4">
-                  <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>
+                  <span style={{ color: `rgb(${accentRgbStr} / 0.6)` }}>
                     {pingResult || 'PING: scanning...'}
                   </span>
-                  <span style={{ color: 'rgb(var(--accent-rgb) / 0.6)' }}>
+                  <span style={{ color: `rgb(${accentRgbStr} / 0.6)` }}>
                     PEERS: {peersFound}/8
                   </span>
                 </div>

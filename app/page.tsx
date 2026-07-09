@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, startTransition } from 'react';
+import dynamic from 'next/dynamic';
 import Header from './Components/header';
 import PageLoader from './Components/page-loader';
 import { Hero } from './Components/main/hero';
@@ -10,6 +11,8 @@ import { Projects } from './Components/main/projects';
 import PersonalProjects from './Components/main/personal-projects';
 import Skills from './Components/main/skills';
 import Education from './Components/main/education';
+import Github from './Components/main/github';
+const Leetcode = dynamic(() => import('./Components/main/leetcode'), { ssr: false });
 import End from './Components/end';
 import CanvasPlayground from './Components/main/canvas-playground';
 import VideoShowcase from './Components/main/video-showcase';
@@ -22,10 +25,11 @@ type ViewMode = 'sketch' | 'terminal' | 'dark';
 
 const SECTION_NAMES = [
   'Hero', 'Competencies', 'Experience', 'Projects',
-  'Personal', 'Skills', 'Education', 'Contact',
+  'Personal', 'Skills', 'Education', 'GitHub',
+  'LeetCode', 'Video', 'Contact',
 ];
 
-const TOTAL_SECTIONS = 9;
+const TOTAL_SECTIONS = 11;
 const MOBILE_BP = '(max-width: 767px)';
 
 function useMediaQuery(query: string) {
@@ -72,6 +76,8 @@ function MobileLayout({ goTo }: { goTo: (i: number) => void }) {
       <Section id="personal"><PersonalProjects /></Section>
       <Section id="skills"><Skills /></Section>
       <Section id="education"><Education /></Section>
+      <Section id="github"><Github /></Section>
+      <Section id="leetcode"><Leetcode /></Section>
       <Section id="playground"><CanvasPlayground /></Section>
       <Section id="showcase"><VideoShowcase /></Section>
       <Section id="contact"><End /></Section>
@@ -92,6 +98,32 @@ function DesktopLayout({
   const scrollBtnHoveredRef = useRef(false);
   const [scrollBtnHovered, setScrollBtnHovered] = useState(false);
   const isPastHero = currentSection > 0;
+  const prevSection = useRef(currentSection);
+  const [direction, setDirection] = useState(0);
+
+  useEffect(() => {
+    setDirection(currentSection > prevSection.current ? 1 : -1);
+    prevSection.current = currentSection;
+  }, [currentSection]);
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? '30vw' : '-30vw',
+      opacity: 0,
+      scale: 0.97,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? '-100vw' : '100vw',
+      opacity: 0,
+      scale: 0.97,
+      transition: { duration: 0.6, ease: [0.32, 0.08, 0.24, 1] as [number, number, number, number] },
+    }),
+  };
 
   return (
     <>
@@ -107,16 +139,20 @@ function DesktopLayout({
       </div>
 
       <main id="main-content" className="relative z-10 w-full overflow-hidden">
-        <div
-          className="flex flex-row will-change-transform transition-transform duration-[0.8s] ease-[cubic-bezier(0.32,0.08,0.24,1)]"
-          style={{ transform: `translateX(-${currentSection * 100}vw)` }}
-        >
-          {Array.from({ length: TOTAL_SECTIONS }, (_, i) => (
-            <div key={i} className="h-dvh w-dvw flex-shrink-0 overflow-hidden">
-              {renderSection(i)}
-            </div>
-          ))}
-        </div>
+        <AnimatePresence mode="popLayout" custom={direction}>
+          <motion.div
+            key={currentSection}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.8, ease: [0.32, 0.08, 0.24, 1] }}
+            className="h-dvh w-dvw overflow-hidden"
+          >
+            {renderSection(currentSection)}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Section dots */}
@@ -329,8 +365,10 @@ export default function HomePage() {
     if (i === 4) return <RevealCard {...props} title="Personal"><PersonalProjects /></RevealCard>;
     if (i === 5) return <RevealCard {...props} title="Skills"><Skills /></RevealCard>;
     if (i === 6) return <RevealCard {...props} title="Education"><Education /></RevealCard>;
-    if (i === 7) return <VideoShowcase />;
-    if (i === 8) return <RevealCard {...props} title="Contact"><End /></RevealCard>;
+    if (i === 7) return <RevealCard {...props} title="GitHub"><Github /></RevealCard>;
+    if (i === 8) return <RevealCard {...props} title="LeetCode"><Leetcode /></RevealCard>;
+    if (i === 9) return <VideoShowcase />;
+    if (i === 10) return <RevealCard {...props} title="Contact"><End /></RevealCard>;
     return null;
   }, [currentSection, goTo]);
 
