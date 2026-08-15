@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../Context/theme';
+import AnimatedLogo from './animated-logo';
 
 type PageType = 'home' | 'gear' | 'gear-detail' | 'lan' | 'homelab' | 'homelab-detail';
 
@@ -45,9 +46,8 @@ const gearDetailNavLinks: NavLink[] = [
 
 const lanNavLinks: NavLink[] = [
   { name: 'Home', href: '/', index: 0 },
-  { name: 'Gear', href: '/gear', index: 1 },
-  { name: 'Homelab', href: '/homelab', index: 2 },
-  { name: 'LAN', href: '/LAN', index: 3 },
+  { name: 'Homelab', href: '/homelab', index: 1 },
+  { name: 'LAN', href: '/LAN', index: 2 },
 ];
 
 const homelabNavLinks: NavLink[] = [
@@ -59,9 +59,8 @@ const homelabDetailNavLinks: NavLink[] = [
 ];
 
 const sitePageLinks: NavLink[] = [
-  { name: 'Gear', href: '/gear', index: 0 },
-  { name: 'Homelab', href: '/homelab', index: 1 },
-  { name: 'LAN', href: '/LAN', index: 2 },
+  { name: 'Homelab', href: '/homelab', index: 0 },
+  { name: 'LAN', href: '/LAN', index: 1 },
 ];
 
 function getPageType(pathname: string): PageType {
@@ -169,15 +168,19 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
       >
         <div className="max-w-7xl mx-auto px-6">
           <div
-            className={`flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500 ${
+            className={`flex items-center justify-between px-6 py-3 rounded-[3px] transition-all duration-500 ${
               isScrolled
-                ? 'bg-(--color-background) backdrop-blur-2xl shadow-sm border border-(--color-border)'
+                ? 'bg-(--color-card-bg) backdrop-blur-2xl shadow-sm border border-(--color-border)'
                 : 'bg-transparent'
             }`}
           >
             <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-              <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
-                JGITAU
+              <AnimatedLogo size={24} />
+              <span
+                className="text-[10px] font-semibold tracking-[0.3em] uppercase"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Mfalme&middot;0
               </span>
             </Link>
 
@@ -227,13 +230,9 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
                 className="w-8 h-8 flex items-center justify-center text-sm transition-all duration-300 hover:opacity-60"
                 style={{ color: 'var(--color-foreground)' }}
               >
-                {theme === 'light' ? (
+                {theme === 'daylight' ? (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                  </svg>
-                ) : theme === 'synth' ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
                 ) : (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

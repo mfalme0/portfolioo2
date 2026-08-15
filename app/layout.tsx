@@ -1,20 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Hanken_Grotesk, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "./Context/theme";
 import { PerformanceProvider } from "./Context/performance";
 import { ErrorBoundary } from "./Components/error-boundary";
-import { SketchProvider } from "./Components/sketch-provider";
+import CursorGlow from "./Components/cursor-glow";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-display",
+  subsets: ["latin"],
+  axes: ["SOFT", "WONK", "opsz"],
+  style: ["normal", "italic"],
+});
+
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const splineSansMono = Spline_Sans_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const baseUrl = "https://josephgitauc.vercel.app";
@@ -81,7 +89,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{
-          __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='loki'||t==='dark')document.documentElement.dataset.theme=t==='loki'?'dark':'dark';else if(t==='light')document.documentElement.dataset.theme='light';else if(t==='synth')document.documentElement.dataset.theme='synth';else document.documentElement.dataset.theme='dark'}catch(e){document.documentElement.dataset.theme='dark'}})()`
+          __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='night'||t==='dark'||t==='loki')document.documentElement.dataset.theme='night';else if(t==='daylight'||t==='light'||!t)document.documentElement.dataset.theme='daylight';else document.documentElement.dataset.theme='daylight'}catch(e){document.documentElement.dataset.theme='daylight'}})()`
         }} />
         <script
           type="application/ld+json"
@@ -108,7 +116,7 @@ export default function RootLayout({
       </head>
       <Analytics />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${fraunces.variable} ${hankenGrotesk.variable} ${splineSansMono.variable} antialiased`}
       >
         <div className="grain-overlay" aria-hidden="true" />
         <a
@@ -120,7 +128,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <ThemeProvider>
             <PerformanceProvider>
-              <SketchProvider />
+              <CursorGlow size={350} />
               {children}
             </PerformanceProvider>
           </ThemeProvider>

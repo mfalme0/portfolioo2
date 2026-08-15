@@ -32,6 +32,8 @@ function extractRamInfo(item: GearItem) {
   return { name: ram.value, gb: isNaN(gb) ? 0 : gb };
 }
 
+const ROG_RED = '#FF003C';
+
 export default function RogHero({ item }: { item: GearItem }) {
   const isSystem = item.category === 'system';
   const cpuInfo = isSystem ? extractCpuInfo(item) : null;
@@ -113,7 +115,7 @@ export default function RogHero({ item }: { item: GearItem }) {
               {item.modelLabel}
             </span>
           )}
-          <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-3 block text-white/60">
+          <span className="text-[10px] font-black tracking-[0.4em] uppercase mb-3 block" style={{ color: 'rgba(255,0,60,0.7)' }}>
             ROG · {item.category.toUpperCase()}
           </span>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] mb-4">
@@ -172,7 +174,7 @@ export default function RogHero({ item }: { item: GearItem }) {
                 className="absolute inset-0 blur-[60px] rounded-full"
                 style={{ background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.06), transparent 70%)' }}
               />
-              <TiltShowcase src={item.image} alt={item.name} accent="#ffffff" />
+              <TiltShowcase src={item.image} alt={item.name} accent={ROG_RED} />
               {/* Status bar */}
               {(item.footerLeft || item.footerRight) && (
                 <div className="absolute -bottom-1 left-0 right-0 flex items-center justify-between px-4 py-1.5 rounded-b-lg border-t border-white/[0.06] bg-black/40 backdrop-blur-sm">
@@ -261,9 +263,9 @@ export default function RogHero({ item }: { item: GearItem }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={showContent ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="rog-price-tag mt-4 border-white/[0.08] bg-white/[0.03]"
+                className="rog-price-tag mt-4"
               >
-                <span className="text-[9px] font-black tracking-[0.3em] text-white/40 uppercase">PRICE</span>
+                <span className="text-[9px] font-black tracking-[0.3em] uppercase" style={{ color: 'rgba(255,0,60,0.6)' }}>PRICE</span>
                 <span className="text-lg font-black text-white">{item.price}</span>
                 {item.purchaseYear && (
                   <span className="text-[10px] font-mono text-zinc-600">{item.purchaseYear}</span>

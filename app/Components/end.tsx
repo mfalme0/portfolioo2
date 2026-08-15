@@ -4,7 +4,14 @@ import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTheme } from '../Context/theme';
+import { usePerformance } from '../Context/performance';
 import { BsGithub, BsLinkedin, BsTwitterX, BsInstagram } from 'react-icons/bs';
+import dynamic from 'next/dynamic';
+import MagneticButton from './magnetic-button';
+import ScrambleText from './scramble-text';
+
+const AnimeParticles = dynamic(() => import('./anime-particles'), { ssr: false });
+const WaveBackground = dynamic(() => import('./wave-background'), { ssr: false });
 
 
 const items = [
@@ -23,18 +30,26 @@ const socials = [
 
 const footerLinks = [
   { label: 'GitHub', href: 'https://github.com/mfalme0' },
-  { label: 'Gear', href: '/gear' },
+  { label: 'Homelab', href: '/homelab' },
   { label: 'LAN', href: '/LAN' },
 ];
 
 export default function End() {
   const { accent } = useTheme();
+  const { reducedEffects } = usePerformance();
   const year = useMemo(() => new Date().getFullYear(), []);
 
   return (
     <div className="flex flex-col min-h-dvh bg-background overflow-y-auto">
       {/* Hex grid background */}
       <div className="rog-hex-grid" />
+
+      {/* Particles background */}
+      {!reducedEffects && (
+        <div className="absolute inset-0 pointer-events-none z-[1]">
+          <AnimeParticles particleCount={30} connectDistance={90} />
+        </div>
+      )}
 
       {/* Marquee strip */}
       <div
@@ -64,6 +79,7 @@ export default function End() {
 
       {/* CTA */}
       <section className="relative w-full py-20 md:py-28 bg-background overflow-hidden flex-shrink-0">
+        <WaveBackground opacity={0.04} />
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute top-[10%] left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full blur-[250px]"
@@ -85,12 +101,12 @@ export default function End() {
             <div className="w-1 h-1 rounded-full" style={{ backgroundColor: accent }} />
           </div>
 
-          <h2 className="text-[clamp(2.8rem,8vw,6rem)] font-extrabold leading-[0.9] tracking-[-0.03em] mb-6" style={{ color: 'var(--color-foreground)' }}>
-            DEPLOY<br />
-            <span className="relative" style={{ color: accent }}>
-              CONNECTION
-              <span className="absolute -bottom-[2px] left-0 right-0 h-[3px] rounded-full"
-                style={{ background: `linear-gradient(90deg, ${accent}, ${accent}40, transparent)` }}
+          <h2 className="text-[clamp(2.8rem,8vw,6rem)] leading-[0.9] tracking-[-0.02em] mb-6 font-display" style={{ color: 'var(--color-foreground)' }}>
+            OPEN A<br />
+            <span className="font-display-italic" style={{ color: accent }}>
+              <ScrambleText text="CHANNEL" triggerOnView={true} />
+              <span className="block -mt-1 h-[4px]"
+                style={{ background: 'repeating-linear-gradient(90deg, var(--flag) 0 6px, transparent 6px 12px)' }}
               />
             </span>
           </h2>
@@ -112,7 +128,7 @@ export default function End() {
                 name="name"
                 placeholder="Name"
                 required
-                className="w-full rounded-lg px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300"
+                className="w-full rounded-[3px] px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300"
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
@@ -126,7 +142,7 @@ export default function End() {
                 name="email"
                 placeholder="Email"
                 required
-                className="w-full rounded-lg px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300"
+                className="w-full rounded-[3px] px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300"
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   border: '1px solid var(--color-border)',
@@ -141,7 +157,7 @@ export default function End() {
               placeholder="Message"
               required
               rows={4}
-              className="w-full rounded-lg px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300 resize-none"
+              className="w-full rounded-[3px] px-4 py-3 text-xs font-mono tracking-wider outline-none transition-all duration-300 resize-none"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
@@ -152,14 +168,17 @@ export default function End() {
             />
             <button
               type="submit"
-              className="w-full rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full rounded-[3px] px-6 py-3 text-[11px] font-mono font-bold uppercase tracking-[0.14em] transition-all duration-300"
               style={{
                 backgroundColor: 'var(--accent-default)',
-                color: '#ffffff',
-                border: 'none',
+                color: '#FFF8EC',
+                border: '1px solid var(--accent-default)',
+                boxShadow: '3px 3px 0 0 color-mix(in srgb, var(--flag) 30%, var(--ink))',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '4px 4px 0 0 color-mix(in srgb, var(--flag) 42%, var(--ink))')}
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '3px 3px 0 0 color-mix(in srgb, var(--flag) 30%, var(--ink))')}
             >
-              Send Message
+              Send Transmission
             </button>
             <p className="text-[9px] font-mono text-center" style={{ color: 'var(--color-muted)' }}>
               or email directly at{' '}
@@ -184,31 +203,31 @@ export default function End() {
         <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-14 py-12 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7v10l10 5 10-5V7L12 2z" stroke={accent} strokeWidth="1.5" fill={`${accent}15`} />
-                  <text x="12" y="14" textAnchor="middle" fill={accent} fontSize="7" fontWeight="bold" fontFamily="monospace">R</text>
-                </svg>
-                <span className="text-sm font-extrabold tracking-tight" style={{ color: accent }}>
-                  JG.CHEGE
+              <div className="flex items-center gap-2.5">
+                <span className="w-4 h-4 rounded-[2px] flex items-center justify-center" style={{ backgroundColor: accent }} aria-hidden>
+                  <span className="text-[8px] font-mono font-bold text-[#FFF8EC]">0</span>
+                </span>
+                <span className="text-[11px] font-mono font-bold tracking-[0.24em] uppercase" style={{ color: accent }}>
+                  Mfalme&middot;0
                 </span>
               </div>
-              <p className="text-xs font-medium leading-relaxed max-w-xs" style={{ color: 'var(--color-muted)' }}>
-                Software engineer — backend systems, identity & notification platforms, cloud reliability. Nairobi, Kenya.
+              <p className="text-xs font-medium leading-relaxed max-w-xs font-mono" style={{ color: 'var(--color-muted)' }}>
+                Field report compiled by Joseph Gitau Chege — backend systems, identity &amp; notification platforms, cloud reliability. Nairobi, Kenya.
               </p>
               <div className="flex items-center gap-4 mt-2">
                 {socials.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block transition-all duration-300 hover:-translate-y-0.5"
-                    style={{ color: 'var(--color-muted)' }}
-                    aria-label={s.label}
-                  >
-                    <span className="text-sm block" style={{ color: 'var(--color-muted)' }}>{s.icon}</span>
-                  </a>
+                  <MagneticButton key={s.label} strength={0.4}>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block transition-all duration-300 hover:-translate-y-0.5"
+                      style={{ color: 'var(--color-muted)' }}
+                      aria-label={s.label}
+                    >
+                      <span className="text-sm block" style={{ color: 'var(--color-muted)' }}>{s.icon}</span>
+                    </a>
+                  </MagneticButton>
                 ))}
               </div>
             </div>
@@ -248,11 +267,11 @@ export default function End() {
               style={{ background: `linear-gradient(90deg, transparent, ${accent}30, transparent)` }}
             />
             <div className="flex items-center gap-4">
-              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Architect</span>
+              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}80` }}>Compiled</span>
               <span className="w-1 h-1 rounded-full" style={{ backgroundColor: `${accent}40` }} />
-              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Build</span>
+              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}80` }}>Reviewed</span>
               <span className="w-1 h-1 rounded-full" style={{ backgroundColor: `${accent}40` }} />
-              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}50` }}>Operate</span>
+              <span className="text-[8px] font-bold tracking-[0.3em] uppercase" style={{ color: `${accent}80` }}>Signed</span>
             </div>
             <div className="flex-1 h-[1px]"
               style={{ background: `linear-gradient(90deg, transparent, ${accent}30, transparent)` }}
@@ -264,10 +283,10 @@ export default function End() {
               &copy; {year} Joseph Gitau
             </p>
             <div className="flex items-center gap-4">
-              <span className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: `${accent}60` }}>Est. 2023</span>
+              <span className="text-[9px] font-bold tracking-[0.2em] uppercase font-mono" style={{ color: `${accent}70` }}>Ref: Mfalme&middot;0-2026</span>
               <div className="w-[1px] h-3" style={{ backgroundColor: 'var(--color-border)' }} />
               <span className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
-                Nairobi
+                Nairobi &middot; EAT (GMT+3)
               </span>
             </div>
           </div>

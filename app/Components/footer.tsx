@@ -13,7 +13,6 @@ const socials = [
 
 const footerLinks = [
   { label: 'GitHub', href: 'https://github.com/mfalme0' },
-  { label: 'Gear', href: '/gear' },
   { label: 'Homelab', href: '/homelab' },
   { label: 'LAN', href: '/LAN' },
 ];
@@ -27,11 +26,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <Link href="/" className="text-sm font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
-              JGITAU
+            <Link href="/" className="text-[11px] font-mono font-bold tracking-[0.24em] uppercase" style={{ color: 'var(--color-foreground)' }}>
+              Mfalme&middot;0
             </Link>
-            <p className="text-xs font-medium leading-relaxed max-w-xs" style={{ color: 'var(--color-muted)' }}>
-              Full-stack engineer building production-grade software across the entire technology stack.
+            <p className="text-xs font-mono font-medium leading-relaxed max-w-xs" style={{ color: 'var(--color-muted)' }}>
+              Full-stack engineer keeping production systems up across the stack.
             </p>
             <div className="flex items-center gap-4 mt-2">
               {socials.map((s, i) => (
@@ -99,9 +98,9 @@ export default function Footer() {
 
         {/* Ornament */}
         <div className="divider-ornament my-12">
-          <span>craft</span>
-          <span>code</span>
-          <span>ship</span>
+          <span>compiled</span>
+          <span>reviewed</span>
+          <span>signed</span>
         </div>
 
         {/* Bottom */}
@@ -110,7 +109,7 @@ export default function Footer() {
             &copy; {year} Joseph Gitau
           </p>
           <div className="flex items-center gap-4">
-            <span className="badge-est">Est. 2023</span>
+            <span className="badge-est">Ref Mfalme&middot;0-2026</span>
             <span className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
               Designed & Built in Nairobi
             </span>

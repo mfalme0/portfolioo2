@@ -17,9 +17,9 @@ export default function ConnectivityTerminal({
       {/* Title bar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-white/[0.03]">
         <div className="flex gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-          <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+          <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+          <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
+          <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
         </div>
         <span className="text-[9px] text-zinc-600 tracking-wider ml-2">connectivity_terminal</span>
       </div>

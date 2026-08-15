@@ -5,13 +5,12 @@ import { themeConfig, Theme as ThemeType } from '@/lib/theme-config';
 
 export type Theme = ThemeType;
 
-const themeKeys: Theme[] = ['dark', 'light', 'synth'];
+const themeKeys: Theme[] = ['daylight', 'night'];
 
 function migrateTheme(stored: string | null): Theme {
-  if (stored === 'loki' || stored === 'dark') return 'dark';
-  if (stored === 'light') return 'light';
-  if (stored === 'synth') return 'synth';
-  return 'dark';
+  if (stored === 'loki' || stored === 'dark') return 'night';
+  if (stored === 'light' || stored === 'synth') return 'daylight';
+  return 'daylight';
 }
 
 const defaultTheme = migrateTheme(null);

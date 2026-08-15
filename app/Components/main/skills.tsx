@@ -3,6 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
+import dynamic from 'next/dynamic';
+import AnimatedBar from '../animated-bar';
+
+const SkillsRadar = dynamic(() => import('../skills-radar'), { ssr: false });
 
 const skillGroups = [
   {
@@ -71,6 +75,15 @@ const skillGroups = [
       { name: 'Unity / Game Dev', level: 60 },
     ],
   },
+];
+
+const radarSkills = [
+  { name: 'Backend', level: 90 },
+  { name: 'Cloud', level: 85 },
+  { name: 'DevOps', level: 82 },
+  { name: 'Frontend', level: 78 },
+  { name: 'Mobile', level: 72 },
+  { name: 'Embedded', level: 65 },
 ];
 
 function SkillBar({ name, level, index, accent }: { name: string; level: number; index: number; accent: string }) {
@@ -158,6 +171,38 @@ export default function Skills() {
               Languages, platforms, and infrastructure I work with — from cloud
               down to microcontrollers and USB peripherals.
             </motion.p>
+          </div>
+        </div>
+
+        {/* Radar chart + top skills overview */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 flex items-center justify-center"
+          >
+            <SkillsRadar skills={radarSkills} size={280} />
+          </motion.div>
+          <div className="lg:col-span-7">
+            <div className="apple-card-flat p-5">
+              <span className="text-[8px] font-bold tracking-[0.2em] uppercase mb-4 block" style={{ color: accent }}>
+                Core Proficiency
+              </span>
+              <div className="space-y-3">
+                {radarSkills.map((skill, i) => (
+                  <AnimatedBar
+                    key={skill.name}
+                    label={skill.name}
+                    value={skill.level}
+                    delay={i * 100}
+                    color={accent}
+                    height={5}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

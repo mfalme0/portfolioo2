@@ -103,7 +103,8 @@ function MonitorSpotlight({ item }: { item: GearItem }) {
                   whileInView={{ height: `${30 + ((i * 37) % 70)}%` }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.04, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex-1 rounded-t bg-white/15"
+                  className="flex-1 rounded-t"
+                  style={{ background: i % 2 === 0 ? '#FF003C' : 'rgba(255,255,255,0.15)' }}
                 />
               ))}
             </div>
@@ -208,7 +209,8 @@ function MouseSpotlight({ item }: { item: GearItem }) {
                 whileInView={{ width: `${pct}%` }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-y-0 left-0 bg-white/50 rounded-full"
+                className="absolute inset-y-0 left-0 rounded-full"
+                style={{ background: 'linear-gradient(90deg, #FF003C, rgba(255,0,60,0.4))' }}
               />
             </div>
             <div className="flex justify-between text-[8px] font-mono text-zinc-600 mt-2">
@@ -259,7 +261,8 @@ function AudioSpotlight({ item }: { item: GearItem }) {
                     whileInView={{ height: `${h}%` }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.02, duration: 0.4 }}
-                    className="flex-1 rounded-full bg-white/20"
+                    className="flex-1 rounded-full"
+                    style={{ background: i % 3 === 0 ? '#FF003C' : 'rgba(255,255,255,0.15)' }}
                   />
                 );
               })}
@@ -308,10 +311,10 @@ function ControllerSpotlight({ item }: { item: GearItem }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <Reveal>
           <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 h-64">
-            <svg width="100%" height="100%" viewBox="0 0 160 100" fill="none" className="opacity-30">
-              <rect x="10" y="30" width="140" height="50" rx="25" stroke="white" strokeWidth="2" />
-              <circle cx="45" cy="55" r="10" stroke="white" strokeWidth="1.5" />
-              <circle cx="115" cy="55" r="10" stroke="white" strokeWidth="1.5" />
+            <svg width="100%" height="100%" viewBox="0 0 160 100" fill="none" className="opacity-40">
+              <rect x="10" y="30" width="140" height="50" rx="25" stroke="rgba(255,0,60,0.3)" strokeWidth="2" />
+              <circle cx="45" cy="55" r="10" stroke="rgba(255,0,60,0.3)" strokeWidth="1.5" />
+              <circle cx="115" cy="55" r="10" stroke="rgba(255,0,60,0.3)" strokeWidth="1.5" />
             </svg>
             {points.map((p, i) => (
               <motion.div
@@ -323,7 +326,7 @@ function ControllerSpotlight({ item }: { item: GearItem }) {
                 className="absolute flex flex-col items-center gap-1"
                 style={{ left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -50%)' }}
               >
-                <div className="w-2.5 h-2.5 rounded-full bg-white/60 shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
+                <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_rgba(255,0,60,0.4)]" style={{ background: '#FF003C' }} />
                 <span className="text-[7px] font-mono uppercase tracking-wider text-white/50 whitespace-nowrap">{p.label}</span>
               </motion.div>
             ))}

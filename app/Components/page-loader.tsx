@@ -528,17 +528,18 @@ export default function PageLoader({
               </span>
             </motion.div>
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] font-medium tracking-[0.2em] uppercase" style={{ color: 'var(--color-muted)' }}>
-                Loading
+              <span className="text-[9px] font-mono font-semibold tracking-[0.3em] uppercase" style={{ color: 'var(--color-muted)' }}>
+                Compiling field report
               </span>
+              <div className="w-16 h-px" style={{ background: 'var(--rule)' }} />
               {showWelcome && (
                 <motion.span
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-[11px] font-normal tracking-[0.15em]"
+                  className="text-[10px] font-mono tracking-[0.2em] uppercase"
                   style={{ color: accentColor }}
                 >
-                  Welcome back.
+                  System ready.
                 </motion.span>
               )}
             </div>

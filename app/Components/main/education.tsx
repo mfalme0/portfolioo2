@@ -4,6 +4,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
 import { FiBookOpen, FiCalendar, FiMapPin } from 'react-icons/fi';
+import dynamic from 'next/dynamic';
+
+const AnimatedTimeline = dynamic(() => import('../animated-timeline'), { ssr: false });
 
 const modules = [
   'Data Structures & Algorithms',
@@ -11,6 +14,13 @@ const modules = [
   'Network Security',
   'Operating Systems',
   'Computer Architecture',
+];
+
+const timelineItems = [
+  { year: '2021 - 2024', title: 'B.Sc. Computer Science', subtitle: 'Umma University', description: 'Nairobi, Kenya' },
+  { year: '2023', title: 'Started Professional Career', subtitle: 'Steadfast Academy', description: 'Backend systems & notification infrastructure' },
+  { year: '2024', title: 'BetterFarm Lead Architect', subtitle: 'AgriTech Platform', description: 'Cloud-native Azure backend' },
+  { year: '2025', title: 'Full-Stack ERP Delivery', subtitle: 'Steadfast Academy', description: 'End-to-end ERP system deployment' },
 ];
 
 export default function Education() {
@@ -60,60 +70,79 @@ export default function Education() {
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
-        >
-          <div className="apple-card-flat p-6 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <FiBookOpen className="text-sm" style={{ color: accent }} />
-                  <span className="text-xs font-bold tracking-[0.08em] uppercase" style={{ color: accent }}>
-                    B.Sc. Computer Science
-                  </span>
-                </div>
-                <h3 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
-                  Umma University
-                </h3>
-              </div>
-              <div className="flex flex-col gap-1.5 shrink-0">
-                <div className="flex items-center gap-2 text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
-                  <FiCalendar className="text-[10px]" />
-                  2021 – 2024
-                </div>
-                <div className="flex items-center gap-2 text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
-                  <FiMapPin className="text-[10px]" />
-                  Nairobi, Kenya
-                </div>
-              </div>
-            </div>
-
-            <div style={{ borderTop: '1px solid var(--color-border)' }} className="pt-5">
-              <span className="text-[8px] font-bold tracking-[0.15em] uppercase mb-3 block" style={{ color: 'var(--color-muted)' }}>
-                Key Modules
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Timeline */}
+          <div className="lg:col-span-5">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="apple-card-flat p-5"
+            >
+              <span className="text-[8px] font-bold tracking-[0.2em] uppercase mb-4 block" style={{ color: accent }}>
+                Journey
               </span>
-              <div className="flex flex-wrap gap-2">
-                {modules.map((mod) => (
-                  <span
-                    key={mod}
-                    className="text-[9px] font-medium px-3 py-1.5 rounded-full tracking-[0.03em]"
-                    style={{
-                      backgroundColor: `${accent}08`,
-                      color: 'var(--color-foreground)',
-                      border: '1px solid var(--color-border)',
-                    }}
-                  >
-                    {mod}
-                  </span>
-                ))}
-              </div>
-            </div>
+              <AnimatedTimeline items={timelineItems} accent={accent} />
+            </motion.div>
           </div>
-        </motion.div>
+
+          {/* Education card */}
+          <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+            >
+              <div className="apple-card-flat p-6 md:p-8">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <FiBookOpen className="text-sm" style={{ color: accent }} />
+                      <span className="text-xs font-bold tracking-[0.08em] uppercase" style={{ color: accent }}>
+                        B.Sc. Computer Science
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--color-foreground)' }}>
+                      Umma University
+                    </h3>
+                  </div>
+                  <div className="flex flex-col gap-1.5 shrink-0">
+                    <div className="flex items-center gap-2 text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
+                      <FiCalendar className="text-[10px]" />
+                      2021 – 2024
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
+                      <FiMapPin className="text-[10px]" />
+                      Nairobi, Kenya
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--color-border)' }} className="pt-5">
+                  <span className="text-[8px] font-bold tracking-[0.15em] uppercase mb-3 block" style={{ color: 'var(--color-muted)' }}>
+                    Key Modules
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {modules.map((mod) => (
+                      <span
+                        key={mod}
+                        className="text-[9px] font-medium px-3 py-1.5 rounded-full tracking-[0.03em]"
+                        style={{
+                          backgroundColor: `${accent}08`,
+                          color: 'var(--color-foreground)',
+                          border: '1px solid var(--color-border)',
+                        }}
+                      >
+                        {mod}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

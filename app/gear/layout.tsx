@@ -4,6 +4,10 @@ export const metadata: Metadata = {
   title: 'Gear — Setup & Equipment',
   description:
     'Explore Joseph Gitau\'s curated gear collection — from custom keyboards and ultrawide monitors to precision mice and studio audio. Every component of the battlestation, documented with specs and stories.',
+  robots: {
+    index: false,
+    follow: false,
+  },
   openGraph: {
     title: 'Gear — Joseph Gitau',
     description:

@@ -15,6 +15,7 @@ import RogSideAnchor from '@/app/Components/game/RogSideAnchor';
 import RogProductHeader from '@/app/Components/game/RogProductHeader';
 import ActiveService from '@/app/Components/game/ActiveService';
 import CategorySpotlight from '@/app/Components/game/CategorySpotlight';
+import CategoryFeatures from '@/app/Components/game/CategoryFeatures';
 
 const SPOTLIGHT_CATEGORIES = new Set(['display', 'keyboard', 'mouse', 'audio', 'controller']);
 
@@ -80,6 +81,19 @@ function RevealSection({ children, className = '' }: { children: React.ReactNode
   );
 }
 
+const SECTION_IDS = {
+  overview: 'overview',
+  spotlight: 'spotlight',
+  features: 'features',
+  specs: 'specs',
+  gallery: 'gallery',
+  benchmarks: 'benchmarks',
+  techSpecs: 'tech-specs',
+  story: 'story',
+  connectivity: 'connectivity',
+  related: 'related',
+} as const;
+
 export default function GearDetailClient({
   item,
   related,
@@ -92,6 +106,7 @@ export default function GearDetailClient({
   const isSystem = item.category === 'system';
   const cpuInfo = isSystem ? extractCpuInfo(item) : null;
   const gpuInfo = isSystem ? extractGpuInfo(item) : null;
+  const accentColor = '#FF003C';
 
   useEffect(() => {
     const text = item.subtitle || '';
@@ -133,15 +148,16 @@ export default function GearDetailClient({
   };
 
   const sections = [
-    { id: 'overview', label: 'Overview' },
-    ...(showSpotlight ? [{ id: 'spotlight', label: spotlightLabel[item.category] || 'Spotlight' }] : []),
-    { id: 'specs', label: isSystem ? 'Performance' : 'Specs' },
-    ...(item.gallery && item.gallery.length > 0 ? [{ id: 'gallery', label: 'Gallery' }] : []),
-    ...(isSystem && item.benchmarks && item.benchmarks.length > 0 ? [{ id: 'benchmarks', label: 'Benchmarks' }] : []),
-    { id: 'tech-specs', label: 'Tech Specs' },
-    { id: 'story', label: 'Story' },
-    ...(item.connectivity && item.connectivity.length > 0 ? [{ id: 'connectivity', label: 'Connectivity' }] : []),
-    ...(related.length > 0 ? [{ id: 'related', label: 'Related' }] : []),
+    { id: SECTION_IDS.overview, label: 'Overview' },
+    ...(showSpotlight ? [{ id: SECTION_IDS.spotlight, label: spotlightLabel[item.category] || 'Spotlight' }] : []),
+    { id: SECTION_IDS.features, label: 'Features' },
+    { id: SECTION_IDS.specs, label: isSystem ? 'Performance' : 'Specs' },
+    ...(item.gallery && item.gallery.length > 0 ? [{ id: SECTION_IDS.gallery, label: 'Gallery' }] : []),
+    ...(isSystem && item.benchmarks && item.benchmarks.length > 0 ? [{ id: SECTION_IDS.benchmarks, label: 'Benchmarks' }] : []),
+    { id: SECTION_IDS.techSpecs, label: 'Tech Specs' },
+    { id: SECTION_IDS.story, label: 'Story' },
+    ...(item.connectivity && item.connectivity.length > 0 ? [{ id: SECTION_IDS.connectivity, label: 'Connectivity' }] : []),
+    ...(related.length > 0 ? [{ id: SECTION_IDS.related, label: 'Related' }] : []),
   ];
 
   return (
@@ -169,11 +185,12 @@ export default function GearDetailClient({
         name={item.name}
         category={item.category}
         tabs={sections}
+        accent={accentColor}
       />
 
       <main
         className={`transition-opacity duration-700 ${loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}
-        style={{ '--accent-rgb': '255 255 255' } as React.CSSProperties}
+        style={{ '--accent-rgb': '255 0 60' } as React.CSSProperties}
       >
         {/* Breadcrumbs */}
         <nav className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
@@ -191,10 +208,10 @@ export default function GearDetailClient({
         </nav>
 
         {/* Side Anchor Navigation */}
-        <RogSideAnchor items={sections} />
+        <RogSideAnchor items={sections} accent={accentColor} />
 
         {/* ═══ OVERVIEW / KV HERO ═══ */}
-        <section id="overview">
+        <section id={SECTION_IDS.overview}>
           <RogHero item={item} />
         </section>
 
@@ -256,13 +273,18 @@ export default function GearDetailClient({
 
         {/* ═══ CATEGORY SPOTLIGHT ═══ */}
         {showSpotlight && (
-          <div id="spotlight">
+          <div id={SECTION_IDS.spotlight}>
             <CategorySpotlight item={item} />
           </div>
         )}
 
+        {/* ═══ CATEGORY-SPECIFIC FEATURES DEEP-DIVE ═══ */}
+        <div id={SECTION_IDS.features}>
+          <CategoryFeatures item={item} />
+        </div>
+
         {/* ═══ PERFORMANCE / SPECS ═══ */}
-        <section id="specs" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+        <section id={SECTION_IDS.specs} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <RevealSection>
               <div className="rog-strix-eyebrow mb-4">{isSystem ? 'Performance Profile' : 'Specifications'}</div>
@@ -296,7 +318,10 @@ export default function GearDetailClient({
                     transition={{ delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     className="relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] p-4 text-center transition-all duration-300 group hover:border-white/[0.2]"
                   >
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/10" />
+                    <div
+                      className="absolute top-0 left-0 right-0 h-[2px]"
+                      style={{ background: 'linear-gradient(90deg, transparent, #FF003C, transparent)' }}
+                    />
                     {s.icon && <div className="text-xl mb-2 flex justify-center text-white/50">{s.icon}</div>}
                     <div className="text-[8px] font-bold tracking-[0.2em] uppercase text-white/40">{s.label}</div>
                     <div className="text-xs font-semibold text-white/90 mt-1">{s.value}</div>
@@ -310,7 +335,7 @@ export default function GearDetailClient({
               <div className="mt-8">
                 <button
                   type="button"
-                  onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById(SECTION_IDS.story)?.scrollIntoView({ behavior: 'smooth' })}
                   className="rog-read-more"
                 >
                   Read more about this device <span className="w-3 h-3 inline-flex items-center justify-center">&rarr;</span>
@@ -322,7 +347,7 @@ export default function GearDetailClient({
 
         {/* ═══ BENCHMARKS ═══ */}
         {isSystem && item.benchmarks && item.benchmarks.length > 0 && (
-          <section id="benchmarks" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+          <section id={SECTION_IDS.benchmarks} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
                 <div className="rog-strix-eyebrow mb-4">Benchmarks</div>
@@ -358,7 +383,7 @@ export default function GearDetailClient({
 
         {/* ═══ GALLERY ═══ */}
         {item.gallery && item.gallery.length > 0 && (
-          <section id="gallery" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+          <section id={SECTION_IDS.gallery} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
                 <div className="rog-strix-eyebrow mb-4">Gallery</div>
@@ -375,7 +400,7 @@ export default function GearDetailClient({
         )}
 
         {/* ═══ TECH SPECS ═══ */}
-        <section id="tech-specs" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+        <section id={SECTION_IDS.techSpecs} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <RevealSection>
               <div className="rog-strix-eyebrow mb-4">Technical Specifications</div>
@@ -437,7 +462,7 @@ export default function GearDetailClient({
         </section>
 
         {/* ═══ STORY ═══ */}
-        <section id="story" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+        <section id={SECTION_IDS.story} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
               <div className="lg:col-span-3">
@@ -519,7 +544,7 @@ export default function GearDetailClient({
 
         {/* ═══ CONNECTIVITY ═══ */}
         {item.connectivity && item.connectivity.length > 0 && (
-          <section id="connectivity" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+          <section id={SECTION_IDS.connectivity} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                 <RevealSection>
@@ -541,7 +566,7 @@ export default function GearDetailClient({
 
         {/* ═══ RELATED GEAR ═══ */}
         {related.length > 0 && (
-          <section id="related" className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
+          <section id={SECTION_IDS.related} className="rog-strix-section scroll-mt-32" style={{ background: '#000' }}>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealSection>
                 <div className="rog-strix-eyebrow mb-4">Complete the Setup</div>
