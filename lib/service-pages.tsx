@@ -9,7 +9,7 @@ export const servicePages: Record<string, ServicePageConfig> = {
         Business systems built around <span style={{ color: "var(--flag)" }}>how you work.</span>
       </>
     ),
-    lead: "ERPs, portals, dashboards, APIs and integrations for organisations that have outgrown spreadsheets and disconnected tools — scoped honestly, built properly, and shipped all the way to production.",
+    lead: "Software developer services for Nairobi and Kenya-based businesses: custom ERP systems, portals, dashboards, APIs, integrations, and production-grade backend platforms designed to replace manual work and scale with your operations.",
     crumbs: [
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

@@ -30,17 +30,17 @@ const baseUrl = "https://mfalme.runs-on.dev";
 
 export const metadata: Metadata = {
   title: {
-    default: "Joseph Gitau Chege — Software Engineer, Backend Systems & Cloud Reliability",
+    default: "Joseph Gitau Chege — Software Developer, Backend Systems & Cloud Reliability",
     template: "%s — Joseph Gitau Chege",
   },
   description:
-    "Software engineer with 3+ years building production backend systems at scale in C#, Python, TypeScript, and C++. Specializing in identity & notification platforms, cloud reliability, and high-availability architectures. Nairobi, Kenya.",
+    "Software developer building production backend systems, APIs, and cloud infrastructure in C#, Python, TypeScript, and C++. Specializing in identity platforms, notification services, and reliable software systems for organisations in Nairobi, Kenya.",
   keywords: [
-    "software engineer", "backend systems", "identity platform",
-    "notification services", "C#", "Python", "TypeScript", "Azure",
-    "Docker", "Kubernetes", "Nairobi", "Kenya", "portfolio",
-    "cloud reliability", "DevOps", "incident response",
-    "Joseph Gitau Chege", "mfalme0", "API development",
+    "software developer", "software engineer", "backend developer",
+    "backend systems", "identity platform", "notification services",
+    "C#", "Python", "TypeScript", "Azure", "Docker", "Kubernetes",
+    "Nairobi", "Kenya", "portfolio", "cloud reliability", "DevOps",
+    "incident response", "Joseph Gitau Chege", "mfalme0", "API development",
   ],
   authors: [{ name: "Joseph Gitau", url: "https://github.com/mfalme0" }],
   creator: "Joseph Gitau",
@@ -50,17 +50,17 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Joseph Gitau Chege",
-    title: "Joseph Gitau Chege — Software Engineer, Backend Systems & Cloud Reliability",
+    title: "Joseph Gitau Chege — Software Developer, Backend Systems & Cloud Reliability",
     description:
-      "Software engineer with 3+ years building production backend systems at scale. Specializing in identity & notification platforms, cloud reliability, and high-availability architectures.",
+      "Software developer building backend systems, APIs, and cloud infrastructure for production environments. Specializing in identity platforms, notification services, and reliable software systems.",
     url: baseUrl,
-    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau Chege — Software Engineer" }],
+    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau Chege — Software Developer" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Joseph Gitau Chege — Software Engineer, Backend Systems & Cloud Reliability",
+    title: "Joseph Gitau Chege — Software Developer, Backend Systems & Cloud Reliability",
     description:
-      "Software engineer with 3+ years building production backend systems at scale. Specializing in identity & notification platforms, cloud reliability, and high-availability architectures.",
+      "Software developer building backend systems, APIs, and cloud infrastructure for production environments. Specializing in identity platforms, notification services, and reliable software systems.",
     images: [`${baseUrl}/opengraph-image.png`],
   },
   robots: {
@@ -100,11 +100,11 @@ export default function RootLayout({
             "@type": "Person",
             name: "Joseph Gitau Chege",
             url: "https://mfalme.runs-on.dev",
-            jobTitle: "Software Engineer — Backend Systems",
+            jobTitle: "Software Developer — Backend Systems",
             knowsAbout: [
               "C#", "Python", "TypeScript", "C++", "Azure",
               "Docker", "Kubernetes", "Identity Platforms",
-              "Notification Services", "Cloud Reliability",
+              "Notification Services", "Cloud Reliability", "Software Development",
             ],
             sameAs: [
               "https://github.com/mfalme0",

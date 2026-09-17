@@ -5,11 +5,20 @@ import { ServicePage } from "@/app/Components/site/service-page";
 import { servicePages } from "@/lib/service-pages";
 
 export const metadata: Metadata = pageMeta({
-  title: "Custom Software Engineering in Nairobi — ERP, Portals, APIs",
+  title: "Software Developer in Nairobi, Kenya | Backend Systems, APIs & Cloud Platforms",
   description:
-    "Custom ERP and business systems, portals, dashboards, APIs and integrations — designed around how your organisation works. From KSh 100,000.",
+    "Software developer in Nairobi building backend systems, business applications, APIs, cloud platforms, and production-ready software for organisations in Kenya.",
   path: "/software-engineering",
-  keywords: ["software engineer Nairobi", "custom ERP Kenya", "business systems", "API development Kenya"],
+  keywords: [
+    "software developer Nairobi",
+    "software developer Kenya",
+    "software engineer Nairobi",
+    "backend developer Nairobi",
+    "API developer Kenya",
+    "custom software developer Kenya",
+    "business software developer",
+    "cloud software developer",
+  ],
 });
 
 export default function SoftwareEngineeringPage() {
