@@ -6,9 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: '/gear',
+        disallow: '',
       },
     ],
-    sitemap: 'https://josephgitauc.vercel.app/sitemap.xml',
+    sitemap: 'https://mfalme.runs-on.dev/sitemap.xml',
   };
 }

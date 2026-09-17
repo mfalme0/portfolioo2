@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../Context/theme';
 import AnimatedLogo from './animated-logo';
 
-type PageType = 'home' | 'gear' | 'gear-detail' | 'lan' | 'homelab' | 'homelab-detail';
+type PageType = 'home' | 'lan' | 'homelab' | 'homelab-detail';
 
 interface NavLink {
   name: string;
@@ -22,26 +22,6 @@ const portfolioNavLinks: NavLink[] = [
   { name: 'Projects', href: '#projects', index: 3 },
   { name: 'Personal', href: '#personal', index: 4 },
   { name: 'Skills', href: '#skills', index: 5 },
-];
-
-const gearNavLinks: NavLink[] = [
-  { name: 'Systems', href: '#rigs', index: 0 },
-  { name: 'Keyboards', href: '#keyboards', index: 1 },
-  { name: 'Mice', href: '#mice', index: 2 },
-  { name: 'Audio', href: '#audio', index: 3 },
-  { name: 'Display', href: '#display', index: 4 },
-  { name: 'Power', href: '#power', index: 5 },
-  { name: 'Controllers', href: '#controllers', index: 6 },
-];
-
-const gearDetailNavLinks: NavLink[] = [
-  { name: 'Systems', href: '/gear#rigs', index: 0 },
-  { name: 'Keyboards', href: '/gear#keyboards', index: 1 },
-  { name: 'Mice', href: '/gear#mice', index: 2 },
-  { name: 'Audio', href: '/gear#audio', index: 3 },
-  { name: 'Display', href: '/gear#display', index: 4 },
-  { name: 'Power', href: '/gear#power', index: 5 },
-  { name: 'Controllers', href: '/gear#controllers', index: 6 },
 ];
 
 const lanNavLinks: NavLink[] = [
@@ -65,8 +45,6 @@ const sitePageLinks: NavLink[] = [
 
 function getPageType(pathname: string): PageType {
   if (pathname === '/') return 'home';
-  if (pathname === '/gear') return 'gear';
-  if (pathname.startsWith('/gear/')) return 'gear-detail';
   if (pathname === '/homelab') return 'homelab';
   if (pathname.startsWith('/homelab/')) return 'homelab-detail';
   if (pathname === '/LAN') return 'lan';
@@ -83,13 +61,11 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
   const pathname = usePathname();
 
   const pageType = useMemo(() => getPageType(pathname), [pathname]);
-  const isSectionPage = pageType === 'home' || pageType === 'gear';
+  const isSectionPage = pageType === 'home';
 
   const links = useMemo(() => {
     switch (pageType) {
       case 'home': return portfolioNavLinks;
-      case 'gear': return gearNavLinks;
-      case 'gear-detail': return gearDetailNavLinks;
       case 'lan': return lanNavLinks;
       case 'homelab': return homelabNavLinks;
       case 'homelab-detail': return homelabDetailNavLinks;
@@ -115,7 +91,7 @@ export default function Header({ currentSection, onNavigate }: HeaderProps) {
     if (!isSectionPage) return;
     if (pageType === 'home' && currentSection !== undefined) return;
 
-    const ids = links.map((l) => l.href.replace(/^\/gear#/, '#'));
+    const ids = links.map((l) => l.href);
     const els = ids
       .filter((id) => id.startsWith('#'))
       .map((id) => document.getElementById(id.slice(1)))

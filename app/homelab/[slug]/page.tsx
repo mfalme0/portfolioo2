@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const item = getHomelabItem(slug);
   if (!item) return { title: 'Not Found' };
-  const baseUrl = 'https://josephgitauc.vercel.app';
+  const baseUrl = 'https://mfalme.runs-on.dev';
   const fullTitle = `${item.name} — Homelab — Joseph Gitau`;
   return {
     title: `${item.name} — Homelab`,

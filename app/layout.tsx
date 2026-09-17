@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Fraunces, Hanken_Grotesk, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
@@ -25,7 +26,7 @@ const splineSansMono = Spline_Sans_Mono({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const baseUrl = "https://josephgitauc.vercel.app";
+const baseUrl = "https://mfalme.runs-on.dev";
 
 export const metadata: Metadata = {
   title: {
@@ -98,7 +99,7 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Joseph Gitau Chege",
-            url: "https://josephgitauc.vercel.app",
+            url: "https://mfalme.runs-on.dev",
             jobTitle: "Software Engineer — Backend Systems",
             knowsAbout: [
               "C#", "Python", "TypeScript", "C++", "Azure",
@@ -112,6 +113,17 @@ export default function RootLayout({
             ],
           }),
         }}
+        />
+      <Script
+          id="gtag-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KC8Z48VS2N');`,
+          }}
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KC8Z48VS2N"
+          strategy="afterInteractive"
         />
       </head>
       <Analytics />

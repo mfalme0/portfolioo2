@@ -10,7 +10,6 @@ import ServiceCard from '@/app/Components/homelab/ServiceCard';
 import ActiveService from '@/app/Components/game/ActiveService';
 import RogSideAnchor from '@/app/Components/game/RogSideAnchor';
 import RogProductHeader from '@/app/Components/game/RogProductHeader';
-import ConnectivityTerminal from '@/app/Components/game/ConnectivityTerminal';
 
 function RevealSection({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);

@@ -67,7 +67,7 @@ export default function RogProductHeader({
         <div className="flex items-center h-14 gap-4">
           {/* Product name */}
           <Link
-            href={`/gear`}
+            href={`/homelab`}
             className="shrink-0 text-xs font-black tracking-[0.15em] uppercase"
             style={{ color: accent }}
           >
