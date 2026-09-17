@@ -113,7 +113,7 @@ export function Hero() {
           </div>
           <div className="hidden md:flex items-center gap-4">
             <a
-              href="mailto:josephgitauc@gmail.com"
+              href="mailto:joseph.gitau.c@gmail.com"
               className="text-[10px] font-mono font-medium tracking-[0.08em] transition-all duration-300 hover:opacity-60"
               style={{ color: 'var(--color-muted)' }}
             >

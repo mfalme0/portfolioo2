@@ -182,8 +182,8 @@ export default function End() {
             </button>
             <p className="text-[9px] font-mono text-center" style={{ color: 'var(--color-muted)' }}>
               or email directly at{' '}
-              <a href="mailto:josephgitauc@gmail.com" className="underline underline-offset-2 transition-colors" style={{ color: 'var(--accent-default)' }}>
-                josephgitauc@gmail.com
+              <a href="mailto:joseph.gitau.c@gmail.com" className="underline underline-offset-2 transition-colors" style={{ color: 'var(--accent-default)' }}>
+                joseph.gitau.c@gmail.com
               </a>
             </p>
           </form>

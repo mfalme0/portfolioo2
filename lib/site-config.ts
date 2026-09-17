@@ -6,7 +6,7 @@ export const siteConfig = {
   positioning:
     "Software, infrastructure, AI, hardware and technical systems \u2014 designed, built and operated from Nairobi.",
   url: "https://mfalme.runs-on.dev",
-  email: "josephgitauc@gmail.com",
+  email: "joseph.gitau.c@gmail.com",
   phone: "+254 755 917 099",
   phoneRaw: "+254755917099",
   whatsapp: "254755917099",
