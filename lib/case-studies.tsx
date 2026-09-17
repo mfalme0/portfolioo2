@@ -135,83 +135,210 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "atlas",
-    title: "Atlas \u2014 Distributed Systems Engine",
+    title: "Atlas \u2014 Distributed Infrastructure Engine",
     category: "Distributed Systems",
     kind: "Engineering Project",
     timeframe: "Ongoing engineering project",
     context:
-      "A deep engineering exercise in distributed systems: building replicated, fault-tolerant infrastructure from first principles rather than reaching for managed services.",
+      "An open-source distributed infrastructure intelligence engine and systems-engineering laboratory \u2014 every data structure, algorithm, scheduler, consensus layer and failure-injection engine implemented from first principles. No external database, message broker or AI service to hide behind.",
     tags: [
       "Raft",
-      "Consensus",
-      "Replicated KV",
-      "Distributed Queues",
       "Consistent Hashing",
-      "Chaos Testing",
+      "Chaos Engineering",
+      "Anomaly Detection",
+      "Scheduler",
+      "Graph Engine",
+      "Go",
     ],
     summary:
-      "A distributed systems engine exploring consensus, replication and failure recovery \u2014 a replicated key-value store and distributed queue built on Raft, with consistent hashing, retries, dead-letter queues and chaos-tested failure handling.",
+      "Atlas discovers and models infrastructure as a graph, schedules workloads, replicates state through a from-scratch Raft layer, injects controlled failures, correlates them into incidents and produces advisory AI analysis \u2014 running entirely over an in-memory event bus on a single machine, with real-time visualization and algorithmic transparency.",
     problem: [
-      "Most engineers consume distributed systems as a managed black box. This project builds the core mechanics \u2014 and the failure modes \u2014 from the ground up.",
-      "Single-node queues and key-value stores lose data and availability on failure; replication and ordered recovery are hard to get right.",
+      "Most distributed systems are consumed as managed black boxes \u2014 the mechanics and the failure modes stay hidden until something breaks in production.",
+      "Infrastructure understanding is scattered: discovery, scheduling, consensus, chaos, anomaly detection and incident management usually live in separate tools that never talk to each other.",
+      "AI in operations is expected to be trusted on vibes \u2014 recommendations arrive without a transparent path from evidence to conclusion.",
     ],
     approach: [
       {
-        heading: "Raft consensus",
+        heading: "Graph engine",
         body:
-          "Leader election, terms, heartbeats and log replication implemented directly \u2014 covering the full lifecycle from election to committed entries, with the failure recovery paths that follow when a leader loses contact.",
+          "Infrastructure is modelled as a graph \u2014 BFS, DFS, Dijkstra and A* pathfinding, topological sort, cycle detection, connected components, Tarjan SCCs, articulation points and bridges, across directed and undirected representations.",
       },
       {
-        heading: "Replicated key-value store",
+        heading: "Data structures & algorithms",
         body:
-          "A replicated KV store where writes are committed through the Raft log and reads are served consistently, so data survives node failure without manual recovery.",
+          "A from-scratch library covering dynamic arrays, singly and doubly linked lists, stacks, queues, circular queues, binary min-heaps, priority queues, chaining hash maps, BST and AVL trees, tries and an LRU cache \u2014 with an in-process benchmark harness timing all 16 workloads and recording runtime, memory and throughput.",
       },
       {
-        heading: "Distributed queue with DLQ",
+        heading: "Scheduler & job queue",
         body:
-          "A distributed queue with retries, a dead-letter queue for poisoned messages, and worker heartbeats so stalled consumers are detected and work can be re-queued rather than lost.",
+          "Resource-aware scheduling with a transparent score breakdown (CPU, memory, GPU, network, health and affinity, plus a utilisation penalty and priority bonus), and a priority-based job queue with retries.",
+      },
+      {
+        heading: "Raft consensus & replicated KV",
+        body:
+          "Leader election, log replication, heartbeats, term management and snapshots implemented directly. A replicated key\u2013value store commits writes through the Raft log and serves reads from a consistent view.",
       },
       {
         heading: "Consistent hashing",
         body:
-          "Consistent hashing places keys across nodes and minimises re-balancing when the node set changes \u2014 keeping partitions stable during scale-out and replacement.",
+          "A hash ring with virtual nodes places shards and keeps re-balancing minimal when the node set changes.",
       },
       {
-        heading: "Chaos testing",
+        heading: "Chaos engineering",
         body:
-          "Deliberately killing leaders, partitions, pauses and message failures to verify elections, log replay and DLQ paths under realistic fault conditions.",
+          "kill_node, network_partition, latency, cpu_stress and memory_pressure experiments with automatic revert and blast-radius impact analysis \u2014 wired into the event bus so failures flow naturally into anomaly and incident systems.",
+      },
+      {
+        heading: "Anomaly detection & incident correlation",
+        body:
+          "Rolling-window z-score detection plus absolute threshold rules (defaults: CPU > 90, memory usage > 85) feed an incident manager that coalesces related events, correlates across the cluster and drives a lifecycle from open to investigating to resolved.",
+      },
+      {
+        heading: "Advisory AI, read-only",
+        body:
+          "Rule-based archetype analysis \u2014 deliberate failure injection, dependency cascade, single-component failure, cluster-wide pressure, capacity bottleneck, latency degradation. Advisory output is read-only and every recommendation requires explicit approval before anything is acted on.",
+      },
+      {
+        heading: "Observability & tooling",
+        body:
+          "Prometheus text and JSON metrics endpoints, event counters, structured logging, an operational CLI (atlas-cli) and a Next.js dark-theme dashboard showing topology, services, open incidents, anomalies and active chaos.",
       },
     ],
     outcomes: [
-      "A working replicated KV store and queue that continue to serve reads and writes through leader failure.",
-      "Verified recovery paths \u2014 new leaders elected, logs replayed, undelivered messages dead-lettered or retried.",
-      "A reusable demonstration of why consensus, ordering and failure handling matter in production systems.",
+      "A single-machine systems lab that exercises real distributed-systems ideas end-to-end: chaos experiment \u2192 event \u2192 anomaly \u2192 incident \u2192 advisory analysis \u2192 resolution.",
+      "Raft, consistent hashing, scheduling and correlation mechanics implemented from first principles with zero managed services.",
+      "A benchmark suite recording runtime, memory and throughput for all 16 algorithm workloads.",
+      "Algorithmic transparency: every scheduler decision and every AI recommendation carries a visible, auditable breakdown.",
     ],
     metrics: [
       {
-        label: "Replicated data",
-        value: "KV + queue",
-        detail: "Both stores replicate writes through the Raft log.",
+        label: "Implemented from scratch",
+        value: "Everything",
+        detail: "Graphs, DSA, Raft, scheduler, chaos \u2014 no external DB or broker.",
       },
       {
-        label: "Failure modes tested",
-        value: "Chaos suite",
-        detail: "Leader kills, partitions, pauses and poisoned messages.",
+        label: "Consensus",
+        value: "Raft",
+        detail: "Election, log replication, heartbeats, terms, snapshots.",
       },
       {
-        label: "Message durability",
-        value: "Retries + DLQ",
-        detail: "Poisoned messages land in a dead-letter queue, not lost.",
+        label: "Algorithm workloads",
+        value: "16",
+        detail: "Timed in-process with runtime, memory and throughput.",
+      },
+      {
+        label: "Chaos primitives",
+        value: "5",
+        detail: "kill_node, partition, latency, cpu_stress, memory_pressure.",
       },
     ],
     stack: [
-      "Distributed Systems Theory",
+      "Go",
+      "chi (REST API)",
       "Raft",
       "Consistent Hashing",
-      "Replicated KV",
-      "Message Queues",
-      "DLQ",
-      "Chaos Testing",
+      "Prometheus",
+      "Event Bus Architecture",
+      "Next.js",
+      "Docker",
+    ],
+  },
+  {
+    slug: "nexus",
+    title: "NEXUS \u2014 Autonomous Homelab SRE",
+    category: "AI & Operations",
+    kind: "Engineering Project",
+    timeframe: "Ongoing engineering project",
+    context:
+      "An AI SRE for real infrastructure that has to show its work: it observes the live system, collects evidence with typed tools, forms hypotheses, tests them, and only then explains a root cause \u2014 and it refuses to sound confident when it cannot prove something.",
+    tags: [
+      "LLM Agents",
+      "SRE",
+      "Evidence-Based AI",
+      "LangGraph",
+      "FastAPI",
+      "Approval Workflows",
+      "PostgreSQL",
+      "Redis",
+    ],
+    summary:
+      "An evidence-first autonomous SRE agent built around four hard rules \u2014 evidence over vibes, allowlisted typed tools, approval enforced outside the model, and explainable reasoning. Investigates incidents the way a careful operator would, verified live against PostgreSQL and Redis.",
+    problem: [
+      "Most \u201cAI ops\u201d demos ask an LLM to guess and let confidence stand in for correctness.",
+      "Without structured tools and permissions, agents either do nothing useful or have an alarming amount of power \u2014 arbitrary bash, rm -rf \u2014 with no audit trail.",
+      "Explainability gets sacrificed: conclusions arrive without observable evidence or a reasoning path you can verify.",
+    ],
+    approach: [
+      {
+        heading: "Evidence over vibes",
+        body:
+          "Confidence is derived from observations, contradictions and required-evidence coverage \u2014 never invented by the model. When NEXUS cannot verify something, the honest output is \u201cI could not verify disk usage because the host did not respond\u201d \u2014 not \u201cdisk usage is normal.\u201d",
+      },
+      {
+        heading: "Allowlist, not denylist",
+        body:
+          "No arbitrary shell. Every capability is a typed tool with a permission class (READ_ONLY, LOW_RISK, REQUIRES_APPROVAL, FORBIDDEN). The model cannot bypass the permission layer because authorization is enforced outside the LLM.",
+      },
+      {
+        heading: "Approval before risk",
+        body:
+          "REQUIRES_APPROVAL actions cannot run until a human says yes. Default mode is READ_ONLY \u2014 no destructive operations until the permission system is explicitly enabled.",
+      },
+      {
+        heading: "Explainable reasoning",
+        body:
+          "The console shows reasoning summaries and the evidence collected at every step \u2014 never hidden chain-of-thought.",
+      },
+      {
+        heading: "Investigation lifecycle",
+        body:
+          "classify \u2192 context \u2192 evidence \u2192 hypothesis \u2192 test \u2192 root cause \u2192 remediation \u2192 approval \u2192 execute \u2192 verify \u2192 close. When evidence is insufficient the reasoning loop iterates instead of inventing a root cause just to finish.",
+      },
+      {
+        heading: "Phase 1 \u2014 verified foundation",
+        body:
+          "FastAPI application factory with a live /api/v1/health database check, PostgreSQL 16 persistence (SQLAlchemy 2.0 async, Alembic migrations), Redis, structured logging with structlog, a sandbox Docker Compose stack, and CI running ruff, strict mypy and pytest against real PostgreSQL and Redis \u2014 with graceful degradation when a dependency is down.",
+      },
+    ],
+    outcomes: [
+      "An agent architecture where sounding confident is never confused with being correct \u2014 the core fix for the AI-ops hype problem.",
+      "Safety enforced structurally: READ_ONLY by default, four permission classes, human approval outside the model, and a complete audit trail.",
+      "Phase 1 foundation verified against live PostgreSQL and Redis; subsequent phases \u2014 discovery, typed tools, LangGraph agent, evaluation framework \u2014 documented and scheduled in verifiable milestones.",
+      "An honest feature ledger: everything is marked REAL, SIMULATED, MOCK or NOT IMPLEMENTED \u2014 nothing is claimed before it is tested.",
+    ],
+    metrics: [
+      {
+        label: "Default mode",
+        value: "READ_ONLY",
+        detail: "No destructive ops until the permission system is enabled.",
+      },
+      {
+        label: "Permission classes",
+        value: "4",
+        detail: "READ_ONLY, LOW_RISK, REQUIRES_APPROVAL, FORBIDDEN.",
+      },
+      {
+        label: "Phase 1",
+        value: "Complete",
+        detail: "Verified against live PostgreSQL 16 + Redis 7.",
+      },
+      {
+        label: "Root causes",
+        value: "Evidence-backed",
+        detail: "Hypotheses tested against the live system before claiming anything.",
+      },
+    ],
+    stack: [
+      "Python",
+      "FastAPI",
+      "LangGraph",
+      "PostgreSQL 16",
+      "Redis 7",
+      "SQLAlchemy 2.0 (async)",
+      "Alembic",
+      "Docker",
+      "structlog",
+      "pydantic-settings",
     ],
   },
   {
