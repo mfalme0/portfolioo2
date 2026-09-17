@@ -5,6 +5,7 @@ import { SectionHeading } from "./section-heading";
 import { MetricCard, CaseStudyCard } from "./cards";
 import { caseStudies, type CaseStudy } from "@/lib/case-studies";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
+import { FiGithub, FiArrowUpRight } from "react-icons/fi";
 
 export function CaseStudyPage({ study }: { study: CaseStudy }) {
   const related = caseStudies.filter((c) => c.slug !== study.slug);
@@ -114,6 +115,19 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
                   <span key={t} className="apple-tag">{t}</span>
                 ))}
               </div>
+              {study.github && (
+                <a
+                  href={study.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center gap-2 rounded-[3px] border px-4 py-2.5 text-[11px] font-mono font-bold uppercase tracking-[0.14em] transition-opacity hover:opacity-70"
+                  style={{ borderColor: "var(--rule-strong)", color: "var(--flag)" }}
+                >
+                  <FiGithub className="text-sm" />
+                  View source on GitHub
+                  <FiArrowUpRight className="text-sm" />
+                </a>
+              )}
             </div>
           </div>
         </div>

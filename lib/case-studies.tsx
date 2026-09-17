@@ -24,6 +24,7 @@ export interface CaseStudy {
   outcomes: string[];
   metrics: CaseStudyMetric[];
   stack: string[];
+  github?: string;
 }
 
 export const caseStudies: CaseStudy[] = [
@@ -141,6 +142,7 @@ export const caseStudies: CaseStudy[] = [
     timeframe: "Ongoing engineering project",
     context:
       "An open-source distributed infrastructure intelligence engine and systems-engineering laboratory \u2014 every data structure, algorithm, scheduler, consensus layer and failure-injection engine implemented from first principles. No external database, message broker or AI service to hide behind.",
+    github: "https://github.com/mfalme0/atlas",
     tags: [
       "Raft",
       "Consistent Hashing",
@@ -251,6 +253,7 @@ export const caseStudies: CaseStudy[] = [
     timeframe: "Ongoing engineering project",
     context:
       "An AI SRE for real infrastructure that has to show its work: it observes the live system, collects evidence with typed tools, forms hypotheses, tests them, and only then explains a root cause \u2014 and it refuses to sound confident when it cannot prove something.",
+    github: "https://github.com/mfalme0/nexus",
     tags: [
       "LLM Agents",
       "SRE",
@@ -339,6 +342,88 @@ export const caseStudies: CaseStudy[] = [
       "Docker",
       "structlog",
       "pydantic-settings",
+    ],
+  },
+  {
+    slug: "cs2rgb",
+    title: "CS2RGB \u2014 Counter-Strike \u00d7 OpenRGB Lighting",
+    category: "Automation & Hardware",
+    kind: "Engineering Project",
+    timeframe: "Ongoing engineering project",
+    context:
+      "Bridging a game's internal state to physical RGB hardware through Counter-Strike 2's Game State Integration API and a local OpenRGB client \u2014 no injection, no overlays, no touching the game process. Just the game publishing its state and hardware reacting to it.",
+    github: "https://github.com/mfalme0/CS2RGB",
+    tags: [
+      "Python",
+      "Game State Integration",
+      "OpenRGB",
+      "CS2",
+      "Local HTTP Server",
+      "Hardware Automation",
+    ],
+    summary:
+      "A Python service that taps CS2's Game State Integration API and drives OpenRGB directly \u2014 lighting reacts to health, flash/smoke/burn status, game phase and round events (bomb, kills, round wins) with secure secret-key authentication and full event logging.",
+    problem: [
+      "PC lighting is static \u2014 a machine with a full RGB setup runs the same light show whether you're winning, burning, or dead.",
+      "Games expose no lighting hooks; most reactive setups rely on heuristics, screen capture or hooking the game process \u2014 fragile and invasive.",
+      "CS2 already broadcasts rich match state, but nothing was mapping it to hardware.",
+    ],
+    approach: [
+      {
+        heading: "Game State Integration",
+        body:
+          "CS2 publishes player, round, map and provider state over HTTP to a local listener using a signed Game State Integration config \u2014 every update arrives as structured JSON, so the game is never touched or injected into.",
+      },
+      {
+        heading: "Secure listener",
+        body:
+          "A local HTTP server validates requests against a secret key from the GSI config before any state is trusted, blocking spoofed or stale event streams.",
+      },
+      {
+        heading: "OpenRGB client",
+        body:
+          "openrgb-python talks to the running OpenRGB daemon, so lighting changes work across manufacturers and devices without vendor-specific SDKs.",
+      },
+      {
+        heading: "Event \u2192 colour mapping",
+        body:
+          "Health tiers (green 80\u2013100, yellow 50\u201379, orange 20\u201349, red 1\u201319), environment effects (white flash, orange burn flicker, grey smoke), game phase (loading, searching, main menu) and round events (bomb planted/exploded, kill confirmed, round wins) each resolve to a deterministic colour and effect.",
+      },
+      {
+        heading: "Observability",
+        body:
+          "Every game-state payload and system event is written to a structured log for debugging mappings and tracing missed events.",
+      },
+    ],
+    outcomes: [
+      "A working pipeline from in-game event to physical RGB change, driven entirely by the game's own state feed.",
+      "Reactive ambience for health, status effects and round moments \u2014 with zero modification of the game.",
+      "A small, dependency-light pattern (Python + local HTTP + GSI + OpenRGB) reusable for any game that publishes GSI state.",
+    ],
+    metrics: [
+      {
+        label: "Event groups mapped",
+        value: "4",
+        detail: "Health, environment, game phase, round events.",
+      },
+      {
+        label: "Health tiers",
+        value: "4",
+        detail: "Green, yellow, orange and red based on HP.",
+      },
+      {
+        label: "Game untouched",
+        value: "100%",
+        detail: "Only GSI data flows \u2014 no hooks, no injection.",
+      },
+    ],
+    stack: [
+      "Python",
+      "Game State Integration",
+      "OpenRGB",
+      "openrgb-python",
+      "Local HTTP Server",
+      "JSON",
     ],
   },
   {
