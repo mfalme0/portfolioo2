@@ -71,45 +71,9 @@ export default function AnimatedLogo({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <path
-        d="M12 2L2 7v10l10 5 10-5V7L12 2z"
-        stroke={accentColor}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        className="logo-inner"
-        d="M12 7l-5 2.5v5L12 17l5-2.5v-5L12 7z"
-        stroke={accentColor}
-        strokeWidth="1"
-        fill={`${accentColor}15`}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity={0}
-      />
-      <path
-        className="logo-inner"
-        d="M7 9.5L12 12l5-2.5M12 12v5"
-        stroke={accentColor}
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity={0}
-      />
-      <text
-        x="12"
-        y="14.5"
-        textAnchor="middle"
-        fill={accentColor}
-        fontSize="5"
-        fontWeight="bold"
-        fontFamily="monospace"
-        className="logo-inner"
-        opacity={0}
-      >
-        JG
-      </text>
+      <circle cx="6" cy="7" r="4" fill="#D02020" stroke={accentColor} strokeWidth="0.75" />
+      <rect className="logo-inner" x="10" y="3" width="8" height="8" fill="#1040C0" opacity={0} />
+      <path className="logo-inner" d="M6 20l5-9 5 9H6z" fill="#F0C020" opacity={0} />
     </svg>
   );
 }

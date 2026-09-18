@@ -17,7 +17,11 @@ export function Faq({ items, title = "Frequently Asked Questions" }: { items: Fa
         {items.map((item, i) => {
           const isOpen = open === i;
           return (
-            <div key={item.q} className="apple-card-flat overflow-hidden">
+            <div
+              key={item.q}
+              className="apple-card-flat overflow-hidden"
+              style={isOpen ? { backgroundColor: "var(--flag)", color: "#fff" } : undefined}
+            >
               <button
                 type="button"
                 onClick={() => setOpen(isOpen ? null : i)}
@@ -25,12 +29,12 @@ export function Faq({ items, title = "Frequently Asked Questions" }: { items: Fa
                 aria-controls={`faq-panel-${i}`}
                 className="w-full flex items-start justify-between gap-4 px-5 py-4 text-left"
               >
-                <span className="text-sm font-semibold" style={{ color: "var(--fg)" }}>
+                <span className="text-sm font-semibold" style={{ color: isOpen ? "#fff" : "var(--fg)" }}>
                   {item.q}
                 </span>
                 <span
                   className="text-lg font-light leading-none transition-transform duration-300 shrink-0"
-                  style={{ color: "var(--flag)", transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                  style={{ color: isOpen ? "#fff" : "var(--flag)", transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
                   aria-hidden
                 >
                   +
@@ -41,7 +45,7 @@ export function Faq({ items, title = "Frequently Asked Questions" }: { items: Fa
                 className="overflow-hidden transition-[max-height,opacity] duration-300 ease-out"
                 style={{ maxHeight: isOpen ? 400 : 0, opacity: isOpen ? 1 : 0 }}
               >
-                <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "var(--gravel)" }}>
+                <p className="mx-3 mb-3 border-t-4 border-black bg-[#FFF9C4] px-5 py-4 text-sm leading-relaxed" style={{ color: "var(--ink)" }}>
                   {item.a}
                 </p>
               </div>

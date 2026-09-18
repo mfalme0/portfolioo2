@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Fraunces, Hanken_Grotesk, Spline_Sans_Mono } from "next/font/google";
+import { Outfit, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "./Context/theme";
@@ -8,16 +8,10 @@ import { PerformanceProvider } from "./Context/performance";
 import { ErrorBoundary } from "./Components/error-boundary";
 import CursorGlow from "./Components/cursor-glow";
 
-const fraunces = Fraunces({
-  variable: "--font-display",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  axes: ["SOFT", "WONK", "opsz"],
-  style: ["normal", "italic"],
-});
-
-const hankenGrotesk = Hanken_Grotesk({
-  variable: "--font-sans",
-  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
 });
 
 const splineSansMono = Spline_Sans_Mono({
@@ -91,7 +85,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{
-          __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='night'||t==='dark'||t==='loki')document.documentElement.dataset.theme='night';else if(t==='daylight'||t==='light'||!t)document.documentElement.dataset.theme='daylight';else document.documentElement.dataset.theme='daylight'}catch(e){document.documentElement.dataset.theme='daylight'}})()`
+          __html: `document.documentElement.dataset.theme='daylight'`
         }} />
         <script
           type="application/ld+json"
@@ -131,7 +125,7 @@ export default function RootLayout({
       </head>
       <Analytics />
       <body
-        className={`${fraunces.variable} ${hankenGrotesk.variable} ${splineSansMono.variable} antialiased`}
+        className={`${outfit.variable} ${splineSansMono.variable} antialiased`}
       >
         <div className="grain-overlay" aria-hidden="true" />
         <a

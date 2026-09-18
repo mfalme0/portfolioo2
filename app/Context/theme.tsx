@@ -5,15 +5,13 @@ import { themeConfig, Theme as ThemeType } from '@/lib/theme-config';
 
 export type Theme = ThemeType;
 
-const themeKeys: Theme[] = ['daylight', 'night'];
+const themeKeys: Theme[] = ['daylight'];
 
-function migrateTheme(stored: string | null): Theme {
-  if (stored === 'loki' || stored === 'dark') return 'night';
-  if (stored === 'light' || stored === 'synth') return 'daylight';
+function migrateTheme(): Theme {
   return 'daylight';
 }
 
-const defaultTheme = migrateTheme(null);
+const defaultTheme = migrateTheme();
 const defaultColors = themeConfig.themes[defaultTheme];
 
 interface ThemeContextType {
@@ -41,8 +39,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const next = migrateTheme(stored);
+    const next = migrateTheme();
     setTheme(next);
     localStorage.setItem('theme', next);
     setMounted(true);
@@ -55,10 +52,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
-    setTheme(t => {
-      const idx = themeKeys.indexOf(t);
-      return themeKeys[(idx + 1) % themeKeys.length];
-    });
+    setTheme(themeKeys[0]);
   }, []);
 
   const t = themeConfig.themes[theme];

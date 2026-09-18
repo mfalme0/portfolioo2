@@ -34,20 +34,20 @@
   --font-display: var(--font-display);
 }
 
-/* ── MAIN SITE PALETTE (Field Report — "MFALME·0" / Nairobi Daylight) ── */
+/* ── BAUHAUS PALETTE ── */
 :root,
 :root[data-theme="daylight"],
 :root[data-theme="light"] {
-  --paper: #F2EEE1;
-  --sheet: #FBF9F1;
-  --sheet-2: #EAE4D1;
-  --ink: #0C1D23;
-  --flag: #D9481C;
-  --bush: #5F7A1F;
-  --water: #0F6B78;
-  --gravel: #6B6657;
-  --rule: #D8D1BC;
-  --rule-strong: #B6AE96;
+  --paper: #F0F0F0;
+  --sheet: #FFFFFF;
+  --sheet-2: #E0E0E0;
+  --ink: #121212;
+  --flag: #D02020;
+  --bush: #1040C0;
+  --water: #F0C020;
+  --gravel: #4A4A4A;
+  --rule: #121212;
+  --rule-strong: #121212;
 
   --bone: var(--ink);
   --amber: var(--flag);
@@ -59,8 +59,8 @@
   --border-default: var(--rule);
   --accent-default: var(--flag);
   --accent-secondary: var(--water);
-  --accent-rgb: 217 72 28;
-  --border-hover: color-mix(in srgb, var(--flag) 35%, var(--rule));
+  --accent-rgb: 208 32 32;
+  --border-hover: #121212;
   --muted: var(--gravel);
   --card-bg: var(--sheet);
 
@@ -1598,6 +1598,140 @@ body {
   border-style: dashed;
 }
 
+/* ────────────────────────────────────────────
+   BAUHAUS SYSTEM OVERRIDES
+   ──────────────────────────────────────────── */
+
+:root {
+  --font-sans: var(--font-outfit);
+  --font-display: var(--font-outfit);
+}
+
+body {
+  font-family: var(--font-outfit), Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  transition: none;
+}
+
+.font-display,
+.font-display-italic,
+.apple-heading,
+.apple-heading-compact,
+.apple-heading-xl,
+.apple-title,
+.apple-heading-serif {
+  font-family: var(--font-outfit), Arial, Helvetica, sans-serif;
+  font-style: normal;
+  font-variation-settings: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.055em;
+  line-height: 0.92;
+}
+
+.apple-heading { font-size: clamp(2.7rem, 7vw, 6.8rem); }
+.apple-heading-compact { font-size: clamp(2rem, 4.8vw, 4rem); }
+.apple-heading-xl { font-size: clamp(3.4rem, 10vw, 8rem); }
+
+.apple-eyebrow,
+.apple-eyebrow-accent {
+  font-family: var(--font-outfit), Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.apple-eyebrow::before { width: 1rem; height: 4px; background: var(--flag); opacity: 1; }
+
+.section-grid {
+  background-image: radial-gradient(var(--ink) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+
+.apple-card,
+.apple-card-flat,
+.apple-card-glass,
+.card-vintage {
+  background: var(--sheet);
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 var(--ink);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.apple-card:hover,
+.apple-card-flat:hover,
+.card-vintage:hover {
+  border-color: var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  transform: translate(-2px, -2px);
+}
+
+.apple-tag,
+.apple-tag-subtle,
+.badge-est {
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--sheet-2);
+  color: var(--ink);
+  font-family: var(--font-outfit), Arial, sans-serif;
+  font-weight: 700;
+}
+
+.rog-btn-primary,
+.rog-btn-secondary {
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family: var(--font-outfit), Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out;
+}
+
+.rog-btn-primary {
+  background: var(--flag);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.rog-btn-primary:hover {
+  background: #b91c1c;
+  box-shadow: 6px 6px 0 var(--ink);
+  transform: translate(-2px, -2px);
+}
+
+.rog-btn-primary:active,
+.rog-btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.rog-btn-primary::before { display: none; }
+
+.rog-btn-secondary {
+  background: var(--sheet);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.rog-btn-secondary:hover {
+  background: var(--water);
+  color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  transform: translate(-2px, -2px);
+}
+
+.grain-overlay { display: none; }
+
+*:focus-visible {
+  outline: 3px solid var(--bush);
+  outline-offset: 3px;
+}
+
 /* Blueprint header styling */
 .blueprint-mode header > div > div {
   background: rgba(15, 50, 96, 0.7) !important;
@@ -2369,4 +2503,3 @@ body {
   .border-zinc-800\/60,
   .border-zinc-600 { border-color: var(--rule); }
 }
-
