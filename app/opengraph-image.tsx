@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'Joseph Gitau — Full-Stack Engineer';
+export const alt = 'Joseph Gitau — Technology Engineer & Technical Leader';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -40,7 +40,7 @@ export default function OgImage() {
             letterSpacing: '0.05em',
           }}
         >
-          Full-Stack Engineer &amp; Systems Architect
+          Technology Engineer &amp; Systems Architect
         </div>
         <div
           style={{
@@ -51,7 +51,7 @@ export default function OgImage() {
             color: '#6B7280',
           }}
         >
-          React · Next.js · Node.js · C# · Docker
+          C# · Python · TypeScript · Azure · Kubernetes · Linux
         </div>
       </div>
     ),

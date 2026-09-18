@@ -30,17 +30,18 @@ const baseUrl = "https://mfalme.runs-on.dev";
 
 export const metadata: Metadata = {
   title: {
-    default: "Joseph Gitau Chege — Software Developer, Backend Systems & Cloud Reliability",
+    default: "Joseph Gitau Chege — Technology Engineer & Technical Leader",
     template: "%s — Joseph Gitau Chege",
   },
   description:
-    "Software developer building production backend systems, APIs, and cloud infrastructure in C#, Python, TypeScript, and C++. Specializing in identity platforms, notification services, and reliable software systems for organisations in Nairobi, Kenya.",
+    "Technology engineer and technical leader in Nairobi, Kenya — full-stack software engineering, cloud & infrastructure, Linux systems, networking, cybersecurity, AI & automation. Systems designed, deployed, operated and scaled end-to-end.",
   keywords: [
-    "software developer", "software engineer", "backend developer",
-    "backend systems", "identity platform", "notification services",
-    "C#", "Python", "TypeScript", "Azure", "Docker", "Kubernetes",
-    "Nairobi", "Kenya", "portfolio", "cloud reliability", "DevOps",
-    "incident response", "Joseph Gitau Chege", "mfalme0", "API development",
+    "technology engineer", "technical leader", "software engineer",
+    "systems architect", "full-stack developer", "backend systems",
+    "cloud infrastructure", "Azure", "Docker", "Kubernetes",
+    "Linux systems administration", "DevOps", "SRE", "networking",
+    "cybersecurity", "distributed systems", "AI engineering", "automation",
+    "Nairobi", "Kenya", "portfolio", "Joseph Gitau Chege", "mfalme0",
   ],
   authors: [{ name: "Joseph Gitau", url: "https://github.com/mfalme0" }],
   creator: "Joseph Gitau",
@@ -50,17 +51,17 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Joseph Gitau Chege",
-    title: "Joseph Gitau Chege — Software Developer, Backend Systems & Cloud Reliability",
+    title: "Joseph Gitau Chege — Technology Engineer & Technical Leader",
     description:
-      "Software developer building backend systems, APIs, and cloud infrastructure for production environments. Specializing in identity platforms, notification services, and reliable software systems.",
+      "Technology engineer and technical leader in Nairobi, Kenya — full-stack software, cloud & infrastructure, Linux, networking, cybersecurity and AI. Systems designed, deployed, operated and scaled end-to-end.",
     url: baseUrl,
-    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau Chege — Software Developer" }],
+    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau Chege — Technology Engineer & Technical Leader" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Joseph Gitau Chege — Software Developer, Backend Systems & Cloud Reliability",
+    title: "Joseph Gitau Chege — Technology Engineer & Technical Leader",
     description:
-      "Software developer building backend systems, APIs, and cloud infrastructure for production environments. Specializing in identity platforms, notification services, and reliable software systems.",
+      "Technology engineer and technical leader in Nairobi, Kenya — full-stack software, cloud & infrastructure, Linux, networking, cybersecurity and AI. Systems designed, deployed, operated and scaled end-to-end.",
     images: [`${baseUrl}/opengraph-image.png`],
   },
   robots: {
@@ -100,11 +101,13 @@ export default function RootLayout({
             "@type": "Person",
             name: "Joseph Gitau Chege",
             url: "https://mfalme.runs-on.dev",
-            jobTitle: "Software Developer — Backend Systems",
+            jobTitle: "Technology Engineer & Technical Leader",
             knowsAbout: [
-              "C#", "Python", "TypeScript", "C++", "Azure",
-              "Docker", "Kubernetes", "Identity Platforms",
-              "Notification Services", "Cloud Reliability", "Software Development",
+              "Software Engineering", "Full-Stack Development",
+              "Backend Systems", "Systems Architecture", "Distributed Systems",
+              "Cloud Infrastructure", "Azure", "Kubernetes", "Docker",
+              "Linux Systems Administration", "Networking", "Cybersecurity",
+              "CI/CD & Automation", "AI Engineering", "Technical Leadership",
             ],
             sameAs: [
               "https://github.com/mfalme0",

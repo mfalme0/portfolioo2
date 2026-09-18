@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Joseph Gitau Chege",
   shortName: "Joseph Gitau",
   brand: "Mfalme\u00b70",
-  role: "Software Engineer \u00b7 Systems Architect \u00b7 IT & Cloud",
+  role: "Technology Engineer \u00b7 Systems Architect \u00b7 IT & Cloud",
   positioning:
     "Software, infrastructure, AI, hardware and technical systems \u2014 designed, built and operated from Nairobi.",
   url: "https://mfalme.runs-on.dev",

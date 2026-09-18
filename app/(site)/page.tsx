@@ -3,37 +3,43 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMeta, webPageJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 import { siteConfig, whatsappLink, mailtoLink } from "@/lib/site-config";
-import { pillars, pcServices, areasServed } from "@/lib/services";
+import { pillars, areasServed } from "@/lib/services";
 import { caseStudies } from "@/lib/case-studies";
 import { guides } from "@/lib/guides";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { SectionHeading } from "@/app/Components/site/section-heading";
 import { CtaLink, CtaAnchor } from "@/app/Components/site/buttons";
 import { StackDiagram } from "@/app/Components/site/stack-diagram";
-import { PillarCard, PcServiceCard, CaseStudyCard, GuideCard, MetricCard } from "@/app/Components/site/cards";
+import { PillarCard, CaseStudyCard, GuideCard, MetricCard } from "@/app/Components/site/cards";
 import { CtaBand } from "@/app/Components/site/cta-band";
 import { Faq } from "@/app/Components/site/faq";
 import { FiArrowUpRight, FiCpu, FiServer, FiLayers, FiTerminal, FiWatch } from "react-icons/fi";
 
 export const metadata: Metadata = {
   ...pageMeta({
-    title: "PC Building in Nairobi, Kenya | Custom PCs & Software Services — Joseph Gitau Chege",
+    title: "Joseph Gitau Chege — Technology Engineer & Technical Leader",
     description:
-      "Custom PC building, gaming & developer workstations in Nairobi, plus custom software, IT consulting, cloud & DevOps, AI automation and technical leadership for Kenyan businesses. Quality guaranteed.",
+      "Technology engineer and technical leader in Nairobi, Kenya — full-stack software engineering, cloud & infrastructure, Linux systems, networking, cybersecurity, AI & automation. Systems designed, deployed, operated and scaled end-to-end.",
     path: "/",
     keywords: [
+      "technology engineer Nairobi",
+      "technical leader Kenya",
       "software engineer Nairobi",
-      "IT consulting Kenya",
-      "custom PC builder Nairobi",
-      "gaming PC Kenya",
-      "developers workstation Kenya",
-      "AI automation Kenya",
-      "fractional CTO",
-      "infrastructure audit Kenya",
+      "systems architect",
+      "cloud infrastructure engineer Kenya",
+      "DevOps engineer",
+      "Linux systems administrator",
+      "full-stack developer Kenya",
+      "distributed systems",
+      "network infrastructure",
+      "cybersecurity",
+      "AI engineering",
+      "automation",
+      "IT & cloud consulting",
       "Joseph Gitau Chege",
     ],
   }),
-  title: { absolute: "PC Building in Nairobi, Kenya | Custom PCs & Software Services — Joseph Gitau Chege" },
+  title: { absolute: "Joseph Gitau Chege — Technology Engineer & Technical Leader" },
 };
 
 const stackSkills = [
@@ -93,8 +99,8 @@ const homeFaqs = [
     a: "Based in Nairobi, Kenya, serving Nairobi and surrounding areas (Kiambu, Kikuyu, Limuru, Ruaka, Westlands, Karen, Kilimani, Ruiru, Thika). Software and infrastructure work is delivered remotely or on-site depending on the project.",
   },
   {
-    q: "What does custom PC building cost in Kenya?",
-    a: "Every build starts at a different place because every workload is different. Pricing is quoted per build after the use case and budget are known — no generic price list.",
+    q: "Is Joseph available for full-time roles or fractional/contract work?",
+    a: "Both. His career direction targets senior engineering and technical leadership roles — senior/lead software engineering, platform, cloud, infrastructure and DevOps/SRE — and his services can be engaged fractionally for architecture, operations and technical oversight.",
   },
   {
     q: "Can Joseph help my business beyond software?",
@@ -113,7 +119,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify([
-            webPageJsonLd("/", "PC Building in Nairobi, Kenya | Custom PCs & Software Services — Joseph Gitau Chege", metadata.description ?? ""),
+            webPageJsonLd("/", "Joseph Gitau Chege — Technology Engineer & Technical Leader", metadata.description ?? ""),
             breadcrumbJsonLd([{ name: "Home", path: "/" }]),
             faqJsonLd(homeFaqs),
             {
@@ -302,32 +308,6 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-12">
             {pillars.map((p) => (
               <PillarCard key={p.id} pillar={p} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── PC building ─────────────────────────────────────── */}
-      <section className="relative w-full py-20 md:py-28 overflow-hidden" style={{ backgroundColor: "var(--paper)" }}>
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-[20%] right-[-5%] h-[480px] w-[480px] rounded-full blur-[250px]" style={{ background: "var(--flag)", opacity: 0.04 }} />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-14">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-12">
-            <div className="lg:col-span-7">
-              <SectionHeading
-                eyebrow="Custom PC Building"
-                title={<>Custom PCs designed around what you <span style={{ color: "var(--flag)" }}>actually do.</span></>}
-                lead="Not whatever parts happen to be in stock. Gaming, development, AI, content creation and business machines — spec, build, test, deliver."
-              />
-            </div>
-            <div className="lg:col-span-5 lg:flex lg:justify-end">
-              <CtaLink href="/tools/pc-build" label="Try the PC Build Tool" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {pcServices.slice(0, 6).map((s) => (
-              <PcServiceCard key={s.id} service={s} />
             ))}
           </div>
         </div>
