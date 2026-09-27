@@ -1,5 +1,7 @@
 "use client";
 
+import { readConsent } from "./consent";
+
 export type TrackEvent =
   | "whatsapp_click"
   | "email_click"
@@ -35,10 +37,20 @@ declare global {
  * Pushes into `window.dataLayer` (Google Tag Manager standard convention) so
  * it can be wired to GA4/GTM later without changing event call sites, and
  * logs to the console in development.
+ *
+ * Nothing is queued while the visitor has not consented to analytics — an
+ * unconsented queue could be flushed by a tag added later, so the buffer is
+ * only populated once it is actually allowed to be sent.
  */
 export function track(event: TrackEvent, data: TrackData = {}): void {
   const payload = { event, ...data, ts: new Date().toISOString() };
   try {
+    if (readConsent()?.analytics !== true) {
+      if (process.env.NODE_ENV !== "production") {
+        console.info("[analytics: not sent — consent required]", payload);
+      }
+      return;
+    }
     const w = window as AnalyticsWindow;
     if (Array.isArray(w.dataLayer)) {
       w.dataLayer.push(payload);

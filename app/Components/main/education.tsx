@@ -18,7 +18,7 @@ const modules = [
 
 const timelineItems = [
   { year: '2021 - 2024', title: 'B.Sc. Computer Science', subtitle: 'Umma University', description: 'Nairobi, Kenya' },
-  { year: '2023', title: 'Started Professional Career', subtitle: 'Steadfast Academy', description: 'Backend systems & notification infrastructure' },
+  { year: '2023', title: 'Started Professional Career', subtitle: 'VisionFund Kenya', description: 'Software Engineering Intern' },
   { year: '2024', title: 'BetterFarm Lead Architect', subtitle: 'AgriTech Platform', description: 'Cloud-native Azure backend' },
   { year: '2025', title: 'Full-Stack ERP Delivery', subtitle: 'Steadfast Academy', description: 'End-to-end ERP system deployment' },
 ];

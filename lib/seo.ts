@@ -140,7 +140,6 @@ export function serviceJsonLd(
     sameAs: [
       siteConfig.socials.github,
       siteConfig.socials.linkedin,
-      siteConfig.socials.x,
       siteConfig.socials.instagram,
     ],
     contactPoint: {
@@ -265,7 +264,6 @@ export function personJsonLd(): JsonLd {
     sameAs: [
       siteConfig.socials.github,
       siteConfig.socials.linkedin,
-      siteConfig.socials.x,
       siteConfig.socials.instagram,
     ],
   };

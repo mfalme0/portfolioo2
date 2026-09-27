@@ -101,7 +101,6 @@ const CONTACT_TEXT = `Contact Information
   Email:    joseph.gitau.c@gmail.com
   GitHub:   github.com/mfalme0
   LinkedIn: linkedin.com/in/joseph-g-471678208/
-  X:        x.com/joemfalme001
   Location: Nairobi, Kenya
 
   Or use the contact form on the portfolio page.`;

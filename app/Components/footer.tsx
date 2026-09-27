@@ -2,12 +2,11 @@
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
-import { BsGithub, BsLinkedin, BsTwitterX, BsInstagram } from 'react-icons/bs';
+import { BsGithub, BsLinkedin, BsInstagram } from 'react-icons/bs';
 
 const socials = [
   { icon: <BsGithub />, url: 'https://github.com/mfalme0', label: 'GitHub' },
   { icon: <BsLinkedin />, url: 'https://linkedin.com/in/joseph-g-471678208/', label: 'LinkedIn' },
-  { icon: <BsTwitterX />, url: 'https://x.com/joemfalme001', label: 'X' },
   { icon: <BsInstagram />, url: 'https://instagram.com/mfalme.01/', label: 'Instagram' },
 ];
 

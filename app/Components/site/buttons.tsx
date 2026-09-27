@@ -1,8 +1,13 @@
 import Link from "next/link";
 import React from "react";
 
-const base =
-  "relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[11px] font-bold uppercase font-mono tracking-[0.12em] transition-all duration-300 rounded-[2px] overflow-hidden";
+/**
+ * Shared CTA layout. Exported so that <button> elements (cookie consent, cookie
+ * settings) render identically to anchors — `appearance-none` is required because
+ * the .rog-btn-* classes assume an anchor and leave the button's UA styling intact.
+ */
+export const buttonBase =
+  "relative inline-flex items-center justify-center gap-2 appearance-none cursor-pointer px-5 py-2.5 text-[11px] font-bold uppercase font-mono tracking-[0.12em] transition-all duration-300 rounded-[2px] overflow-hidden";
 
 export interface CtaProps {
   href: string;
@@ -14,7 +19,7 @@ export interface CtaProps {
 export function CtaLink({ href, label, variant = "primary", className = "" }: CtaProps) {
   const cls = variant === "primary" ? "rog-btn-primary" : "rog-btn-secondary";
   return (
-    <Link href={href} className={`${base} ${cls} ${className}`}>
+    <Link href={href} className={`${buttonBase} ${cls} ${className}`}>
       <span className="relative flex items-center gap-2">{label}</span>
     </Link>
   );
@@ -33,7 +38,7 @@ export function CtaAnchor({
     <a
       href={href}
       onClick={onClick}
-      className={`${base} ${cls} ${className}`}
+      className={`${buttonBase} ${cls} ${className}`}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       <span className="relative flex items-center gap-2">{label}</span>

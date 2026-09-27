@@ -14,10 +14,10 @@ export const siteConfig = {
   timezone: "EAT (GMT+3)",
   resume: "/Joseph_Chege.pdf",
   formspreeEndpoint: "https://formspree.io/f/xvgonqog",
+  gaMeasurementId: "G-KC8Z48VS2N",
   socials: {
     github: "https://github.com/mfalme0",
     linkedin: "https://linkedin.com/in/joseph-g-471678208/",
-    x: "https://x.com/joemfalme001",
     instagram: "https://instagram.com/mfalme.01/",
   },
   areas: [

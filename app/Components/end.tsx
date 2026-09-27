@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTheme } from '../Context/theme';
 import { usePerformance } from '../Context/performance';
-import { BsGithub, BsLinkedin, BsTwitterX, BsInstagram } from 'react-icons/bs';
+import { BsGithub, BsLinkedin, BsInstagram } from 'react-icons/bs';
 import dynamic from 'next/dynamic';
 import MagneticButton from './magnetic-button';
 import ScrambleText from './scramble-text';
@@ -24,7 +24,6 @@ const items = [
 const socials = [
   { icon: <BsGithub />, url: 'https://github.com/mfalme0', label: 'GitHub' },
   { icon: <BsLinkedin />, url: 'https://linkedin.com/in/joseph-g-471678208/', label: 'LinkedIn' },
-  { icon: <BsTwitterX />, url: 'https://x.com/joemfalme001', label: 'X' },
   { icon: <BsInstagram />, url: 'https://instagram.com/mfalme.01/', label: 'Instagram' },
 ];
 

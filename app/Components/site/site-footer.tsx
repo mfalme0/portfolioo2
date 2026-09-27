@@ -1,17 +1,22 @@
 import React from "react";
 import Link from "next/link";
-import { BsGithub, BsLinkedin, BsTwitterX, BsInstagram } from "react-icons/bs";
+import { BsGithub, BsLinkedin, BsInstagram } from "react-icons/bs";
 import { siteConfig, whatsappLink } from "@/lib/site-config";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
+import { legalDocs } from "@/lib/legal";
+import CookieSettingsButton from "./cookie-settings-button";
 
 const socials = [
   { icon: <BsGithub />, url: siteConfig.socials.github, label: "GitHub" },
   { icon: <BsLinkedin />, url: siteConfig.socials.linkedin, label: "LinkedIn" },
-  { icon: <BsTwitterX />, url: siteConfig.socials.x, label: "X" },
   { icon: <BsInstagram />, url: siteConfig.socials.instagram, label: "Instagram" },
 ];
 
-const columns: { heading: string; links: { label: string; href: string }[] }[] = [
+const columns: {
+  heading: string;
+  links: { label: string; href: string }[];
+  action?: React.ReactNode;
+}[] = [
   {
     heading: "Services",
     links: [
@@ -45,6 +50,16 @@ const columns: { heading: string; links: { label: string; href: string }[] }[] =
       { label: "About Joseph", href: "/about" },
       { label: "Work", href: "/work" },
     ],
+  },
+  {
+    heading: "Legal",
+    links: legalDocs.map((doc) => ({ label: doc.label, href: doc.href })),
+    action: (
+      <CookieSettingsButton
+        className="mt-4 appearance-none cursor-pointer text-left text-[10px] font-mono font-bold tracking-[0.12em] uppercase transition-opacity hover:opacity-60"
+        style={{ color: "#E0E0E0", textDecoration: "underline", textUnderlineOffset: "3px" }}
+      />
+    ),
   },
 ];
 
@@ -110,14 +125,27 @@ export default function SiteFooter() {
                   </li>
                 ))}
               </ul>
+              {col.action}
             </div>
           ))}
         </div>
 
-        <div className="mt-14 pt-6 flex flex-col md:flex-row items-center justify-between gap-3" style={{ borderTop: "1px solid var(--rule)" }}>
+        <div className="mt-14 pt-6 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid var(--rule)" }}>
           <p className="text-[10px] font-medium" style={{ color: "#E0E0E0" }}>
             &copy; {year} {siteConfig.name}. All rights reserved.
           </p>
+          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+            {legalDocs.map((doc) => (
+              <Link
+                key={doc.href}
+                href={doc.href}
+                className="text-[10px] font-medium transition-opacity hover:opacity-60"
+                style={{ color: "#E0E0E0" }}
+              >
+                {doc.label}
+              </Link>
+            ))}
+          </nav>
           <div className="flex items-center gap-4">
             <span className="badge-est">Ref Mfalme&middot;0-2026</span>
             <span className="text-[10px] font-medium"             style={{ color: "#E0E0E0" }}>

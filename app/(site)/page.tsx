@@ -156,7 +156,6 @@ export default function HomePage() {
               sameAs: [
                 siteConfig.socials.github,
                 siteConfig.socials.linkedin,
-                siteConfig.socials.x,
                 siteConfig.socials.instagram,
               ],
               contactPoint: {

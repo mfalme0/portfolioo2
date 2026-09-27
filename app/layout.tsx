@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Outfit, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "./Context/theme";
 import { PerformanceProvider } from "./Context/performance";
 import { ErrorBoundary } from "./Components/error-boundary";
+import { ConsentProvider } from "./Components/site/consent-gate";
+import CookieConsent from "./Components/site/cookie-consent";
 import CursorGlow from "./Components/cursor-glow";
 
 const outfit = Outfit({
@@ -106,24 +106,11 @@ export default function RootLayout({
             sameAs: [
               "https://github.com/mfalme0",
               "https://linkedin.com/in/joseph-g-471678208/",
-              "https://x.com/joemfalme001",
             ],
           }),
         }}
         />
-      <Script
-          id="gtag-init"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KC8Z48VS2N');`,
-          }}
-        />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-KC8Z48VS2N"
-          strategy="afterInteractive"
-        />
       </head>
-      <Analytics />
       <body
         className={`${outfit.variable} ${splineSansMono.variable} antialiased`}
       >
@@ -137,8 +124,11 @@ export default function RootLayout({
         <ErrorBoundary>
           <ThemeProvider>
             <PerformanceProvider>
-              <CursorGlow size={350} />
-              {children}
+              <ConsentProvider>
+                <CursorGlow size={350} />
+                {children}
+                <CookieConsent />
+              </ConsentProvider>
             </PerformanceProvider>
           </ThemeProvider>
         </ErrorBoundary>
