@@ -120,22 +120,90 @@ It's keeping my memories organized and accessible.
 
 That's a pretty good return on all those hours spent debugging Linux.
 
-## The setup
+## The setup: My own little Google Photos
 
-> **[TODO — fill in your actual deployment before publishing.]** Add the real details here:
-> deployment method (Docker Compose, CasaOS, or something else), where the Immich library lives on
-> TrueNAS, and how your phone reaches the server — Tailscale, NetBird, or a reverse proxy. The
-> paragraph after this note stands on its own and can stay as written.
+I didn't want another cloud subscription. I already had the hardware, the storage, and the infrastructure sitting at home. I just needed something that could turn all of that into a photo library I could actually use.
 
-One thing I particularly like about running Immich on existing infrastructure is that it fits naturally into the rest of my homelab.
+So I put Immich on my homelab.
 
-I'm not building an entirely separate platform just to manage photographs.
+The setup revolves around three things: my Linux infrastructure, my TrueNAS storage, and Tailscale.
 
-I'm using the machines, storage, networking, and deployment tools I already have.
+### The infrastructure
 
-Which is exactly how I want self-hosting to work.
+My homelab runs on Debian-based machines, with Docker forming a big part of how I manage and deploy services. Storage is handled by my TrueNAS setup, which gives me over 10 TB of capacity to work with.
 
-Although, knowing me, there's a reasonable chance I'll eventually decide the deployment needs a complete architectural redesign for absolutely no reason.
+Rather than treating Immich as another isolated application, I wanted it to fit into the infrastructure I already maintained.
+
+The idea was straightforward:
+
+- Immich handles the photo and video management.
+- My existing storage infrastructure provides the capacity for the library.
+- My homelab handles running the service.
+- Tailscale provides private access to the service when I'm away from home.
+
+The result is a photo library running on hardware I own, without needing to expose the entire server directly to the public internet.
+
+### Tailscale: My photos follow me
+
+This is probably my favourite part of the setup.
+
+One of the biggest inconveniences of self-hosting is that your services traditionally live wherever your server lives.
+
+At home, everything works.
+
+Leave the house, and suddenly you're dealing with public IP addresses, port forwarding, reverse proxies, firewall rules, and whatever networking problem you've accidentally created for yourself.
+
+I wanted to avoid turning access to my photo library into another networking project.
+
+Enter Tailscale.
+
+I use Tailscale to connect my devices to my homelab through a private network. Once my server and client devices are connected to the same tailnet, I can reach Immich using its private network address, even when I'm away from home.
+
+Coffee shop? Accessible.
+
+Travelling? Accessible.
+
+Different network entirely? Still accessible, provided my server and internet connection are online.
+
+I don't have to expose Immich directly to the public internet just to access my own photographs.
+
+And because Tailscale handles the connectivity, I don't have to keep manually configuring port forwarding every time I want to access something remotely.
+
+**My photos are on my hardware, but they're not confined to my home network.**
+
+That's exactly what I wanted.
+
+### The mobile experience
+
+The mobile application is where the whole thing comes together.
+
+I can access my library from my phone, browse photographs, and use Immich as my personal photo management platform.
+
+With Tailscale running, my phone can reach the service through the private network connection rather than relying on a publicly exposed endpoint.
+
+It makes the experience feel much closer to using a conventional cloud photo service, except the infrastructure is mine.
+
+And that's the sweet spot I was looking for.
+
+I don't want to spend every day thinking about where my photos are hosted. I just want to take a picture, have it backed up, and find it again when I need it.
+
+### The important caveat
+
+Self-hosted doesn't mean magically available.
+
+If my server is offline, my internet connection goes down, or Tailscale isn't connected, remote access is affected.
+
+That's the trade-off.
+
+I'm responsible for the infrastructure, and I accept that.
+
+But for a personal photo library, having private remote access to my own hardware is a trade-off I'm very comfortable making.
+
+I get control over my data, access from wherever I am, and no need to maintain a publicly exposed photo server.
+
+For once, the networking part of my homelab is doing exactly what I wanted it to do.
+
+And that is a genuinely rare feeling.
 
 ## A note on backups
 
