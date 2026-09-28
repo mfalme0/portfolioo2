@@ -1,0 +1,438 @@
+---
+title: "Making Business Central Talk to Our ERP Without Creating a Distributed Mess"
+description: "Integrating two enterprise systems is not about making HTTP requests — it's about handling the moment when one system believes something happened and the other has no idea. Idempotency, failure routing, reconciliation and recovery."
+datePublished: "2026-10-02"
+publishOn: "2026-10-02"
+tags: ["Enterprise Integration", "APIs", "Idempotency", "Backend Engineering"]
+---
+
+> **Note before publishing:** this post is written at a conceptual level. Sections marked
+> **[IMPLEMENTATION]** need your actual architecture, identifier scheme, retry policy and
+> recovery behaviour filled in from the real integration before it goes out. The repository
+> contains no Business Central integration code, so nothing here is presented as a claim about
+> what the system does. See the checklist at the end.
+
+Enterprise integrations have a very special way of making you question your career choices.
+
+You send a request. The other system processes it. Your connection times out.
+
+Did it work?
+
+Did it fail?
+
+Should you retry?
+
+Congratulations. You now have a distributed systems problem, and neither application asked for your permission.
+
+This is the part of enterprise software that doesn't always make it into the architecture diagrams.
+
+Everyone loves drawing boxes, arrows, and API endpoints. You have Business Central on one side, your ERP on the other, and a beautifully labelled integration service sitting in the middle.
+
+The diagram looks fantastic.
+
+Then production happens.
+
+A request times out after the target system has already processed it. A retry arrives. A transaction gets rejected because a required field is missing. An upstream service becomes unavailable. Someone notices that the records in two systems no longer agree.
+
+Suddenly, your elegant integration architecture has become a very expensive exercise in figuring out what actually happened.
+
+I learned that integrating enterprise systems is less about moving data from A to B and more about making sure that when something inevitably goes wrong, you can identify it, understand it, and recover without making the situation worse.
+
+## The problem with making two systems talk
+
+Business Central and an ERP may represent the same business operation, but they don't necessarily share the same internal state, transaction boundaries, validation rules, or failure behavior.
+
+A successful request from one system does not automatically mean the other system has successfully completed the corresponding business operation.
+
+And a failed HTTP response does not always mean the operation failed.
+
+That distinction is where things get interesting.
+
+Consider a simple transaction:
+
+1. Business Central initiates a business operation.
+2. The integration service receives and validates the request.
+3. The integration service forwards the operation to the ERP.
+4. The ERP processes the operation.
+5. The integration service records the outcome and communicates the result.
+
+Now imagine the ERP completes step four, but the response never reaches the integration service.
+
+From the integration service's perspective, the outcome is uncertain.
+
+If we retry blindly, we risk processing the same business operation twice.
+
+If we don't retry, we risk leaving a successfully processed operation without a corresponding acknowledgement or recorded outcome.
+
+Neither option is particularly attractive.
+
+This is why I started thinking about integration reliability as a problem of identity, state, and recovery rather than simply request handling.
+
+## 1. Idempotency: because retries are not free
+
+Retries are one of those things that sound wonderfully simple until they start creating duplicate business records.
+
+A network timeout occurs. The client retries. The original request had actually succeeded.
+
+Now the same operation has potentially been processed twice.
+
+In a normal application, this might mean an annoying duplicate record.
+
+In an enterprise workflow, it could mean duplicated transactions, inconsistent financial records, repeated business actions, or hours spent investigating what happened.
+
+The solution is to give business operations a stable identity and define what should happen when the same operation is received more than once.
+
+This is the role of idempotency.
+
+An idempotent operation can be repeated without producing additional unintended effects.
+
+For an integration, that means identifying whether an incoming request represents:
+
+- A completely new operation
+- A previously processed operation
+- An operation currently being processed
+- An operation that previously failed and may be eligible for recovery
+
+The important distinction is between identifying an HTTP request and identifying the underlying business operation.
+
+A retry may be a completely new HTTP request while still representing the exact same business transaction.
+
+The integration needs to understand that distinction.
+
+### The uncomfortable question
+
+What happens if the target ERP successfully processes an operation, but the integration service crashes before recording the success?
+
+This is where idempotency becomes more than a database lookup.
+
+The integration needs a reliable way to recognize the operation when it reappears and determine whether it can safely be processed again.
+
+The exact mechanism depends on the implementation and the guarantees offered by the target system. It might involve persistent operation identifiers, stored processing states, target-side uniqueness constraints, or a combination of these.
+
+The important thing is not to pretend that a timeout tells you what happened.
+
+It doesn't.
+
+**[IMPLEMENTATION]** — Describe the actual identity mechanism: where the operation identifier comes from, whether it is generated at ingestion or carried from the source, what uniqueness constraint protects it, and how the "currently being processed" state is held so a concurrent duplicate cannot slip through.
+
+## 2. Failure routing: not every failure deserves another attempt
+
+One of the easiest ways to make an integration worse is to treat every failure as a temporary inconvenience.
+
+Some failures are transient.
+
+A service is temporarily unavailable. A connection drops. A request encounters a timeout.
+
+Other failures are deterministic.
+
+A required field is missing. A business rule rejects the transaction. A reference does not exist. The payload is invalid.
+
+Retrying a transient failure may eventually succeed.
+
+Retrying an invalid payload five hundred times is just an elaborate way of wasting resources.
+
+This is why failure classification matters.
+
+Instead of treating every unsuccessful operation as the same generic error, the integration should distinguish between failures that may recover automatically and failures that require investigation or intervention.
+
+A useful conceptual classification is:
+
+| Failure category | Typical handling |
+| --- | --- |
+| Temporary network failure | Retry according to policy |
+| Service unavailable | Retry with bounded backoff |
+| Request validation failure | Route for correction |
+| Business rule rejection | Record and investigate |
+| Authentication or authorization failure | Escalate configuration or access issue |
+| Unknown outcome | Reconcile before replaying blindly |
+
+These are general integration patterns, not a claim that every category was implemented exactly this way.
+
+The key engineering principle is that failure handling should be intentional.
+
+A failed transaction should not simply disappear into application logs while everyone assumes the integration is healthy.
+
+### Failure-handling decision tree
+
+```text
+              Operation received
+                      │
+              ┌───────┴────────┐
+              │  Validate      │
+              │  payload       │
+              └───┬────────┬───┘
+             fail  │        │ pass
+                  ┌┘        └┐
+                  │           │
+        ┌─────────▼──┐   ┌────▼─────────────┐
+        │ Deterministic│   │ Forward to ERP   │
+        │ (bad payload,│  └────┬─────────────┘
+        │  bad ref)    │       │
+        └─────────┬──┘   ┌───┴────┐
+                  │      │Outcome │
+       Route for │      │        │
+       correction│  ┌───┴──┐  ┌──▼───────┐
+                  │  │known │  │ unknown  │
+                  │  └───┬──┘  │ (timeout)│
+                  │      │     └────┬─────┘
+          ┌───────▼──┐ ┌─▼──────────▼──┐
+          │  DLQ /   │ │  Reconcile    │
+          │  manual  │ │  before any   │
+          │  review  │ │  replay       │
+          └──────────┘ └───────┬───────┘
+                                 │
+                     ┌───────────┴──────────┐
+                     │ safe to replay?     │
+                     └───┬─────────────┬───┘
+                     yes │             │ no
+                         │             │
+                  ┌──────▼─────┐  ┌────▼──────┐
+                  │ Replay with│  │ Escalate  │
+                  │ idempotent │  │ to a human│
+                  │ identity   │  │           │
+                  └────────────┘  └───────────┘
+```
+
+The branch that matters most is the right-hand one: **unknown outcome**. It is the only case where the system genuinely cannot tell whether the work was done, and it is the branch most integrations get wrong by treating it as a retry.
+
+**[IMPLEMENTATION]** — Replace the conceptual categories with the ones actually implemented, and state which map to automated retry, which route to a queue, and which stop for a person. Note any category that exists in the code but is not represented above.
+
+## 3. Retries: the difference between persistence and stubbornness
+
+Retries are useful.
+
+Unbounded retries are not.
+
+A reliable integration needs to consider how often an operation should be retried, how long to wait between attempts, and what happens when the retry budget is exhausted.
+
+Exponential backoff is one common approach.
+
+Instead of retrying immediately and repeatedly hammering an unavailable service, the delay between attempts increases.
+
+Jitter can also be introduced to avoid many clients retrying simultaneously and creating another spike in load.
+
+But retries alone do not solve the underlying problem.
+
+They need to work alongside idempotency, transaction tracking, and failure classification.
+
+Otherwise, the system may become very good at repeatedly submitting an operation whose outcome is already uncertain.
+
+Which is not exactly the kind of reliability anyone wants.
+
+**[IMPLEMENTATION]** — Give the real numbers: maximum attempts, initial delay, backoff multiplier, whether jitter is applied, and what happens on exhaustion. A specific policy is more useful than a description of exponential backoff in general.
+
+## 4. Observability: can I actually find the transaction?
+
+There is a special kind of frustration that comes from knowing a transaction failed somewhere but having no idea where.
+
+You have logs from the source system.
+
+You have logs from the integration service.
+
+You have logs from the target ERP.
+
+And none of them appear to agree on what happened.
+
+This is why transaction-level observability matters.
+
+An integration should make it possible to follow a business operation across its lifecycle.
+
+At a minimum, useful diagnostic information includes:
+
+- A stable transaction or correlation identifier
+- Source and target system references
+- Processing status
+- Attempt count
+- Timestamps for important state transitions
+- Failure category and relevant error details
+- The last known successful stage
+- Whether the operation is eligible for retry or requires intervention
+
+The objective is to answer practical questions quickly.
+
+Did the integration receive the operation?
+
+Did validation succeed?
+
+Was the request forwarded?
+
+Did the target system respond?
+
+Was the outcome recorded?
+
+Is this operation safe to replay?
+
+The point of observability is not to collect as many logs as possible.
+
+It is to make the system explain itself when something goes wrong.
+
+**[IMPLEMENTATION]** — Name the correlation field as it is actually named, where it is generated, whether it propagates into the ERP request, and what the operational tooling looks like. If there is a view, queue or dashboard an operator actually uses, that is worth more than the field list.
+
+## 5. Reconciliation: what happens when both systems disagree?
+
+Even with retries, idempotency, and failure routing, integrations can encounter situations where the source and target systems disagree about the state of a business operation.
+
+This is where reconciliation becomes important.
+
+Reconciliation is the process of comparing records or transaction states across systems to identify discrepancies.
+
+It provides a way to investigate operations that may have been processed successfully in one system but not reflected correctly in another.
+
+A reconciliation workflow might identify:
+
+- Operations present in the source but missing from the target
+- Operations whose processing status differs between systems
+- Transactions that remain unresolved beyond an expected processing window
+- Records requiring manual investigation
+- Operations eligible for safe replay
+
+Reconciliation is particularly important when an integration cannot conclusively determine the outcome of a previous request.
+
+Rather than blindly resubmitting the operation, the system can investigate its current state and determine the appropriate recovery action.
+
+Because sometimes the correct response to an uncertain transaction is not another request.
+
+Sometimes it is asking the system what actually happened.
+
+**[IMPLEMENTATION]** — Explain whether reconciliation is scheduled, triggered, or both; what it compares; and what it does with a discrepancy it finds. If it is currently manual, say so — that is a useful, honest detail rather than a gap.
+
+## 6. Recovery: making failure boring
+
+The ultimate goal of failure handling is not to prevent every failure.
+
+It is to make recovery predictable.
+
+When an operation fails, the integration should preserve enough information to understand what happened and determine the next action.
+
+Depending on the failure category, that might mean:
+
+- Retrying automatically
+- Routing the operation to a dead-letter queue or equivalent failure mechanism
+- Correcting invalid data
+- Escalating a configuration problem
+- Reconciling the operation against the target system
+- Replaying the operation once its outcome is understood
+
+A recovery mechanism should preserve the original business identity of the operation.
+
+Otherwise, replaying a failed transaction can accidentally turn one business operation into two.
+
+This is also where operational tooling matters.
+
+An integration that can process thousands of transactions but requires an engineer to manually inspect database rows every time something fails is not particularly pleasant to operate.
+
+The recovery process should be understandable to the people responsible for maintaining the system.
+
+## The reliability boundary, end to end
+
+The following is a conceptual representation of the reliability boundary between Business Central and the ERP. The final architecture diagram should reflect the actual implementation.
+
+```text
+        Business Central (source)
+        Initiates a business operation
+                    │
+                    │  payload + business reference
+                    ▼
+        ┌───────────────────────────────┐
+        │      Integration service     │
+        │                               │
+        │  1. Validate payload          │
+        │  2. Identify business op      │
+        │  3. Check stored state        │
+        │     new / in-flight / done /  │
+        │     failed                   │
+        │  4. Decide: safe to proceed? │
+        └───────────────┬───────────────┘
+                        │
+          ┌─────────────┴─────────────┐
+          │                           │
+   ┌──────▼──────┐            ┌───────▼────────┐
+   │  Rejected   │            │  Forward to ERP│
+   │  classify + │            └───────┬────────┘
+   │  route      │                    │
+   └──────┬──────┘           ┌────────┴─────────┐
+          │                  │      Outcome      │
+   ┌──────▼──────┐           └────┬─────────┬───┘
+   │ DLQ / manual│        known   │         │ unknown
+   │  review     │                │         │
+   └─────────────┘     ┌──────────▼──┐  ┌───▼──────────┐
+                       │ persist +   │  │  Reconcile   │
+                       │ acknowledge │  │  before any  │
+                       └─────────────┘  │  replay      │
+                                        └──────┬───────┘
+                                               │
+                                    ┌──────────┴────────┐
+                                    │  safe to replay?  │
+                                    └────┬─────────┬────┘
+                                   yes   │         │  no
+                                         │         │
+                              ┌──────────▼──┐  ┌───▼────────┐
+                              │ Replay with │  │  Escalate  │
+                              │ same op id  │  │  to human  │
+                              └─────────────┘  └────────────┘
+```
+
+The most important part of this flow is not the HTTP request itself.
+
+It is the handling of uncertainty between the request being sent and the outcome being reliably established.
+
+## What this taught me about enterprise engineering
+
+Building integrations has made me appreciate how much of software engineering happens outside the happy path.
+
+The API contract is important.
+
+The data model is important.
+
+The implementation is important.
+
+But what happens when the other system is unavailable, the response disappears, or the same operation arrives twice is just as important.
+
+The integration layer is effectively responsible for managing the disagreement between two independent systems.
+
+And that requires deliberate decisions about identity, state, retries, observability, and recovery.
+
+It also reinforces something I keep encountering in backend engineering: distributed systems concepts aren't confined to consensus algorithms, message brokers, or massive infrastructure platforms.
+
+They show up in ordinary enterprise workflows.
+
+A timeout between Business Central and an ERP is still a distributed systems problem.
+
+A duplicate transaction caused by a retry is still a consistency problem.
+
+A record that exists in one system but not the other is still a state reconciliation problem.
+
+You don't need millions of users or a globally distributed cluster to encounter these challenges.
+
+Sometimes all you need is two enterprise applications, an unreliable network, and a transaction that absolutely cannot be duplicated.
+
+And suddenly you're doing distributed systems engineering on a Tuesday.
+
+## Before this goes live
+
+Every **[IMPLEMENTATION]** marker above needs replacing with what the integration actually does. Specifically:
+
+- [ ] Operation identity: where it comes from, what enforces uniqueness
+- [ ] The in-flight state, and how a concurrent duplicate is prevented
+- [ ] Real failure categories, and the handling each one maps to
+- [ ] Retry policy: attempts, delay, backoff, jitter, exhaustion behaviour
+- [ ] Correlation identifier as actually named, and where it propagates
+- [ ] How reconciliation runs, and what it does with a discrepancy
+- [ ] What recovery tooling an operator actually uses
+- [ ] Remove the note at the top of this file
+
+**Do not claim exactly-once delivery or exactly-once processing** unless the implementation's guarantees actually justify it. The honest claim for most enterprise integrations is at-least-once delivery with idempotent processing, which is a genuinely strong property and does not need inflating.
+
+Links to the integration repository or internal documentation can go here once they exist:
+
+- **[IMPLEMENTATION]** — repository or docs link
+
+## Engineering takeaway
+
+The difference between a basic integration and a reliable integration is not how quickly it can move data when everything works.
+
+It is whether the system can explain what happened, avoid unintended duplicate operations, classify failures, and recover safely when things don't go according to plan.
+
+Because the real question isn't whether two systems can communicate.
+
+It's whether you can trust what happened after they did.
