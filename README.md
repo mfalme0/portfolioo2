@@ -25,9 +25,11 @@ Five things will save you an hour of confusion:
 3. **The theme is locked to a single value.** `app/Context/theme.tsx` sets `themeKeys = ['daylight']`
    and an inline script in `app/layout.tsx` forces `data-theme='daylight'` before paint. The other
    themes in `globals.css` are dead code. Don't build UI that depends on switching themes.
-4. **There is no database, no API routes, and no test suite.** Zero test files, no test script, no
-   test framework in `package.json`. Form submissions go to Formspree over HTTP. Don't invent
-   tests to "verify" a change — verification is `tsc`, `eslint`, and `next build` (§4).
+4. **There is no database and no test suite.** Zero test files, no test script, no test framework in
+   `package.json`. Form submissions go to Formspree over HTTP. Don't invent tests to "verify" a
+   change — verification is `tsc`, `eslint`, and `next build` (§4). The only `route.ts` in the repo
+   is `/blog/feed.xml`, which is `force-static` and prerenders to a file — there are no dynamic
+   server endpoints.
 5. **Don't trust `llm.txt` or this file's route table blindly.** `llm.txt` is *stale*: it describes
    an old horizontal-scroll homepage and a `/gear` route that no longer exist. Where they conflict,
    the code is the source of truth.
@@ -46,6 +48,7 @@ Five things will save you an hour of confusion:
 | 3D | @react-three/fiber, drei, postprocessing | |
 | Icons | react-icons 5 | Predominantly `react-icons/fi` and `react-icons/bs` |
 | Data | axios, @tanstack/react-query, react-github-calendar | |
+| Content | **MDX 3** via `@next/mdx` | Blog posts are `.mdx` files in `content/blog/` |
 | Analytics | @vercel/analytics 1.5 + Google Analytics 4 | **Consent-gated** — see §9 |
 | Lint | ESLint 9 flat config + eslint-config-next | `core-web-vitals` + `typescript` |
 | Hosting | Vercel | |
@@ -110,12 +113,17 @@ app/
     technical-leadership/
     case-studies/[slug]/  guides/[slug]/
     guides/
+    blog/                 ← MDX posts
+      page.tsx  [slug]/page.tsx  feed.xml/route.ts
     tools/pc-build/  tools/infrastructure-check/
     privacy/  terms/  cookies/        ← legal (see §10)
   homelab/                outside the group, own layout
     layout.tsx  page.tsx  [slug]/  [slug]/client.tsx
   LAN/                    outside the group, own layout
   Components/             NOTE: capital "C" — import as "@/app/Components/..."
+content/
+  blog/                  ← MDX posts; filename is the slug. See §13
+mdx-components.tsx       global MDX element map (required by @next/mdx)
     site/                 ← the site design system (§7)
     main/                 legacy single-page sections (about, education, skills, …)
     game/ homelab/ lan/   animated-bar/ collectibles/ cursor-glow/ …
@@ -154,7 +162,8 @@ If the page is `/privacy`-style (legal) it is deliberately in the footer only, n
 **PC building (6, config in `lib/pc-pages.tsx`):** `/pc-building` · `/gaming-pcs` · `/workstations` ·
 `/pc-upgrades` · `/pc-troubleshooting` · `/pc-consulting`
 
-**Content:** `/case-studies` (6) · `/case-studies/[slug]` · `/guides` (8) · `/guides/[slug]`
+**Content:** `/case-studies` (6) · `/case-studies/[slug]` · `/guides` (8) · `/guides/[slug]` ·
+`/blog` · `/blog/[slug]` · `/blog/feed.xml` (RSS)
 
 **Tools:** `/tools/pc-build` · `/tools/infrastructure-check`
 
@@ -235,12 +244,13 @@ file — not creating a page.
 | --- | --- | --- |
 | `lib/site-config.ts` | **Single source of brand/contact truth.** Name, email, phone, WhatsApp, location, resume path, Formspree endpoint, GA ID, socials, service areas, metrics. Also `whatsappLink()` and `mailtoLink()` helpers. | — |
 | `lib/guides.ts` | `Guide[]` + `guideClusters` + `relatedGuides()`. Guides are a typed block array (`p`, `h2`, `list`, `table`, `callout`) — `GuideArticle` renders them. | 8 |
+| `lib/blog.ts` | Reads `content/blog/*.mdx` frontmatter at build time. `getAllPosts`, `getPost`, `getPostSlugs`, `allTags`, `postsByTag`, `relatedPosts`, `adjacentPosts`, `latestPosts`, `formatDate`. Derives reading time and the TOC. **Server-only.** | 0 published |
 | `lib/case-studies.tsx` | `CaseStudy[]`, rendered by `CaseStudyPage` | 6 |
 | `lib/homelab-data.tsx` | `homelabItems[]` | 2 |
 | `lib/service-pages.tsx` | `Record<string, ServicePageConfig>`, keyed `"/slug"` | 7 |
 | `lib/pc-pages.tsx` | `Record<string, PcPageConfig>`, keyed `"/slug"` | 6 |
 | `lib/services.ts` | `pillars`, `pricing`, `pcServices`, `pcBuildProcess`, `stackLayers` | — |
-| `lib/seo.ts` | `pageMeta()` + JSON-LD builders (`webPageJsonLd`, `breadcrumbJsonLd`, `serviceJsonLd`, `faqJsonLd`, `articleJsonLd`, `personJsonLd`) | — |
+| `lib/seo.ts` | `pageMeta()` + JSON-LD builders (`webPageJsonLd`, `breadcrumbJsonLd`, `serviceJsonLd`, `faqJsonLd`, `articleJsonLd`, `blogPostingJsonLd`, `personJsonLd`) | — |
 | `lib/cta-messages.ts` | `whatsappCtaMessage(key)` — pre-written WhatsApp openers | — |
 | `lib/legal.ts` | Legal doc registry, controller details, "last updated" | — |
 | `lib/consent.ts` | Cookie-consent model, storage, GPC/DNT detection, event bus | — |
@@ -298,6 +308,11 @@ cards, a sticky "on this page" TOC, numbered sections, and a contact card.
 
 Don't "fix" these unless asked; they're documented here so you don't waste time rediscovering them.
 
+- **⚠️ `next` is below the security-fix threshold.** The installed `next@16.2.9` falls under
+  `GHSA-p293-qw3h-jr36` (critical, unauthenticated RCE) and `GHSA-2xp9-vwfh-vxw4` (critical RCE in
+  the Image Optimization API via AVIF). Both are fixed in `16.3.3`. The first explicitly affects
+  **Windows-hosted servers**, so a `next dev` server bound to a LAN interface is exposed. Run
+  `npm audit fix` and pin to `^16.3.3` or later. 13 transitive advisories are open in total.
 - **`llm.txt` is stale.** Describes an old horizontal-scroll homepage and a `/gear` route. Wrong
   domain (`josephgitauc.vercel.app`). It also contains a stray agent-session note around lines
   146–147. Treat as junk; the code is authoritative.
@@ -330,3 +345,65 @@ Don't "fix" these unless asked; they're documented here so you don't waste time 
   LinkedIn and Instagram, and the X profile is deliberately absent from all JSON-LD `sameAs` arrays.
   The `twitter: { card: … }` blocks in the layouts are **Open Graph link-preview metadata** and
   must stay — they control how links render in Slack/WhatsApp/iMessage and have nothing to do with X.
+
+---
+
+## 13. Writing a blog post
+
+`/guides` and `/blog` are deliberately separate. Guides answer a specific question directly
+(`How much RAM do I need?`). The blog carries the reasoning, the trade-offs and what actually
+happened. Both are static — no database, no CMS, no API.
+
+**To publish, drop an `.mdx` file into `content/blog/`.** The filename is the slug. There is no
+registration step, no page to create, and no rebuild beyond the normal Vercel deploy.
+
+```text
+content/blog/rebuilding-the-homelab.mdx   →   /blog/rebuilding-the-homelab
+```
+
+### Frontmatter
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `title` | yes | Post headline and `<h1>` |
+| `description` | yes | Card text, meta description, RSS item |
+| `datePublished` | yes | `YYYY-MM-DD`. Drives sort order |
+| `dateModified` | no | Renders an "Updated" line when it differs from published |
+| `tags` | no | Powers the filter pills and related-post matching |
+| `cover` | no | Path to an image under `public/`. Omit for a generated placeholder |
+| `draft` | no | `true` hides the post from the index, feed, sitemap and routing |
+
+Malformed frontmatter **fails the build** rather than rendering a broken page.
+
+### Body
+
+Start at `##` — the `<h1>` is rendered from frontmatter, so a leading `#` would duplicate it.
+`##` and `###` headings automatically populate the "on this page" table of contents.
+
+Styling comes from `mdx-components.tsx`, which maps every element onto the Bauhaus tokens so posts
+match the block-rendered guides. GFM tables, fenced code, blockquote callouts and `next/image` all
+work. To restyle posts, edit that one file — it affects every post at once.
+
+### Cover images
+
+Put files in `public/images/blog/`. A post without `cover` renders a Bauhaus composition
+generated from its slug, so the index grid stays visually even. The composition is **seeded from
+the slug**, so a given post always draws the same shapes — deterministic across builds, identical
+on every device, no hydration mismatch.
+
+### Drafts
+
+`content/blog/how-to-write-a-post.mdx` ships as a `draft: true` template. Delete it whenever you
+like.
+
+> **Do not leave `content/blog/` completely empty.** `app/(site)/blog/[slug]/page.tsx` imports MDX
+> via a template-literal specifier, which Turbopack resolves against a glob of the directory. With
+> zero files there is nothing to resolve and **the build fails** with
+> `Module not found: Can't resolve '@/content/blog/'`. Keeping one draft (or any post) in the
+> directory avoids this. `/blog` itself handles the empty state correctly and shows a call-to-action
+> panel instead of a blank grid.
+
+### RSS
+
+`/blog/feed.xml` is hand-rolled RSS 2.0 in `app/(site)/blog/feed.xml/route.ts` — no dependency.
+It prerenders at build time and is valid-but-empty when no posts are published.

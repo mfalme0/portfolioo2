@@ -45,6 +45,7 @@ const columns: {
     links: [
       { label: "Case Studies", href: "/case-studies" },
       { label: "Guides", href: "/guides" },
+      { label: "Blog", href: "/blog" },
       { label: "Infrastructure Check", href: "/tools/infrastructure-check" },
       { label: "Homelab", href: "/homelab" },
       { label: "About Joseph", href: "/about" },

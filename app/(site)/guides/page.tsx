@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMeta, webPageJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { guides, guidesByCluster, guideClusters, type Guide } from "@/lib/guides";
+import { latestPosts, formatDate } from "@/lib/blog";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { PageHero } from "@/app/Components/site/page-hero";
 import { CtaBand } from "@/app/Components/site/cta-band";
 import { GuideCard, MetricCard } from "@/app/Components/site/cards";
+import { FiArrowUpRight } from "react-icons/fi";
 
 export const metadata: Metadata = pageMeta({
   title: "Guides — PC Building, IT, Software & AI from Experience",
@@ -39,6 +41,7 @@ export default async function GuidesPage({ searchParams }: Props) {
   const nameMatch = guideClusters.find((c) => c.name.toLowerCase() === raw);
   const active = slugMatch ?? nameMatch?.name ?? "All";
   const filtered = guidesByCluster(active as Guide["cluster"] | "All");
+  const latest = latestPosts(2);
 
   return (
     <>
@@ -99,6 +102,45 @@ export default async function GuidesPage({ searchParams }: Props) {
           </div>
         </div>
       </section>
+
+      {latest.length > 0 && (
+        <section className="relative w-full py-16 md:py-20" style={{ backgroundColor: "var(--sheet-2)" }}>
+          <div className="max-w-7xl mx-auto px-6 md:px-14">
+            <span className="apple-eyebrow">From the blog</span>
+            <h2 className="apple-heading-compact mt-4">The longer version.</h2>
+            <p className="apple-subtitle text-sm leading-relaxed mt-4" style={{ maxWidth: "44rem" }}>
+              Guides answer a specific question directly. The blog carries the reasoning,
+              the trade-offs and what actually happened.
+            </p>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-3">
+              {latest.map((p) => (
+                <Link key={p.slug} href={`/blog/${p.slug}`} className="group block h-full">
+                  <div className="apple-card-flat p-6 h-full flex flex-col transition-transform duration-300 group-hover:-translate-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {p.tags.slice(0, 2).map((tag) => (
+                        <span key={tag} className="apple-tag">{tag}</span>
+                      ))}
+                      <span className="text-[9px] font-mono tracking-[0.1em] uppercase" style={{ color: "var(--gravel)" }}>
+                        {formatDate(p.datePublished)} &middot; {p.readingTime}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-semibold tracking-tight mt-3" style={{ color: "var(--fg)" }}>
+                      {p.title}
+                    </h3>
+                    <p className="text-xs leading-relaxed mt-2 flex-1" style={{ color: "var(--gravel)" }}>
+                      {p.description}
+                    </p>
+                    <span className="mt-4 font-mono text-[10px] font-bold tracking-[0.14em] uppercase inline-flex items-center gap-1.5" style={{ color: "var(--flag)" }}>
+                      Read post
+                      <FiArrowUpRight className="text-xs" />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <CtaBand
         title="Reading beats doing — but only up to a point."

@@ -49,14 +49,17 @@ export const metadata: Metadata = {
     description:
       "Technology engineer and technical leader in Nairobi, Kenya — full-stack software, cloud & infrastructure, Linux, networking, cybersecurity and AI. Systems designed, deployed, operated and scaled end-to-end.",
     url: baseUrl,
-    images: [{ url: `${baseUrl}/opengraph-image.png`, width: 1200, height: 630, alt: "Joseph Gitau Chege — Technology Engineer & Technical Leader" }],
+    // Next 16 serves app/opengraph-image.tsx extensionless. The previous
+    // "/opengraph-image.png" 404'd, so every social preview of the site
+    // rendered with no image at all.
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Joseph Gitau Chege — Technology Engineer & Technical Leader" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Joseph Gitau Chege — Technology Engineer & Technical Leader",
     description:
       "Technology engineer and technical leader in Nairobi, Kenya — full-stack software, cloud & infrastructure, Linux, networking, cybersecurity and AI. Systems designed, deployed, operated and scaled end-to-end.",
-    images: [`${baseUrl}/opengraph-image.png`],
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,

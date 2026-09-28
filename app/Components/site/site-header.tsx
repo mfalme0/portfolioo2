@@ -60,6 +60,7 @@ const siteNavGroups: NavGroup[] = [
     links: [
       { label: "Resources Home", href: "/resources", description: "Guides, tools and the lab" },
       { label: "Guides", href: "/guides", description: "PC, IT, software and AI guides" },
+      { label: "Blog", href: "/blog", description: "Longer notes from the work" },
       { label: "Infrastructure Check", href: "/tools/infrastructure-check", description: "Free self-assessment" },
       { label: "Homelab", href: "/homelab", description: "Personal infrastructure lab" },
       { label: "LAN Party", href: "/LAN", description: "Local network gaming" },
@@ -100,6 +101,7 @@ export default function SiteHeader() {
     if (plainLinks.some((l) => l.href === pathname)) return undefined;
     if (pathname === "/case-studies" || pathname.startsWith("/case-studies/")) return "Case Studies";
     if (pathname.startsWith("/guides")) return "Resources";
+    if (pathname.startsWith("/blog")) return "Resources";
     return undefined;
   }, [pathname]);
 

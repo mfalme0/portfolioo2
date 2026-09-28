@@ -1,0 +1,380 @@
+---
+title: "How Anakin Skywalker Made Me a Better Software Engineer"
+description: "Anakin taught me to be capable, Vader taught me not to wait for rescue — and both taught me that trust without verification is not engineering."
+datePublished: "2026-09-20"
+tags: ["Software Engineering", "Mindset", "Leadership"]
+---
+
+I didn't expect *Star Wars* to make me a better software engineer.
+
+But somehow, Anakin Skywalker did.
+
+Not because I wanted to become like him.
+
+Actually, quite the opposite.
+
+Anakin taught me lessons about engineering, leadership, trust, independence, and what happens when you let other people make decisions for you.
+
+And then Darth Vader taught me another lesson:
+
+**Nobody is coming to save you. Get up and do something.**
+
+That doesn't mean you should trust nobody.
+
+It means you shouldn't blindly assume that someone else will fix your problem.
+
+That distinction has stayed with me.
+
+## Anakin was the engineer who could make things work
+
+Anakin's defining characteristic was capability.
+
+He could look at machines and understand them instinctively. As a child, he built C-3PO from spare parts. He modified his pod. He could fly things other people couldn't.
+
+He was constantly put into situations where the conventional answer was essentially:
+
+*"You can't do that."*
+
+And Anakin's response was usually:
+
+*"Watch me."*
+
+I relate to that part.
+
+Software engineering attracts a certain type of person.
+
+You get handed the broken system.
+
+The undocumented API.
+
+The production incident nobody understands.
+
+The server that hasn't been touched in three years.
+
+The deployment that only works if you sacrifice a goat to some forgotten configuration file.
+
+And eventually, you become the person people call when something needs to work.
+
+You learn to figure things out.
+
+You Google.
+
+You read documentation.
+
+You inspect the source code.
+
+You experiment.
+
+You break things in a controlled environment.
+
+You build your own tools.
+
+You keep going.
+
+That ability to figure things out independently has probably been one of the most important skills I've developed.
+
+And Anakin helped me understand why.
+
+## Don't wait around for someone to save you
+
+This is probably the biggest lesson I took from Vader.
+
+There were moments in Anakin's story where he desperately wanted someone else to solve an impossible problem for him.
+
+But eventually, nobody could.
+
+And that's something I've carried into engineering and life:
+
+**If something is important to me, I can't sit around waiting for someone else to make it happen.**
+
+One of the clearest examples of this came from my time leading engineering and IT at a school.
+
+I wasn't working with a giant engineering organization where every problem had a dedicated specialist. We had software, infrastructure, networking, devices, users, vendors, and day-to-day operational problems all competing for attention.
+
+At the same time, we were building an ERP from scratch.
+
+That meant dealing with things like student records, attendance, finance, notifications, authentication, infrastructure, and the operational systems underneath all of it.
+
+There were plenty of moments where it would have been easy to say:
+
+*"We need someone else to handle this."*
+
+Instead, I had to figure it out.
+
+If the infrastructure wasn't doing what we needed, I investigated it.
+
+If a deployment was unreliable, I dug into the deployment process.
+
+If the network wasn't giving us what we needed, I investigated the topology, hardware, ISP setup, and failure points.
+
+If the application had a problem, I went into the code.
+
+Sometimes that meant learning something I hadn't worked with before.
+
+Sometimes it meant building a solution myself.
+
+Sometimes it meant asking someone who knew more than me.
+
+But the important part was that I didn't make **waiting** the strategy.
+
+That experience changed how I approach engineering.
+
+I don't need to know the answer immediately.
+
+I need to know how to find the answer.
+
+That's a much more valuable skill.
+
+## Trust people, but don't outsource your thinking
+
+That experience also taught me the other side of the Anakin lesson.
+
+You can't blindly trust people.
+
+Not because everyone is trying to mislead you.
+
+Most people aren't.
+
+But because **everyone can be wrong**.
+
+A vendor can recommend something that isn't right for your environment.
+
+An experienced engineer can make a bad architectural assumption.
+
+Documentation can be outdated.
+
+A manager can have incomplete information.
+
+And an AI can confidently generate something that looks perfectly reasonable while being completely wrong.
+
+I've learned to separate trusting someone's expertise from outsourcing my judgment to them.
+
+If someone tells me something, I want to understand *why*.
+
+If someone recommends an architecture, I want to understand the tradeoffs.
+
+If something doesn't make sense, I want to test it.
+
+If something is important enough to affect production, I want evidence.
+
+That's not distrust.
+
+That's engineering.
+
+## The infrastructure problem nobody else was going to magically solve
+
+There was another part of that job that reinforced this mindset.
+
+The infrastructure wasn't just a theoretical exercise.
+
+We had real users depending on it.
+
+We had servers, networking, storage, endpoints, printers, authentication, internet connectivity, and applications all interacting with one another.
+
+Problems in one area could become problems somewhere else.
+
+A network issue could look like an application issue.
+
+An application issue could look like a server issue.
+
+A server issue could actually be storage.
+
+And sometimes the answer was simply that two things that were supposed to work together didn't.
+
+The only way through that was to investigate the whole system.
+
+I ended up working across Ubuntu and Debian servers, Azure, Docker and Kubernetes, TrueNAS storage, networking, authentication, access systems, and application infrastructure.
+
+The result wasn't just that individual problems got fixed.
+
+We were able to improve the environment substantially, including reaching around **99.9% uptime**, reducing Azure spend by roughly **20%**, reducing deployment errors by about **45%**, and saving more than **15 hours of operational work each week** through automation and better processes.
+
+Those numbers matter to me less than what they represent.
+
+They represent a mindset.
+
+I didn't always have the perfect answer.
+
+I didn't always have the perfect resources.
+
+But I could investigate the problem, learn what I needed to learn, and start improving it.
+
+That is what I mean when I say:
+
+**Get up and try.**
+
+## Independence doesn't mean isolation
+
+This is where I think the lesson gets more nuanced.
+
+The answer isn't to become some lone-wolf engineer who trusts nobody and refuses help.
+
+That's just another failure mode.
+
+Good software is collaborative.
+
+The best systems I've worked on have benefited from people challenging each other's assumptions.
+
+Someone catches the security issue.
+
+Someone notices the terrible database query.
+
+Someone asks why the service needs to exist at all.
+
+Someone says:
+
+*"Have you considered doing this differently?"*
+
+That's valuable.
+
+Independence means you can survive without constant direction.
+
+It doesn't mean you refuse collaboration.
+
+I want to be the engineer who can say:
+
+*"I don't know. Let's figure it out."*
+
+Not:
+
+*"I don't know, so someone else needs to fix it."*
+
+And not:
+
+*"I know everything, so nobody else gets a say."*
+
+## Technical confidence needs humility
+
+This is where Anakin's story comes full circle for me.
+
+Anakin had enormous ability.
+
+But ability without humility can become dangerous.
+
+The same is true in software.
+
+The engineer who knows everything is dangerous.
+
+The engineer who knows they might be wrong is much easier to work with.
+
+I've learned to question my own assumptions.
+
+Why does this need Kubernetes?
+
+Why does this need another microservice?
+
+Why are we using this database?
+
+Why does this endpoint exist?
+
+Why are we doing this manually?
+
+Why does this system depend on one person?
+
+Why am I convinced this is the right solution?
+
+And sometimes the answer is:
+
+*"Because it's actually the right decision."*
+
+That's great.
+
+But sometimes the answer is:
+
+*"Because this is how I've always done it."*
+
+That's when you need to stop.
+
+## Anakin's other lesson: power isn't enough
+
+Anakin's defining characteristic was that he could do things other people couldn't.
+
+But his story also shows the danger of believing that being powerful means being right.
+
+That distinction matters more now than ever in software.
+
+We have incredibly powerful tools.
+
+Cloud infrastructure can give a single engineer enormous capabilities.
+
+AI coding agents can write and modify large amounts of code.
+
+Automation can replace hours of manual work.
+
+Open-source software gives us access to systems that previously required entire teams to build.
+
+But powerful tools don't remove the need for judgment.
+
+They increase it.
+
+The more powerful the tool, the more important it becomes to understand what the tool is actually doing.
+
+I don't want to be the engineer who blindly accepts whatever an AI generates.
+
+I want to be the engineer who can look at the output and ask:
+
+**Does this actually make sense?**
+
+That's the same principle again.
+
+Trust.
+
+Verify.
+
+Understand.
+
+Then act.
+
+## What Anakin ultimately taught me
+
+Anakin Skywalker didn't make me want to become a better engineer by teaching me how to be powerful.
+
+He taught me what can happen when power isn't accompanied by judgment.
+
+Darth Vader taught me something different.
+
+Don't sit around waiting for somebody else to fix your life.
+
+Don't blindly trust authority.
+
+Don't blindly trust experts.
+
+Don't blindly trust your teammates.
+
+And definitely don't blindly trust an AI just because it sounds confident.
+
+Verify.
+
+Investigate.
+
+Learn.
+
+Build.
+
+Ask for help.
+
+But keep moving.
+
+Because sometimes the person who can change the situation is you.
+
+And if you can't change it yet, start learning whatever you need to change it.
+
+That's probably the biggest thing *Star Wars* gave me as an engineer.
+
+**Be capable enough to figure things out yourself.**
+
+**Be humble enough to know you can be wrong.**
+
+**Trust people, but verify what matters.**
+
+**Ask for help, but don't wait for rescue.**
+
+And when the system breaks?
+
+Get up.
+
+Open the terminal.
+
+Start digging.
+
+*May the Force be with your production deployments.*

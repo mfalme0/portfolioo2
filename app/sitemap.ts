@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { homelabItems } from '@/lib/homelab-data';
 import { guides } from '@/lib/guides';
 import { caseStudies } from '@/lib/case-studies';
+import { getAllPosts } from '@/lib/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://mfalme.runs-on.dev';
@@ -24,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/pc-consulting`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/case-studies`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/guides`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/resources`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/tools/pc-build`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/tools/infrastructure-check`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
@@ -51,6 +53,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  const blogPostPages: MetadataRoute.Sitemap = getAllPosts().map((p) => ({
+    url: `${baseUrl}/blog/${p.slug}`,
+    lastModified: new Date(p.dateModified),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
   const homelabPages: MetadataRoute.Sitemap = homelabItems.map((item) => ({
     url: `${baseUrl}/homelab/${item.slug}`,
     lastModified: new Date(),
@@ -58,5 +67,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...caseStudyPages, ...guidePages, ...homelabPages];
+  return [...staticPages, ...caseStudyPages, ...guidePages, ...blogPostPages, ...homelabPages];
 }

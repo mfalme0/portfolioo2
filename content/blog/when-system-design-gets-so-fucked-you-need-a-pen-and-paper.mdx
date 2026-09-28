@@ -1,0 +1,700 @@
+---
+title: "When System Design Gets So Fucked You Need a Pen and Paper"
+description: "Why I close the laptop, grab a pen, and draw the system when it gets too complicated to hold in my head — and why distributed systems are a timeline problem wearing a box problem."
+datePublished: "2026-09-25"
+tags: ["System Design", "Distributed Systems", "Architecture", "AI"]
+cover: "/penandpaper.jpg"
+---
+
+There is a point in every sufficiently complicated software project where your IDE stops helping.
+
+You've got 14 tabs open.
+
+Three terminals.
+
+A browser window full of documentation.
+
+An AI coding agent sitting there waiting for instructions.
+
+Maybe a second agent reviewing the first one.
+
+Git open. Logs streaming somewhere.
+
+And you're still staring at the screen thinking:
+
+**"I have no fucking idea what is supposed to happen next."**
+
+That's usually when I reach for a pen and paper.
+
+Not because I've run out of technology.
+
+Because I've run out of abstraction.
+
+---
+
+## The dangerous phase of system design
+
+Simple systems live comfortably inside your head.
+
+Request comes in. Controller handles it. Service does something. Database gets updated. Response goes back.
+
+You can mentally simulate the whole thing.
+
+Then requirements start arriving.
+
+Authentication. Permissions. Notifications. Retries. Caching. Background jobs. Real-time updates. Multiple services. External integrations. Offline clients. Failure recovery. Auditing. Concurrency.
+
+Now you've crossed a line.
+
+The system is no longer something you can **remember**.
+
+You need to **see it**.
+
+---
+
+## Whiteboards are basically external RAM
+
+One of my biggest mistakes as an engineer was trying to hold too much architecture in my head.
+
+You tell yourself:
+
+> "I know how this works."
+
+Do you?
+
+Where does this event originate?
+
+Which service consumes it?
+
+What happens if the consumer is down?
+
+What happens if the request succeeds but the response is lost?
+
+Who owns this piece of state?
+
+What happens when two users update it at the same time?
+
+Suddenly you're staring at the ceiling.
+
+So you draw a box. Then another. Then an arrow.
+
+Then you realize one of your assumptions was completely wrong.
+
+**The paper just saved you six hours of coding.**
+
+---
+
+## My ERP project turned into a drawing problem
+
+When I was working on the ERP at Steadfast, the idea sounded straightforward.
+
+Student records. Attendance. Finance. Authentication. Notifications. Portals.
+
+Easy enough.
+
+Then reality happened.
+
+Parents need one view. Teachers need another. Students need another. Administrators need another. Finance has its own rules. Attendance touches students and teachers. Notifications need to know when things happen. Authentication has to work across every portal.
+
+Then you add real-time presence and read receipts.
+
+Then biometric authentication.
+
+Then you start asking what happens when something fails halfway through.
+
+At some point, understanding the architecture through source code becomes ridiculous.
+
+So you draw it:
+
+```text
+                 ┌─────────────┐
+                 │   Student   │
+                 │   Portal    │
+                 └──────┬──────┘
+                        │
+                        ▼
+                 ┌─────────────┐
+                 │     API     │
+                 └──────┬──────┘
+                        │
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+      ┌────────┐   ┌──────────┐   ┌──────────┐
+      │  Auth  │   │ Student  │   │ Finance  │
+      └────────┘   └──────────┘   └──────────┘
+                        │
+                        ▼
+                 ┌──────────────┐
+                 │ Notifications │
+                 └──────────────┘
+```
+
+And you stare at it.
+
+And realize:
+
+**This is not the architecture.**
+
+It's the beginning of the architecture.
+
+---
+
+## The arrows are where the suffering begins
+
+Boxes are easy.
+
+Arrows are where system design becomes real.
+
+A box says:
+
+> "There is a notification service."
+
+Cool.
+
+The arrow asks:
+
+> **"Exactly when does the notification service know something happened?"**
+
+Does finance call notifications directly?
+
+Does it publish an event?
+
+Does the API handle it?
+
+Does a database trigger fire?
+
+Does a worker poll for changes?
+
+What happens if notifications are down? Do we retry? How many times? Where?
+
+What happens if the notification is delivered twice?
+
+Now your innocent little arrow is a design decision.
+
+---
+
+## Integrations are just arrows with lawyers
+
+Connecting two systems is where I learned to hate the word "sync".
+
+When we connected Business Central to our in-house ERP, the pitch was simple.
+
+Data goes from here to there.
+
+Done.
+
+Then you draw it and ask the annoying questions.
+
+Which system is the source of truth for a student's balance?
+
+What happens when both get edited?
+
+What happens when the ERP sends the same invoice twice?
+
+What happens when Business Central is down for an hour and the ERP keeps moving?
+
+What does "sync" even mean? A copy? A mirror? A request? A promise?
+
+That single arrow turns out to be five arrows:
+
+```text
+ERP ──(create)──► BC
+ERP ──(update)──► BC
+BC  ──(posted)──► ERP
+BC  ──(failed)──► ???
+???  ──(retry)──► BC
+```
+
+The last two are the dangerous ones.
+
+**Every integration has a failure arrow nobody drew.**
+
+Once it's on paper, the rules get obvious.
+
+One system owns each piece of data.
+
+Every operation carries an ID so a retry can't create a duplicate.
+
+Failures go somewhere visible, not into a log nobody reads.
+
+None of that is clever. It just never shows up unless you draw it.
+
+---
+
+## Then distributed systems enters the room
+
+This is where I stopped trusting diagrams that looked too clean.
+
+I built ATLAS specifically to understand distributed systems properly: Raft leader election, log replication, terms, heartbeats, replicated key-value storage, failure scenarios.
+
+Nothing makes you respect a simple system more than deliberately trying to break a distributed one.
+
+The happy path is easy:
+
+```text
+A → B → C
+```
+
+Beautiful.
+
+Now kill B.
+
+Bring B back. What state does it have?
+
+Now partition A from B. Who thinks they're the leader?
+
+Now both think they're the leader.
+
+Now you have a problem.
+
+And suddenly your piece of paper looks like a crime scene.
+
+---
+
+## The system doesn't care about your diagram
+
+Your diagram can be beautiful.
+
+Your code can be clean.
+
+Your services can have wonderful names.
+
+Reality still does whatever the fuck it wants.
+
+You designed:
+
+```text
+Service A
+    ↓
+Service B
+    ↓
+Database
+```
+
+Reality gives you:
+
+```text
+Service A
+    ↓
+   ????
+    ↓
+Service B
+
+Database:
+"connection refused"
+
+Network:
+"packet lost"
+
+User:
+"why isn't this working?"
+```
+
+This is why I draw failure paths.
+
+Not just **what happens when everything works?**
+
+But **what happens when everything goes wrong at once?**
+
+---
+
+## Pen and paper forces you to slow down
+
+This is probably the real reason I like it.
+
+When you're coding, you can move insanely fast. Autocomplete. AI agents. Refactoring. Jump to definition. Generate, run, fix, repeat.
+
+You can move so fast that you start implementing decisions you haven't actually made.
+
+Paper doesn't let you do that.
+
+You write **Client → API**.
+
+Then you stop.
+
+What happens next?
+
+You write **API → Queue**.
+
+Why?
+
+You think about it. Draw another arrow. Cross it out. Draw another box.
+
+It's slower.
+
+That's exactly why it works.
+
+---
+
+## Nobody owns the state
+
+This is one of my favorite system-design smells.
+
+Ask:
+
+> "Where does this information live?"
+
+Someone says:
+
+> "The API."
+
+That's not an answer. The API isn't a database.
+
+Ask again:
+
+> "Where is the source of truth?"
+
+Now people start looking around.
+
+One service has some of the state. Another caches it. The frontend has its own copy. A background worker holds another representation. The database has the actual value.
+
+And you've accidentally built a distributed state-management problem.
+
+This is where I start drawing circles around things.
+
+**Who owns this?**
+
+That one question can clean up a shocking amount of architecture.
+
+---
+
+## Race conditions only make sense when you draw them
+
+```text
+User A                User B
+
+   │                     │
+   ▼                     ▼
+ Read: balance = 100   Read: balance = 100
+   │                     │
+   ▼                     ▼
+Subtract 80            Subtract 50
+   │                     │
+   ▼                     ▼
+ Write 20              Write 50
+```
+
+Congratulations. You just lost money.
+
+The code can look completely reasonable. Every individual operation works. The system is still wrong.
+
+Draw the timeline and the bug is obvious.
+
+Which is why I increasingly think system design is less about drawing boxes and more about drawing **time**.
+
+---
+
+## Time is the thing nobody puts on the diagram
+
+Most architecture diagrams are spatial. Service A is here, service B is there, the database is underneath.
+
+But distributed systems are temporal.
+
+What happened first?
+
+What if the second thing arrives before the first?
+
+What if the first thing gets processed twice?
+
+What if the response arrives after the timeout?
+
+What if the client retries?
+
+What if the worker crashes after committing but before acknowledging?
+
+Those aren't box problems. They're timeline problems.
+
+So sometimes my architecture diagram turns into this:
+
+```text
+T0       T1       T2       T3       T4
+
+A ──────► B ──────► C
+          │
+          X crash
+                   │
+                   ▼
+                retry
+                   │
+                   ▼
+                  C
+```
+
+And the real question becomes:
+
+**Did C just process the same operation twice?**
+
+Now we're doing system design.
+
+---
+
+## The one-month patch job
+
+At one point the old system died and admin still needed to bill for uniforms and inventory.
+
+The full ERP wasn't ready.
+
+So the plan was a rush job: custom Odoo 16 modules to keep things running until the real thing existed.
+
+This is where paper is the opposite of slow.
+
+When you only have a month, you can't afford to build the wrong thing.
+
+So before writing any code, I answered three questions:
+
+**What has to work on day one?**
+
+**What can be ugly?**
+
+**What must never be wrong?**
+
+Billing totals had to be right. Stock counts had to be right.
+
+Everything else, like polish, reporting and nice-to-haves, could wait.
+
+A temporary system is still a system.
+
+And a rushed system with no boundaries doesn't stay temporary. It becomes the thing you're still maintaining two years later.
+
+---
+
+## This is also where AI coding gets dangerous
+
+I use AI heavily in my workflow. OpenCode. Codex. Claude Code. Local models. Agents.
+
+They're incredibly useful.
+
+But there's a boundary.
+
+AI is very good at helping me implement a design.
+
+It's much less useful when I haven't decided what the system should do.
+
+Tell an agent:
+
+> "Build a notification system."
+
+It will build something. Probably quickly.
+
+But what notification system?
+
+Synchronous or asynchronous?
+
+At-least-once or exactly-once?
+
+Retry policy? Dead-letter queue? Idempotency? Ordering? Persistence?
+
+The agent will make assumptions.
+
+That's the dangerous part.
+
+**Fast implementation of a bad architecture is still a bad architecture.**
+
+Sometimes I have to take the problem away from the keyboard before I give it back to the AI.
+
+---
+
+## NEXUS exists partly because of this
+
+One of the things I wanted NEXUS to explore was evidence-backed infrastructure investigation.
+
+Not:
+
+> "The server is probably down."
+
+But:
+
+> "Here is what I observed. Here is the evidence. Here is what I think happened. Here is what I need permission to change."
+
+That distinction matters.
+
+Good engineering isn't just producing an answer. It's understanding **why** the answer is correct.
+
+And sometimes the fastest way to get there isn't another tool call.
+
+It's a piece of paper.
+
+---
+
+## The moment you discover the system is stupid
+
+You spend two hours thinking about an architecture.
+
+You draw it.
+
+You stare at it.
+
+And suddenly:
+
+> "Why the fuck do we even need this service?"
+
+That's a fantastic discovery.
+
+The code hasn't been written yet.
+
+You just deleted complexity you'll never have to maintain.
+
+Sometimes the best architectural improvement isn't **adding** a component.
+
+It's removing one.
+
+---
+
+## Paper is a debugging tool too
+
+Something's broken? Draw the request.
+
+Something's slow? Draw the request path.
+
+Something's duplicated? Draw the event timeline.
+
+Something's inconsistent? Draw where state is created and modified.
+
+Something randomly fails? Draw every dependency.
+
+Something only fails under load? Draw the concurrency.
+
+You don't always need another monitoring dashboard.
+
+Sometimes you need:
+
+**A box.**
+
+**An arrow.**
+
+**A timestamp.**
+
+**And the realization that you designed something stupid.**
+
+---
+
+## What my paper sessions actually look like
+
+People imagine a beautiful whiteboard.
+
+It's not. It's crossed-out boxes, arrows pointing the wrong way, and a coffee ring.
+
+But there's a rough order to it:
+
+```text
+1. Draw the nouns        → what things exist?
+2. Draw the owners       → who holds each piece of state?
+3. Draw the happy path   → one arrow at a time
+4. Draw the timeline     → what happens first, second, twice?
+5. Draw the failure      → kill one box, then the network
+6. Delete something      → what can go?
+```
+
+Step 6 is the one people skip.
+
+If I finish a session and haven't deleted anything, I probably wasn't honest enough.
+
+The other rule: I don't touch the keyboard until I can explain the drawing out loud, without looking at it, to someone who doesn't care.
+
+If I can't, the design isn't done.
+
+---
+
+## Paper doesn't replace the tools
+
+I'm not saying "put down the laptop, tools bad."
+
+I build with AI agents. I run monitoring. I write code I'm glad exists.
+
+The point is the order.
+
+**Think on paper. Build on the machine. Verify with reality.**
+
+Paper is where decisions get made.
+
+Code is where they get carried out.
+
+The running system is where they get tested, and it's always harsher than you.
+
+Keep those in order and AI agents are amazing, because you're handing them a decision to implement instead of a vague wish to guess at.
+
+Mix them up and you get a very fast, very confident mess.
+
+---
+
+## The best system designs usually look boring
+
+I wish I'd understood this earlier.
+
+When you're learning architecture, complicated diagrams look impressive.
+
+Fifteen microservices. Event buses. Caches. Queues. Workers. API gateways. Service meshes. Kubernetes. Distributed databases. Observability stacks.
+
+It looks like NASA designed your backend.
+
+But complexity isn't sophistication.
+
+Sometimes:
+
+```text
+Frontend
+   ↓
+API
+   ↓
+Postgres
+```
+
+is the correct architecture.
+
+And if it handles the actual requirements, adding seventeen more boxes doesn't make you a better engineer.
+
+It makes you responsible for seventeen more things.
+
+---
+
+## So now I have a rule
+
+When a system gets complicated enough that I can't explain it clearly without opening my laptop...
+
+**I close the laptop.**
+
+I get a pen. I get paper.
+
+And I start asking stupidly simple questions.
+
+What talks to what?
+
+Who owns the data?
+
+When does this happen?
+
+What happens if it fails?
+
+What happens if it happens twice?
+
+What happens if it happens out of order?
+
+What happens if the network disappears?
+
+What happens if the database dies?
+
+What happens if the user retries?
+
+What happens if two users do it simultaneously?
+
+And most importantly:
+
+**Do we actually need all these boxes?**
+
+Because sometimes system design doesn't need another framework.
+
+It doesn't need another AI agent.
+
+It doesn't need another cloud service.
+
+It doesn't need Kubernetes.
+
+It doesn't need a 40-slide architecture presentation.
+
+Sometimes it needs a cheap pen, a piece of paper, and enough humility to admit:
+
+> **"I don't understand my own system anymore."**
+
+And honestly?
+
+That's usually the point where the real engineering starts.

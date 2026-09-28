@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMeta, webPageJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { guides } from "@/lib/guides";
+import { getAllPosts } from "@/lib/blog";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { PageHero } from "@/app/Components/site/page-hero";
 import { SectionHeading } from "@/app/Components/site/section-heading";
@@ -40,6 +41,8 @@ const clusterHref: Record<string, string> = {
 };
 
 export default function ResourcesPage() {
+  const postCount = getAllPosts().length;
+
   return (
     <>
       <script
@@ -123,6 +126,22 @@ export default function ResourcesPage() {
       {/* The living lab */}
       <section className="relative w-full py-16 md:py-20" style={{ backgroundColor: "var(--paper)" }}>
         <div className="max-w-7xl mx-auto px-6 md:px-14 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Link href="/blog" className="group block h-full">
+            <div className="apple-card-flat p-6 h-full flex flex-col transition-transform duration-300 group-hover:-translate-y-1">
+              <span className="apple-eyebrow-accent">Blog</span>
+              <h3 className="text-lg font-semibold tracking-tight mt-3" style={{ color: "var(--fg)" }}>
+                The longer version.
+              </h3>
+              <p className="text-xs leading-relaxed mt-2 flex-1" style={{ color: "var(--gravel)" }}>
+                {postCount > 0
+                  ? `${postCount} build ${postCount === 1 ? "log" : "logs"}, post-mortem${postCount === 1 ? "" : "s"} and architecture notes — the reasoning behind the guides.`
+                  : "Build logs, post-mortems and architecture notes — the reasoning behind the guides, in longer form."}
+              </p>
+              <span className="mt-4 inline-block font-mono text-[10px] font-bold tracking-[0.14em] uppercase" style={{ color: "var(--flag)" }}>
+                Read the blog →
+              </span>
+            </div>
+          </Link>
           <Link href="/homelab" className="group block h-full">
             <div className="apple-card-flat p-6 h-full transition-transform duration-300 group-hover:-translate-y-1">
               <span className="apple-eyebrow-accent">Home Lab</span>

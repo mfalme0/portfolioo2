@@ -1,0 +1,65 @@
+---
+title: "How to Write a Post"
+description: "The authoring template. This post is a draft, so it is excluded from the blog index, the RSS feed and the sitemap — and /blog/how-to-write-a-post does not exist as a page. Copy it, edit it, set draft to false, rename the file to your slug, and it goes live on the next deploy."
+datePublished: "2026-09-28"
+dateModified: "2026-09-28"
+tags: ["Meta", "Writing"]
+draft: true
+---
+
+Delete or overwrite this file. The filename is the URL slug, so
+`rebuilding-the-homelab.mdx` is served at `/blog/rebuilding-the-homelab`.
+
+## Frontmatter reference
+
+Every field above the `---` fence is read by `lib/blog.ts` at build time.
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `title` | yes | Post headline, also the `<h1>` |
+| `description` | yes | Card text, meta description, RSS item |
+| `datePublished` | yes | `YYYY-MM-DD`, drives sort order |
+| `dateModified` | no | Shows an "Updated" line when it differs |
+| `tags` | no | Powers the filter pills and related posts |
+| `cover` | no | Path to an image in `public/` |
+| `draft` | no | `true` hides the post from the site entirely |
+
+## Writing the body
+
+Start at `##`. The headline is already rendered from frontmatter, so a
+top-level `#` would duplicate it. `##` and `###` headings build the
+"on this page" table of contents automatically.
+
+## What the renderer supports
+
+Ordinary markdown, plus everything wired up in `mdx-components.tsx`:
+GFM tables, task lists, fenced code blocks, blockquote callouts, and
+`next/image` for images.
+
+```ts
+// Fenced code blocks render on the ink background
+const posts = getAllPosts().filter((p) => !p.draft);
+```
+
+Tables come straight from the markdown source:
+
+| Component | Source | Notes |
+| --- | --- | --- |
+| `PostCard` | `blog-card.tsx` | Index grid |
+| `BlogPost` | `blog-post.tsx` | Article layout |
+
+> Blockquotes become the same callout treatment the guides use.
+
+## Images
+
+Put files in `public/images/blog/` and reference them with
+`cover: "/images/blog/name.jpg"`. Omit `cover` and the card renders a
+generated Bauhaus composition instead, seeded from the slug so it is
+identical on every build.
+
+## Publishing checklist
+
+- [x] `draft` is `false` or removed
+- [x] Filename matches the intended slug
+- [x] `datePublished` is a real date, not a placeholder
+- [x] Description is one or two sentences, written for someone who hasn't read it

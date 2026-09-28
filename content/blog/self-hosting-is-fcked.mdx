@@ -1,0 +1,788 @@
+---
+title: "Self-Hosting Is F*cked, and I Keep Doing It Anyway"
+description: "A confession about homelabs: 10 TB nobody asked for, RAID that isn't a backup, a laptop consumed by local AI, a Kubernetes cluster for three containers — and why I still do it anyway."
+datePublished: "2026-09-13"
+tags: ["Homelab", "Self-Hosting", "Docker", "Kubernetes"]
+---
+
+There is something deeply wrong with me.
+
+I could deploy an application to a managed cloud platform, connect a database, point a domain at it, and go live.
+
+Instead, I look at a perfectly reasonable solution and think:
+
+> **“What if I hosted the entire thing myself?”**
+
+This is how it starts.
+
+You have one server.
+
+Then two.
+
+Then suddenly you have a Debian machine, a TrueNAS box with 10+ TB of storage, Docker containers everywhere, Tailscale, NetBird, Gitea, local AI models, random VMs, monitoring, backups and several services that you are no longer completely sure you still need.
+
+At some point, you stop having a homelab.
+
+You have an unpaid IT department.
+
+And unfortunately, **you are the IT department.**
+
+---
+
+## It always starts with “I just need to run one thing”
+
+This is the biggest lie in self-hosting.
+
+You don't start by saying:
+
+> “I would like to operate a miniature cloud provider from my house.”
+
+You say:
+
+> “I just need somewhere to run this backend.”
+
+Fair enough.
+
+So you install Docker.
+
+Problem solved.
+
+Except now you think:
+
+> “Well, since Docker is already here, I could run the database too.”
+
+Fine.
+
+Then:
+
+> “I should probably put Nginx in front of it.”
+
+Fine.
+
+Then:
+
+> “Actually, I should automate deployment.”
+
+Fine.
+
+Then:
+
+> “I need a Git server.”
+
+So now you install Gitea.
+
+Then:
+
+> “Why am I manually deploying? Let's have CI do it.”
+
+Now you're writing pipelines.
+
+Then:
+
+> “I should monitor this.”
+
+Now you have monitoring.
+
+Then:
+
+> “I need backups.”
+
+Now you have backup jobs.
+
+Then:
+
+> “The backup should probably go somewhere else.”
+
+Now you have another machine.
+
+This is how you accidentally become infrastructure.
+
+---
+
+## My homelab has progressively become a cry for help
+
+I've built enough infrastructure at home that I have occasionally had to stop and ask myself:
+
+**What exactly am I trying to accomplish here?**
+
+Because at some point the infrastructure became more interesting than the application.
+
+I have a machine with **10+ TB of storage**.
+
+Why?
+
+Honestly, I don't know anymore.
+
+Do I need 10 TB to host my projects?
+
+No.
+
+Did I have a legitimate reason to build storage infrastructure?
+
+Probably.
+
+Did that legitimate reason eventually become an excuse to store absolutely everything?
+
+Absolutely.
+
+There are probably files sitting on that thing that haven't been opened since the Obama administration.
+
+And the worst part is that deleting them feels dangerous.
+
+Because the moment you delete something, that's when you'll need it.
+
+So you keep it.
+
+Forever.
+
+---
+
+## Then you learn RAID isn't backup
+
+This is one of those things you understand intellectually until you actually start managing storage.
+
+You can have redundancy.
+
+You can have multiple disks.
+
+You can have a beautiful storage array.
+
+And still lose your data.
+
+Because:
+
+**RAID protects availability. It does not magically protect you from being an idiot.**
+
+Delete the wrong directory?
+
+Gone.
+
+Corrupt something?
+
+Potentially gone.
+
+Ransomware?
+
+Congratulations.
+
+House burns down?
+
+Your RAID array has achieved perfect synchronization with the fire.
+
+This is where self-hosting stops being “cool Linux stuff” and becomes actual infrastructure engineering.
+
+You have to think about failure.
+
+Not theoretical failure.
+
+**Your failure.**
+
+---
+
+## The physical layer is particularly annoying
+
+The cloud has a beautiful abstraction.
+
+You say:
+
+> “I need a server.”
+
+The cloud says:
+
+> “Here.”
+
+You don't think about the electricity.
+
+You don't think about the physical disks.
+
+You don't think about the motherboard.
+
+You don't think about the rack.
+
+You don't think about the cooling.
+
+You don't think about the network cable.
+
+You don't think about whether someone accidentally unplugged the machine.
+
+At home?
+
+You think about all of it.
+
+Suddenly uptime depends on things that have absolutely nothing to do with your code.
+
+Power goes out.
+
+Now I'm looking at a UPS like it's a life-support machine.
+
+The internet drops.
+
+Now I'm looking at my router.
+
+The router is fine.
+
+So I look at the ISP.
+
+The ISP is having a bad day.
+
+Fantastic.
+
+My application is perfectly healthy.
+
+**The internet simply isn't interested in serving it today.**
+
+---
+
+## And then I discovered networking is basically dark magic
+
+You start with:
+
+> “I'll just expose the service.”
+
+Then you learn about NAT.
+
+Then port forwarding.
+
+Then firewalls.
+
+Then DNS.
+
+Then TLS.
+
+Then reverse proxies.
+
+Then certificates.
+
+Then you start thinking:
+
+> “Maybe I shouldn't expose this machine directly to the internet.”
+
+Good instinct.
+
+So now you install Tailscale.
+
+Maybe NetBird too, because apparently one networking solution wasn't enough.
+
+Now your machines can talk privately.
+
+Great.
+
+But then you want some services public.
+
+So now you have to decide what should be exposed and what shouldn't.
+
+And this is when self-hosting forces you to confront something uncomfortable:
+
+**Every service you expose is another thing you have to secure.**
+
+You don't get to pretend security is somebody else's problem anymore.
+
+---
+
+## Docker is an enabler of bad decisions
+
+Docker is fantastic.
+
+I genuinely love Docker.
+
+But Docker also makes it far too easy to say:
+
+> “Eh, I'll just run it.”
+
+Before Docker:
+
+> “Do I really need another service?”
+
+After Docker:
+
+```text
+docker compose up -d
+```
+
+Congratulations.
+
+You now operate another service.
+
+You don't even need to think about whether you should.
+
+The barrier between:
+
+**“I wonder if this would be useful”**
+
+and
+
+**“This is now running 24/7”**
+
+is approximately three commands.
+
+This is how you end up with a server full of containers whose names look like they were generated by a mildly sleep-deprived engineer.
+
+And when something breaks six months later, you're staring at:
+
+```text
+docker ps
+```
+
+thinking:
+
+> “What the fuck is nexus?”
+
+---
+
+## Then I decided I wanted local AI
+
+Because apparently normal self-hosting wasn't enough.
+
+I wanted AI running locally.
+
+No cloud.
+
+No sending everything to an API.
+
+Just my own hardware running the models.
+
+So now I have Ollama and coding models running locally.
+
+And suddenly I'm not just thinking about CPU and RAM.
+
+Now I'm thinking about **VRAM**.
+
+My RTX 4060 has 8 GB.
+
+Which is enough to make you optimistic and not enough to let you remain optimistic for very long.
+
+You download a model.
+
+Load it.
+
+It runs.
+
+You think:
+
+> “This is actually pretty good.”
+
+Then you try something larger.
+
+VRAM:
+
+**No.**
+
+You quantize it.
+
+Try again.
+
+Now it fits.
+
+But it's slow.
+
+So you start tweaking things.
+
+Then you start comparing tokens per second.
+
+Then you start changing models.
+
+Then you start optimizing the inference server.
+
+At some point you aren't using AI anymore.
+
+You're benchmarking silicon.
+
+---
+
+## And then my laptop became part of the infrastructure
+
+This is another terrible idea.
+
+I have a fairly powerful ROG laptop.
+
+It's a machine I use for development.
+
+So naturally, I started using it for local AI.
+
+Because why waste perfectly good hardware?
+
+Then you discover that your GPU memory is being eaten by everything else you're doing.
+
+You have external displays.
+
+You have development tools.
+
+You have browsers.
+
+You have AI models.
+
+You have whatever Windows has decided to reserve today.
+
+And suddenly you're looking at VRAM utilization thinking:
+
+**“Who is using all of this?”**
+
+Then you start investigating UMA allocation.
+
+Then BIOS settings.
+
+Then firmware tools.
+
+Then you are one Google search away from flashing something you probably shouldn't flash.
+
+All because you wanted your local AI model to have another 512 MB of memory.
+
+This is self-hosting.
+
+---
+
+## Kubernetes was where I briefly lost the plot
+
+Docker was not enough.
+
+Of course it wasn't.
+
+Eventually you look at your containers and think:
+
+> “Maybe Kubernetes would solve this.”
+
+No.
+
+It probably wouldn't.
+
+But you install it anyway.
+
+Because you're an engineer.
+
+Kubernetes is incredible technology.
+
+It is also an incredible way to turn:
+
+> “I have three containers”
+
+into:
+
+> “Why is my cluster unhealthy?”
+
+Now you have nodes.
+
+Pods.
+
+Services.
+
+Ingress.
+
+Volumes.
+
+Deployments.
+
+Secrets.
+
+ConfigMaps.
+
+Networking.
+
+And some YAML that has become so important that nobody is willing to touch it.
+
+You have successfully replaced:
+
+```bash
+docker compose up
+```
+
+with a small administrative bureaucracy.
+
+---
+
+## The funniest part is that I actually build software for this stuff
+
+I don't just self-host applications.
+
+I've started building things around the infrastructure itself.
+
+ATLAS, for example, became a distributed-systems playground.
+
+Raft.
+
+Leader election.
+
+Replication.
+
+Heartbeats.
+
+Terms.
+
+Replicated key-value storage.
+
+Chaos testing.
+
+Dead-letter queues.
+
+Stuff that normal people quite reasonably decide they don't want to think about.
+
+I decided to implement it for fun.
+
+Why?
+
+Because apparently running a server wasn't painful enough.
+
+I also built NEXUS, an AI SRE-style agent for investigating my infrastructure.
+
+Think about that for a second.
+
+I created an AI agent to help me troubleshoot the infrastructure that **I created because I wanted to self-host things.**
+
+That's not DevOps.
+
+That's a cry for help with an API.
+
+---
+
+## And then there is the “I can automate this” disease
+
+This one is particularly dangerous.
+
+You find yourself doing something manually for the third time.
+
+And instead of accepting that it takes five minutes, your brain goes:
+
+> “I should automate this.”
+
+So you automate it.
+
+Then you improve the automation.
+
+Then you make the automation configurable.
+
+Then you add logging.
+
+Then error handling.
+
+Then retries.
+
+Then a dashboard.
+
+Then authentication.
+
+Now you've spent four hours automating something that took five minutes.
+
+But here's the problem:
+
+**You had fun.**
+
+So you don't even regret it.
+
+---
+
+## This is where self-hosting becomes genuinely valuable
+
+For all the complaining, I wouldn't trade the experience.
+
+Because self-hosting has taught me something that clicking “Deploy” on a cloud platform doesn't always teach you.
+
+It taught me what the abstractions are hiding.
+
+When your own server breaks, you can't just assume:
+
+> “The infrastructure will handle it.”
+
+You have to ask:
+
+- Is the application running?
+- Is the container healthy?
+- Is the disk healthy?
+- Is the filesystem healthy?
+- Is DNS resolving?
+- Is the route working?
+- Is the firewall blocking it?
+- Is TLS broken?
+- Is the reverse proxy broken?
+- Is the machine reachable?
+- Is the ISP reachable?
+- Is there power?
+- Did I break something?
+
+And eventually:
+
+> **“What did I change?”**
+
+That last one has solved more problems than any sophisticated monitoring system I've built.
+
+---
+
+## Self-hosting also changes how you write software
+
+When you know that the infrastructure underneath your application is not magical, you start designing differently.
+
+You care about:
+
+**Failure.**
+
+What happens if the database disappears?
+
+What happens if a request is duplicated?
+
+What happens if the service restarts?
+
+What happens if the network disappears for 30 seconds?
+
+What happens if a deployment partially fails?
+
+What happens if the machine dies?
+
+What happens if the service comes back but the dependency doesn't?
+
+Those aren't just infrastructure questions.
+
+They're software engineering questions.
+
+Running my own infrastructure has made me much more suspicious of assumptions like:
+
+> “That service will always be available.”
+
+No.
+
+It won't.
+
+Everything fails eventually.
+
+Your job is to decide what happens when it does.
+
+---
+
+## But sometimes the cloud is absolutely the correct answer
+
+This is the part self-hosting people don't like admitting.
+
+Sometimes the best architecture is:
+
+**Pay Render.**
+
+Seriously.
+
+If I have a small application and the alternative is spending an entire weekend maintaining a server, the managed platform might be the better engineering decision.
+
+The cloud isn't inherently wasteful.
+
+It's buying somebody else's expertise.
+
+You're paying them to handle:
+
+- infrastructure
+- hardware
+- networking
+- redundancy
+- availability
+- operations
+- maintenance
+
+And that can be worth every cent.
+
+The mistake isn't using the cloud.
+
+The mistake is using self-hosting when you don't actually want to operate infrastructure.
+
+---
+
+## My problem is that I actually want to
+
+That's the difference.
+
+I don't self-host because I think cloud providers are useless.
+
+I self-host because I like knowing how things work.
+
+I like having a machine and being able to decide what happens on it.
+
+I like running Linux.
+
+I like breaking things.
+
+I like fixing them.
+
+I like building infrastructure just to understand the infrastructure.
+
+And yes, occasionally I like spending three hours solving a problem that would have cost me $5 to avoid.
+
+That's the dangerous part.
+
+**Self-hosting isn't always rational.**
+
+Sometimes it's educational.
+
+Sometimes it's practical.
+
+Sometimes it's cheaper.
+
+Sometimes it's more private.
+
+Sometimes it's completely unnecessary.
+
+And sometimes...
+
+**you just want to fuck around with servers.**
+
+That's valid too.
+
+---
+
+## The real cost of self-hosting
+
+The biggest thing I've learned isn't that self-hosting is expensive.
+
+It's that **self-hosting charges you in attention.**
+
+The server doesn't care that you're busy.
+
+The disk doesn't care that you have an interview tomorrow.
+
+The broken container doesn't care that it's 2 AM.
+
+The ISP doesn't care that your demo is in ten minutes.
+
+And the UPS certainly doesn't care about your sprint deadline.
+
+When you self-host, infrastructure becomes part of your life.
+
+That's both the best and worst thing about it.
+
+You gain control.
+
+You gain knowledge.
+
+You gain flexibility.
+
+You also gain another thing to worry about.
+
+---
+
+## So, would I recommend self-hosting?
+
+I don't know.
+
+Ask me after I finish rebuilding the cluster.
+
+I'm probably going to do it again anyway.
+
+Because every time I finally get everything stable, I look at the setup and think:
+
+> **“This is pretty cool.”**
+
+Then immediately:
+
+> **“I could make this better.”**
+
+And that sentence has cost me an absolutely unreasonable amount of time.
+
+But it has also made me a better engineer.
+
+Because somewhere between the dead containers, questionable networking decisions, 10 TB of storage, local AI models, Docker files, distributed systems experiments and machines running Linux in the corner of my room, I stopped thinking of infrastructure as something that simply exists.
+
+I started thinking about it as something I am responsible for.
+
+And that is probably the real lesson.
+
+**Self-hosting is fucked.**
+
+But if you're willing to break your own stuff, fix it, document it, break it again and learn why it broke...
+
+you learn an absurd amount.
+
+Just don't call me when your server goes down.
+
+I'm probably fixing mine.

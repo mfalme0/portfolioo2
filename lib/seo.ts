@@ -12,17 +12,30 @@ export interface PageMetaInput {
   modifiedTime?: string;
   keywords?: string[];
   noIndex?: boolean;
+  /** Absolute path to an RSS feed, advertised via <link rel="alternate">. */
+  rss?: string;
 }
 
 export function pageMeta(input: PageMetaInput): Metadata {
   const url = `${baseUrl}${input.path}`;
-  const image = input.image ?? `${baseUrl}/opengraph-image.png`;
   const isArticle = Boolean(input.publishedTime);
+
+  // Next 16 serves `app/opengraph-image.tsx` from `/opengraph-image`
+  // (extensionless, no content hash). The previously hardcoded
+  // `/opengraph-image.png` returned 404, so every link preview on the site
+  // rendered without an image. Blog posts override this with their own
+  // generated card, or with a `cover` image when one is set.
+  const image = input.image ?? `${baseUrl}/opengraph-image`;
 
   return {
     title: input.title,
     description: input.description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      // Lets feed readers and aggregators discover the blog without hitting
+      // /blog to look for a link.
+      types: input.rss ? { "application/rss+xml": `${baseUrl}${input.rss}` } : undefined,
+    },
     keywords: input.keywords,
     openGraph: {
       type: isArticle ? "article" : "website",
@@ -35,6 +48,8 @@ export function pageMeta(input: PageMetaInput): Metadata {
       authors: isArticle ? [siteConfig.name] : undefined,
       publishedTime: input.publishedTime,
       modifiedTime: input.modifiedTime,
+      // Maps to article:tag, which aggregators use to route posts by topic.
+      tags: isArticle ? input.keywords : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -113,7 +128,7 @@ export function serviceJsonLd(
     name: `${siteConfig.name} \u2014 ${name}`,
     description,
     url,
-    image: `${baseUrl}/opengraph-image.png`,
+    image: `${baseUrl}/opengraph-image`,
     telephone: siteConfig.phoneRaw,
     email: siteConfig.email,
     priceRange: "KSh 15,000 - KSh 100,000",
@@ -203,7 +218,7 @@ export function articleJsonLd(input: {
     headline: input.headline,
     description: input.description,
     url: `${baseUrl}${input.path}`,
-    image: input.image ?? `${baseUrl}/opengraph-image.png`,
+    image: input.image ?? `${baseUrl}/opengraph-image`,
     datePublished: input.datePublished,
     dateModified: input.dateModified,
     inLanguage: "en",
@@ -222,13 +237,96 @@ export function articleJsonLd(input: {
   };
 }
 
+/**
+ * Blog index markup. Emits a `Blog` node carrying the post list in publish
+ * order, so crawlers can enumerate posts and their dates without following
+ * every link on the page.
+ */
+export function blogJsonLd(input: {
+  path: string;
+  title: string;
+  description: string;
+  posts: { slug: string; title: string; datePublished: string; dateModified: string }[];
+}): JsonLd {
+  const url = `${baseUrl}${input.path}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${url}#blog`,
+    name: input.title,
+    description: input.description,
+    url,
+    inLanguage: "en",
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: baseUrl,
+    },
+    author: {
+      "@type": "Person",
+      name: siteConfig.name,
+      url: `${baseUrl}/about`,
+    },
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.name,
+      url: baseUrl,
+    },
+    blogPost: input.posts.map((post, index) => ({
+      "@type": "BlogPosting",
+      "@id": `${baseUrl}/blog/${post.slug}#posting`,
+      position: index + 1,
+      url: `${baseUrl}/blog/${post.slug}`,
+      mainEntityOfPage: `${baseUrl}/blog/${post.slug}`,
+      headline: post.title,
+      datePublished: post.datePublished,
+      dateModified: post.dateModified,
+    })),
+  };
+}
+
+export function blogPostingJsonLd(input: {
+  path: string;
+  headline: string;
+  description: string;
+  datePublished: string;
+  dateModified: string;
+  tags?: string[];
+  wordCount?: number;
+  image?: string;
+}): JsonLd {
+  return {
+    ...articleJsonLd({
+      path: input.path,
+      headline: input.headline,
+      description: input.description,
+      datePublished: input.datePublished,
+      dateModified: input.dateModified,
+      keywords: input.tags,
+      image: input.image,
+    }),
+    "@type": "BlogPosting",
+    "@id": `${baseUrl}${input.path}#posting`,
+    wordCount: input.wordCount,
+    articleSection: input.tags?.[0],
+    isAccessibleForFree: true,
+    // Keep the article:published_time / article:tag OG pairs consistent with
+    // the metadata block emitted by pageMeta().
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${baseUrl}${input.path}`,
+    },
+  };
+}
+
 export function personJsonLd(): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: siteConfig.name,
     url: baseUrl,
-    image: `${baseUrl}/opengraph-image.png`,
+    image: `${baseUrl}/opengraph-image`,
     jobTitle: siteConfig.role,
     email: `mailto:${siteConfig.email}`,
     telephone: siteConfig.phoneRaw,
