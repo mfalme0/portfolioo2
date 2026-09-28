@@ -21,6 +21,22 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ['intasend-node'],
+  // Posts whose slugs changed after publication. These URLs have been indexed
+  // and shared, so they must keep resolving.
+  async redirects() {
+    return [
+      {
+        source: '/blog/when-system-design-gets-so-fucked-you-need-a-pen-and-paper',
+        destination: '/blog/system-design-pen-and-paper',
+        permanent: true,
+      },
+      {
+        source: '/blog/self-hosting-is-fcked',
+        destination: '/blog/self-hosting-bad-idea',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withMDX(nextConfig);

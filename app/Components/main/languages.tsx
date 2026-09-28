@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FaPython, FaJs, FaReact, FaNodeJs } from 'react-icons/fa';
-import { SiFlutter, SiKotlin, SiNextdotjs, SiCplusplus, SiTypescript } from 'react-icons/si';
+import { SiFlutter, SiKotlin, SiNextdotjs, SiCplusplus, SiTypescript, SiGo } from 'react-icons/si';
 import { TbBrandCSharp } from 'react-icons/tb';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Context/theme';
@@ -14,6 +14,7 @@ const languages = [
   { name: 'Next.js', icon: <SiNextdotjs />, proficiency: 85 },
   { name: 'Node.js', icon: <FaNodeJs />, proficiency: 85 },
   { name: 'C#', icon: <TbBrandCSharp />, proficiency: 80 },
+  { name: 'Go', icon: <SiGo />, proficiency: 70 },
   { name: 'Python', icon: <FaPython />, proficiency: 65 },
   { name: 'Flutter', icon: <SiFlutter />, proficiency: 75 },
   { name: 'Kotlin', icon: <SiKotlin />, proficiency: 70 },

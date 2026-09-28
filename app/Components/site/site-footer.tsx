@@ -48,6 +48,7 @@ const columns: {
       { label: "Blog", href: "/blog" },
       { label: "Infrastructure Check", href: "/tools/infrastructure-check" },
       { label: "Homelab", href: "/homelab" },
+      { label: "Sitemap", href: "/sitemap" },
       { label: "About Joseph", href: "/about" },
       { label: "Work", href: "/work" },
     ],

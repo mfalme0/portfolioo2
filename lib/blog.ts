@@ -37,6 +37,12 @@ export interface PostMeta {
   wordCount: number;
   toc: TocEntry[];
   draft: boolean;
+  /**
+   * Date the post becomes publicly visible. Defaults to `datePublished`, but
+   * can be set later to schedule a post. See SCHEDULING.md for why a static
+   * site can only honour this on rebuild.
+   */
+  publishOn: string;
 }
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -164,6 +170,14 @@ function parsePost(filename: string): PostMeta | null {
 
   const wordCount = countWords(content);
 
+  const publishOn = isDate(fields.publishOn) ? fields.publishOn : datePublished;
+
+  if (publishOn < datePublished) {
+    throw new Error(
+      `content/blog/${slug}.mdx — "publishOn" (${publishOn}) is earlier than "datePublished" (${datePublished}).`
+    );
+  }
+
   return {
     slug,
     title: requireString(fields, "title", slug),
@@ -176,6 +190,7 @@ function parsePost(filename: string): PostMeta | null {
     wordCount,
     toc: extractToc(content),
     draft: fields.draft === true,
+    publishOn,
   };
 }
 
@@ -201,13 +216,29 @@ function all(): PostMeta[] {
 }
 
 /**
- * Drafts are excluded from the index, the feed, the sitemap and
- * `generateStaticParams`, so they are neither listed nor routable — but the
- * file still has to exist on disk for the bundler to resolve the dynamic MDX
- * import in `app/(site)/blog/[slug]/page.tsx`.
+ * Drafts and not-yet-published posts are excluded from the index, the feed, the
+ * sitemap and `generateStaticParams`, so they are neither listed nor routable —
+ * but the file still has to exist on disk for the bundler to resolve the dynamic
+ * MDX import in `app/(site)/blog/[slug]/page.tsx`.
+ *
+ * "Published" is evaluated against the moment the module is first evaluated
+ * (i.e. build time on Vercel). A post whose `publishOn` has not arrived yet is
+ * held back until the next deploy — see SCHEDULING.md.
  */
 function published(): PostMeta[] {
-  return all().filter((p) => !p.draft);
+  const now = Date.now();
+  return all().filter((p) => {
+    if (p.draft) return false;
+    return new Date(`${p.publishOn}T00:00:00Z`).getTime() <= now;
+  });
+}
+
+/** Posts whose `publishOn` is in the future. Excluded from the public site. */
+export function getScheduledPosts(): PostMeta[] {
+  const now = Date.now();
+  return all().filter(
+    (p) => !p.draft && new Date(`${p.publishOn}T00:00:00Z`).getTime() > now
+  );
 }
 
 /** All published posts, newest first. */

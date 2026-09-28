@@ -64,6 +64,7 @@ const siteNavGroups: NavGroup[] = [
       { label: "Infrastructure Check", href: "/tools/infrastructure-check", description: "Free self-assessment" },
       { label: "Homelab", href: "/homelab", description: "Personal infrastructure lab" },
       { label: "LAN Party", href: "/LAN", description: "Local network gaming" },
+      { label: "Sitemap", href: "/sitemap", description: "Every page, indexed" },
     ],
   },
 ];

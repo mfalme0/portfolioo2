@@ -163,7 +163,7 @@ If the page is `/privacy`-style (legal) it is deliberately in the footer only, n
 `/pc-upgrades` · `/pc-troubleshooting` · `/pc-consulting`
 
 **Content:** `/case-studies` (6) · `/case-studies/[slug]` · `/guides` (8) · `/guides/[slug]` ·
-`/blog` · `/blog/[slug]` · `/blog/feed.xml` (RSS)
+`/blog` · `/blog/[slug]` · `/blog/feed.xml` (RSS) · `/sitemap` (human-readable index)
 
 **Tools:** `/tools/pc-build` · `/tools/infrastructure-check`
 
@@ -244,7 +244,8 @@ file — not creating a page.
 | --- | --- | --- |
 | `lib/site-config.ts` | **Single source of brand/contact truth.** Name, email, phone, WhatsApp, location, resume path, Formspree endpoint, GA ID, socials, service areas, metrics. Also `whatsappLink()` and `mailtoLink()` helpers. | — |
 | `lib/guides.ts` | `Guide[]` + `guideClusters` + `relatedGuides()`. Guides are a typed block array (`p`, `h2`, `list`, `table`, `callout`) — `GuideArticle` renders them. | 8 |
-| `lib/blog.ts` | Reads `content/blog/*.mdx` frontmatter at build time. `getAllPosts`, `getPost`, `getPostSlugs`, `allTags`, `postsByTag`, `relatedPosts`, `adjacentPosts`, `latestPosts`, `formatDate`. Derives reading time and the TOC. **Server-only.** | 0 published |
+| `lib/blog.ts` | Reads `content/blog/*.mdx` frontmatter at build time. `getAllPosts`, `getPost`, `getPostSlugs`, `getScheduledPosts`, `allTags`, `postsByTag`, `relatedPosts`, `adjacentPosts`, `latestPosts`, `formatDate`. Derives reading time and the TOC. **Server-only.** | 0 published |
+| `lib/sitemap.ts` | Single source of truth for every indexable route. `getSitemapEntries()` feeds `app/sitemap.ts`; `getSitemapGroups()` feeds the `/sitemap` page. Add a page here once, not in two lists. | — |
 | `lib/case-studies.tsx` | `CaseStudy[]`, rendered by `CaseStudyPage` | 6 |
 | `lib/homelab-data.tsx` | `homelabItems[]` | 2 |
 | `lib/service-pages.tsx` | `Record<string, ServicePageConfig>`, keyed `"/slug"` | 7 |
@@ -369,11 +370,15 @@ content/blog/rebuilding-the-homelab.mdx   →   /blog/rebuilding-the-homelab
 | `description` | yes | Card text, meta description, RSS item |
 | `datePublished` | yes | `YYYY-MM-DD`. Drives sort order |
 | `dateModified` | no | Renders an "Updated" line when it differs from published |
+| `publishOn` | no | Withhold the post until this date. Defaults to `datePublished` |
 | `tags` | no | Powers the filter pills and related-post matching |
 | `cover` | no | Path to an image under `public/`. Omit for a generated placeholder |
 | `draft` | no | `true` hides the post from the index, feed, sitemap and routing |
 
 Malformed frontmatter **fails the build** rather than rendering a broken page.
+
+**Full authoring guide: [`content/blog/README.md`](content/blog/README.md).**
+Scheduling is covered separately in [`SCHEDULING.md`](SCHEDULING.md).
 
 ### Body
 
@@ -395,6 +400,12 @@ on every device, no hydration mismatch.
 
 `content/blog/how-to-write-a-post.mdx` ships as a `draft: true` template. Delete it whenever you
 like.
+
+### Scheduling
+
+`publishOn` withholds a post until its date passes; the post then appears on the next deploy.
+A static site has no clock of its own, so a scheduled post needs a build on the day — see
+[SCHEDULING.md](SCHEDULING.md) for the options and why no cron is checked in.
 
 > **Do not leave `content/blog/` completely empty.** `app/(site)/blog/[slug]/page.tsx` imports MDX
 > via a template-literal specifier, which Turbopack resolves against a glob of the directory. With
