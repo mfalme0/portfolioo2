@@ -1,0 +1,198 @@
+---
+title: "Oh, I Like Immich"
+description: "A love letter to Immich, the open-source, self-hosted photo and video platform. Why it earned a permanent place in my homelab, and why I keep recommending it."
+datePublished: "2026-09-28"
+tags: ["Self-Hosting", "Homelab", "Immich", "TrueNAS", "Docker", "Open Source"]
+cover: "/immich.png"
+---
+
+*A love letter to the self-hosted photo app that made my homelab feel worth it.*
+
+There are very few things in technology that make me genuinely happy.
+
+A clean deployment. A Docker container that starts on the first try. A distributed system surviving a network partition. Getting something to work after spending three hours wondering why the fuck it wasn't working in the first place.
+
+Recently, I've added another thing to that list.
+
+**Immich.**
+
+I fucking love Immich.
+
+Not because it's revolutionary. Not because it uses AI. Not even just because it's self-hosted.
+
+I love it because it solves an actual problem, does it really well, and doesn't make me question my career choices every time I open it.
+
+And considering my relationship with self-hosting, that's saying something.
+
+## Why I wanted it
+
+My homelab is already a bit of a situation.
+
+I've got Debian machines, a TrueNAS box with over 10 TB of storage, Docker containers everywhere, and enough infrastructure experiments to keep me occupied for several weekends.
+
+Naturally, somewhere in all that infrastructure, I have thousands of photos.
+
+Trips. Events. Screenshots. Hardware. Random pictures of things I thought were interesting at the time. Pictures of projects. Pictures I took eight months ago and have absolutely no recollection of taking.
+
+And I wanted somewhere to put all of them.
+
+Not another subscription. Not another service holding my memories hostage behind a monthly payment. Just somewhere I could store, organize, search, and access my photos using hardware I already own.
+
+The problem was that having 10 TB of storage doesn't automatically give you a photo library.
+
+It gives you 10 TB of storage.
+
+Which, if you've ever tried finding a specific photograph in a filesystem full of folders named `DCIM`, `Camera`, `Backup`, and `Camera (1)`, is a very different thing.
+
+I needed something that made my storage actually useful.
+
+Enter Immich.
+
+## What Immich is
+
+[Immich](https://immich.app) is an open-source, self-hosted photo and video management platform.
+
+If you've used Google Photos, you'll understand the appeal immediately.
+
+You get a timeline, albums, sharing, automatic mobile backups, facial recognition, search, and a proper interface for browsing your library.
+
+The important part is that you can run it yourself.
+
+No need to build a custom photo API. No need to spend a weekend making a frontend because apparently storing images in folders is beneath me now.
+
+Just deploy it, configure your storage, connect your phone, and suddenly your photos have a home.
+
+And the people behind Immich have clearly put serious thought into the experience. The timeline feels natural. The albums work the way you'd expect. The mobile application makes backing up photos straightforward.
+
+It's one of those applications where you can tell somebody actually cared about the person using it.
+
+## The moment it clicked
+
+There's a particular satisfaction in opening an application and realizing you don't need to build anything.
+
+You just get to use it.
+
+For me, that was the biggest surprise.
+
+I'm so used to approaching problems from the engineering side that I sometimes forget software is supposed to be enjoyable to use.
+
+I spend enough time dealing with infrastructure, APIs, databases, deployments, and debugging that finding something polished enough to simply disappear into the background is refreshing.
+
+And then there's the search.
+
+I can look for something like a motherboard and find a photograph I took months ago without remembering which folder I put it in.
+
+That's the magic.
+
+I stopped thinking about where the file was stored and started thinking about what I was actually looking for.
+
+I've spent plenty of time experimenting with local AI through Ollama, so I particularly appreciate seeing machine learning used for something this practical.
+
+Not every AI feature needs to be a chatbot.
+
+Sometimes it just needs to find that one photograph of a motherboard you took eight months ago.
+
+Honestly, that's a pretty good use of artificial intelligence.
+
+## Why running it myself matters
+
+I like having control over my own stuff.
+
+I like knowing where my data lives, what hardware it's running on, and how I can access it.
+
+And I particularly like the idea that my photographs aren't exclusively dependent on a subscription whose price increases as my collection grows.
+
+I already own the storage. I already maintain the machines. I already have the infrastructure.
+
+Why shouldn't I use it?
+
+But there's something else I appreciate about Immich.
+
+It gives my homelab a purpose beyond tinkering.
+
+Don't get me wrong. I enjoy tinkering. I have absolutely spent unreasonable amounts of time configuring infrastructure simply because I wanted to understand how something worked.
+
+But having a service that I genuinely use every day makes the whole exercise feel different.
+
+My server isn't just running containers because I thought running containers would be cool.
+
+It's keeping my memories organized and accessible.
+
+That's a pretty good return on all those hours spent debugging Linux.
+
+## The setup
+
+> **[TODO — fill in your actual deployment before publishing.]** Add the real details here:
+> deployment method (Docker Compose, CasaOS, or something else), where the Immich library lives on
+> TrueNAS, and how your phone reaches the server — Tailscale, NetBird, or a reverse proxy. The
+> paragraph after this note stands on its own and can stay as written.
+
+One thing I particularly like about running Immich on existing infrastructure is that it fits naturally into the rest of my homelab.
+
+I'm not building an entirely separate platform just to manage photographs.
+
+I'm using the machines, storage, networking, and deployment tools I already have.
+
+Which is exactly how I want self-hosting to work.
+
+Although, knowing me, there's a reasonable chance I'll eventually decide the deployment needs a complete architectural redesign for absolutely no reason.
+
+## A note on backups
+
+Now, before anyone gets too excited about self-hosting their entire photographic history, let's talk about backups.
+
+Because Immich is great.
+
+But it doesn't magically eliminate the responsibilities of operating your own infrastructure.
+
+Your photographs are probably some of the most important data you own. Losing them because you forgot to configure a backup would be a particularly stupid way to learn an otherwise very important lesson.
+
+I treat mine accordingly.
+
+That means redundant storage, independent backups of the photographs and database, and a recovery process I've actually tested.
+
+Because, as I've mentioned in my other self-hosting adventures:
+
+**RAID is not backup.**
+
+Redundancy protects availability. Backups protect history.
+
+And neither is particularly useful if you've never tested whether you can actually recover anything.
+
+I also pay attention to Immich's release notes before updating. With a project this active, I would rather understand what is changing than blindly pull the latest image and discover I've created an entirely new weekend project.
+
+## The community behind it
+
+Something I appreciate about Immich is the spirit behind the project.
+
+Someone wanted a genuinely good way to manage photographs, built it in the open, and created something that people keep recommending to one another.
+
+That's one of the things I love about open-source software.
+
+It's not always about building the next enormous platform or creating a business around every possible inconvenience.
+
+Sometimes it's just engineers building something useful because they believe it should exist.
+
+And sometimes that project turns out to be so good that people like me start evangelizing it to anyone who owns a server.
+
+Sorry in advance.
+
+## Should you try it?
+
+If you already run a homelab, absolutely.
+
+If you've got a NAS sitting around collecting dust, even better.
+
+And if you don't self-host yet, Immich is one of the more practical reasons I can think of to start.
+
+It's a service you'll actually use. It solves a real problem. And it gives you a reason to learn about storage, networking, deployments, and backups without having to invent an imaginary production workload.
+
+Just remember to back up your data.
+
+Please.
+
+I don't want to write the follow-up article about how I lost every photograph I've ever taken because I thought having 10 TB of storage meant I was invincible.
+
+Anyway, I like Immich.
+
+It's useful. It's polished. It runs on my own infrastructure. And it makes my homelab feel like something more than an elaborate collection of Docker containers and questionable engineering decisions.
