@@ -378,7 +378,9 @@ content/blog/rebuilding-the-homelab.mdx   →   /blog/rebuilding-the-homelab
 Malformed frontmatter **fails the build** rather than rendering a broken page.
 
 **Full authoring guide: [`content/blog/README.md`](content/blog/README.md).**
-Scheduling is covered separately in [`SCHEDULING.md`](SCHEDULING.md).
+Scheduling is covered separately in [`SCHEDULING.md`](SCHEDULING.md), with the
+currently pending scheduled posts listed in
+[`PUBLISH-REMINDER.md`](PUBLISH-REMINDER.md).
 
 ### Body
 

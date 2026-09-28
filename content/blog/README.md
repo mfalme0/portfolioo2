@@ -137,6 +137,11 @@ git push
 Vercel deploys on push to `master`. That is the whole workflow — no CMS, no database, no
 admin panel, no service to pay for.
 
+> **If your post has a future `publishOn` date, it will not appear on its own.** A static site
+> has no clock — the post goes live on the next deploy after the date. See
+> [SCHEDULING.md](../../SCHEDULING.md) and [PUBLISH-REMINDER.md](../../PUBLISH-REMINDER.md)
+> for the push command.
+
 ### Definition of done
 
 ```bash

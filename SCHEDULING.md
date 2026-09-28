@@ -44,6 +44,10 @@ git commit --allow-empty -m "trigger deploy for scheduled post"
 git push
 ```
 
+> **Currently pending.** Two posts are staged and waiting: the Business Central integration
+> post for 2 Oct 2026 and the Atlas post for 6 Oct 2026. See
+> [PUBLISH-REMINDER.md](PUBLISH-REMINDER.md) for the dates and the exact command.
+
 **Option 2 — let the build run on its own.**
 Vercel rebuilds on every push to `master`. If you push a batch of scheduled posts ahead of
 time, each one appears on the next deploy after its date — which may be later than you
