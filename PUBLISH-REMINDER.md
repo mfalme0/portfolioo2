@@ -39,10 +39,10 @@ curl -sI https://mfalme.runs-on.dev/blog/built-atlas-then-broke-it | head -1
 curl -s https://mfalme.runs-on.dev/blog/feed.xml | grep -c "<item>"
 ```
 
-A `200` on the post URL and **5** items in the feed means it worked. There are
-4 today; the Atlas post is the fifth. For the Business Central post on 2 Oct,
-use `business-central-erp-integration` instead and expect the same 5 — the two
-posts are published four days apart, so the count goes to 5 either way.
+A `200` on the post URL and **7** items in the feed means it worked. There are
+6 today; the Atlas post is the seventh. For the Business Central post on 2 Oct,
+use `business-central-erp-integration` instead and expect the same 7 — the two
+posts are published four days apart, so the count goes to 7 either way.
 
 ---
 
