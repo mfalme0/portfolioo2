@@ -42,7 +42,10 @@ export default function CaseStudiesPage() {
 
       <section className="relative w-full py-16 md:py-20" style={{ backgroundColor: "var(--paper)" }}>
         <div className="max-w-7xl mx-auto px-6 md:px-14">
-          <SectionHeading eyebrow="Selected work" title="Four studies that show the range." />
+          <SectionHeading
+            eyebrow="Selected work"
+            title={`${caseStudies.length} studies that show the range.`}
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-10">
             {caseStudies.map((c) => (
               <CaseStudyCard key={c.slug} study={c} />

@@ -3,6 +3,7 @@ import { PageHero } from "./page-hero";
 import { CtaBand } from "./cta-band";
 import { SectionHeading } from "./section-heading";
 import { MetricCard, CaseStudyCard } from "./cards";
+import { SectionVisual } from "./motion/section-visual";
 import { caseStudies, type CaseStudy } from "@/lib/case-studies";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { FiGithub, FiArrowUpRight } from "react-icons/fi";
@@ -73,6 +74,7 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
                     ))}
                   </ul>
                 )}
+                <SectionVisual visual={s.visual} />
               </div>
             ))}
           </div>
