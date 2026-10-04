@@ -11,6 +11,7 @@ import Education from "@/app/Components/main/education";
 import Skills from "@/app/Components/main/skills";
 import ProgrammingLanguages from "@/app/Components/main/languages";
 import TechStack from "@/app/Components/main/techstack";
+import { WorkWithMe } from "@/app/Components/site/work-with-me";
 
 export const metadata: Metadata = pageMeta({
   title: "About Joseph Gitau Chege — Software Engineer & Systems Architect",
@@ -88,6 +89,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <WorkWithMe />
 
       <CtaBand
         title="Curious whether your problem fits?"

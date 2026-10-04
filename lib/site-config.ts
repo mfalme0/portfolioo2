@@ -19,6 +19,7 @@ export const siteConfig = {
     github: "https://github.com/mfalme0",
     linkedin: "https://linkedin.com/in/joseph-g-471678208/",
     instagram: "https://instagram.com/mfalme.01/",
+    x: "https://x.com/joemfalme001",
   },
   areas: [
     "Nairobi",

@@ -10,6 +10,7 @@ import { CtaBand } from "@/app/Components/site/cta-band";
 import { MetricCard } from "@/app/Components/site/cards";
 import { PostCard } from "@/app/Components/site/blog-card";
 import { BlogEmptyState } from "@/app/Components/site/blog-empty-state";
+import { WorkWithMe } from "@/app/Components/site/work-with-me";
 import { FiArrowUpRight } from "react-icons/fi";
 
 export const metadata: Metadata = pageMeta({
@@ -191,6 +192,8 @@ export default async function BlogPage({ searchParams }: Props) {
           </div>
         </div>
       </section>
+
+      <WorkWithMe />
 
       <CtaBand
         title="Reading beats doing — but only up to a point."

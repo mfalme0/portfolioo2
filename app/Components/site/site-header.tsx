@@ -72,6 +72,7 @@ const siteNavGroups: NavGroup[] = [
 const plainLinks = [
   { label: "About", href: "/about" },
   { label: "Work", href: "/work" },
+  { label: "Work With Me", href: "/blog#work-with-me" },
 ];
 
 export default function SiteHeader() {

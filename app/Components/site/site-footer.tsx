@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { BsGithub, BsLinkedin, BsInstagram } from "react-icons/bs";
+import { BsGithub, BsLinkedin, BsInstagram, BsTwitterX } from "react-icons/bs";
 import { siteConfig, whatsappLink } from "@/lib/site-config";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { legalDocs } from "@/lib/legal";
@@ -10,6 +10,7 @@ const socials = [
   { icon: <BsGithub />, url: siteConfig.socials.github, label: "GitHub" },
   { icon: <BsLinkedin />, url: siteConfig.socials.linkedin, label: "LinkedIn" },
   { icon: <BsInstagram />, url: siteConfig.socials.instagram, label: "Instagram" },
+  { icon: <BsTwitterX />, url: siteConfig.socials.x, label: "X" },
 ];
 
 const columns: {
@@ -95,6 +96,13 @@ export default function SiteFooter() {
               ))}
             </div>
             <div className="mt-6 space-y-2">
+              <Link
+                href="/blog#work-with-me"
+                className="block text-xs font-mono font-bold tracking-[0.08em] uppercase transition-opacity hover:opacity-60"
+                style={{ color: "var(--water)" }}
+              >
+                Work With Me
+              </Link>
               <a
                 href={whatsappLink(whatsappCtaMessage("general"))}
                 target="_blank"
