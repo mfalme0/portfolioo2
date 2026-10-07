@@ -2,7 +2,7 @@
 
 import React from "react";
 import { VizFrame } from "../viz-frame";
-import { VIEWBOX, VizNode, VizEdge, VizBar, VizLabel } from "../viz-primitives";
+import { VIEWBOX, VizNode, VizEdge, VizFlow, VizBar, VizLabel } from "../viz-primitives";
 
 export function NexusEvidence() {
   return (
@@ -26,6 +26,8 @@ export function NexusEvidence() {
         <VizLabel x={94} y={72} text="REJECTED" tone="flag" size={4.5} />
 
         <VizLabel x={6} y={86} text='UNVERIFIED → "I COULD NOT VERIFY"' tone="ink" size={4.5} />
+        <VizFlow path="M 96 20 L 96 30 L 46 30 L 46 38" index={0} tone="bush" />
+        <VizFlow path="M 96 20 L 96 68 L 46 68 L 46 60" index={1} tone="flag" />
       </svg>
     </VizFrame>
   );
@@ -56,6 +58,8 @@ export function NexusPermissions() {
 
         <VizEdge path="M 50 68 L 55 68" index={5} />
         <VizEdge path="M 104 68 L 109 68" index={6} />
+        <VizFlow path="M 50 68 L 55 68" index={0} tone="water" />
+        <VizFlow path="M 104 68 L 109 68" index={1} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -84,6 +88,9 @@ export function NexusApproval() {
 
         <VizEdge path="M 132 42 L 132 46" index={3} tone="bush" />
         <VizLabel x={2} y={18} text="NOPE — STOPS HERE" tone="flag" size={4.5} />
+        <VizFlow path="M 36 38 L 48 38" index={0} />
+        <VizFlow path="M 90 38 L 104 34" index={1} tone="flag" />
+        <VizFlow path="M 132 42 L 132 46" index={2} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -109,6 +116,9 @@ export function NexusExplainable() {
         {["M 20 24 L 20 34", "M 60 24 L 60 34", "M 100 24 L 100 34", "M 140 24 L 140 34"].map((d, i) => (
           <VizEdge key={d} path={d} index={i + 4} dashed />
         ))}
+        {["M 20 24 L 20 34", "M 60 24 L 60 34", "M 100 24 L 100 34", "M 140 24 L 140 34"].map((path, i) => (
+          <VizFlow key={path} path={path} index={i} tone="water" />
+        ))}
 
         <VizLabel x={2} y={66} text="SHOWN" tone="bush" size={5} />
         <VizLabel x={2} y={76} text="NOT: HIDDEN CHAIN OF THOUGHT" tone="flag" size={4.5} />
@@ -129,6 +139,14 @@ export function NexusLifecycle() {
         {steps.map((s, i) => (
           <VizNode key={s} x={2 + i * 22} y={30} w={19} h={16} label={s} tone={i === 5 ? "flag" : "ink"} index={i} />
         ))}
+        {steps.slice(0, -1).map((_, i) => {
+          const path = `M ${21 + i * 22} 38 L ${24 + i * 22} 38`;
+          return <VizEdge key={path} path={path} index={i} />;
+        })}
+        {steps.slice(0, -1).map((_, i) => {
+          const path = `M ${21 + i * 22} 38 L ${24 + i * 22} 38`;
+          return <VizFlow key={path} path={path} index={i} tone={i === 5 ? "bush" : "water"} />;
+        })}
 
         <VizEdge path="M 22 22 L 110 22 L 110 28" index={0} dashed tone="flag" />
         <VizLabel x={112} y={20} text="NOT ENOUGH" tone="flag" size={4.5} />
@@ -140,6 +158,7 @@ export function NexusLifecycle() {
         <VizLabel x={72} y={68} text="LOOP" anchor="middle" tone="bush" size={4.5} />
 
         <VizLabel x={2} y={82} text="APPROVAL → EXECUTE → VERIFY → CLOSE" tone="ink" size={4.5} />
+        <VizFlow path="M 130 46 L 130 60 L 12 60 L 12 48" index={0} tone="bush" />
       </svg>
     </VizFrame>
   );

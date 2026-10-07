@@ -2,7 +2,7 @@
 
 import React from "react";
 import { VizFrame } from "../viz-frame";
-import { VIEWBOX, VizNode, VizEdge, VizBar, VizLabel } from "../viz-primitives";
+import { VIEWBOX, VizNode, VizEdge, VizFlow, VizBar, VizLabel } from "../viz-primitives";
 
 export function InfraNetworkFoundation() {
   return (
@@ -26,6 +26,12 @@ export function InfraNetworkFoundation() {
         <VizNode x={120} y={10} w={38} h={16} label="STRUCTURED CABLING" index={3} />
         <VizNode x={120} y={36} w={38} h={16} label="ENDPOINTS" tone="muted" index={4} />
         <VizNode x={120} y={62} w={38} h={16} label="SERVERS" tone="muted" index={5} />
+
+        <VizFlow path="M 42 18 L 68 40" index={0} tone="water" />
+        <VizFlow path="M 42 70 L 68 48" index={1} tone="water" />
+        <VizFlow path="M 106 44 L 118 20" index={2} tone="bush" />
+        <VizFlow path="M 106 44 L 118 44" index={3} tone="bush" />
+        <VizFlow path="M 106 44 L 118 68" index={4} tone="bush" />
 
         <VizLabel x={2} y={40} text="LINK FAILS →" tone="flag" size={4.5} />
         <VizLabel x={2} y={48} text="STAYS ONLINE" tone="flag" size={4.5} />
@@ -58,6 +64,9 @@ export function InfraStorageBackups() {
         <VizLabel x={80} y={62} text="NOT SCATTERED" tone="muted" size={4.5} />
         <VizLabel x={80} y={70} text="NOT UNREPLICATED" tone="muted" size={4.5} />
         <VizLabel x={80} y={80} text="BACKUPS ARE REAL" tone="bush" size={4.5} />
+        <VizFlow path="M 50 14 L 68 14 L 68 34 L 50 34" index={0} tone="water" />
+        <VizFlow path="M 26 42 L 26 54" index={1} tone="flag" />
+        <VizFlow path="M 50 22 L 78 22 L 78 40" index={2} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -103,6 +112,9 @@ export function InfraDeviceOps() {
         <VizNode x={2} y={58} w={36} h={16} label="TICKET" sublabel="no longer" tone="muted" index={4} />
 
         <VizLabel x={2} y={82} text="−40% PRINTER ISSUES" tone="ink" size={4.5} />
+        <VizFlow path="M 38 20 L 50 20" index={0} />
+        <VizFlow path="M 88 20 L 100 20" index={1} tone="flag" />
+        <VizFlow path="M 120 28 L 120 38" index={2} tone="bush" />
       </svg>
     </VizFrame>
   );

@@ -56,6 +56,13 @@ import {
   NeoIdempotency,
   NeoMultitenancy,
 } from "./visuals/neo-learn";
+import {
+  ResuCleanVerifiedProfile,
+  ResuCleanFabricationGuard,
+  ResuCleanAtsPipeline,
+  ResuCleanJobSearch,
+  ResuCleanKitGeneration,
+} from "./visuals/resu-clean";
 
 /**
  * Every visual is a pure presentational component: no props, no data fetching.
@@ -117,6 +124,13 @@ const REGISTRY = {
   "cs2rgb-client": Cs2rgbClient,
   "cs2rgb-colour-map": Cs2rgbColourMap,
   "cs2rgb-observability": Cs2rgbObservability,
+
+  /* resu-clean */
+  "resu-clean-verified-profile": ResuCleanVerifiedProfile,
+  "resu-clean-fabrication-guard": ResuCleanFabricationGuard,
+  "resu-clean-ats-pipeline": ResuCleanAtsPipeline,
+  "resu-clean-job-search": ResuCleanJobSearch,
+  "resu-clean-kit-generation": ResuCleanKitGeneration,
 
   /* neo-learn */
   "neo-transport-abstraction": NeoTransportAbstraction,

@@ -1,5 +1,5 @@
 import React from "react";
-import { VIEWBOX, VizNode, VizEdge, VizBar, VizLabel } from "../viz-primitives";
+import { VIEWBOX, VizNode, VizEdge, VizFlow, VizBar, VizLabel } from "../viz-primitives";
 import { VizFrame } from "../viz-frame";
 
 export function AtlasGraphEngine() {
@@ -26,6 +26,9 @@ export function AtlasGraphEngine() {
 
         <VizLabel x={4} y={78} text="SHORTEST PATH" tone="bush" size={4.5} />
         <VizLabel x={4} y={86} text="CYCLE DETECTED" tone="flag" size={4.5} />
+        <VizFlow path="M 30 38 L 40 22" index={0} tone="bush" />
+        <VizFlow path="M 66 18 L 78 34" index={1} tone="bush" />
+        <VizFlow path="M 104 34 L 116 22" index={2} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -113,6 +116,9 @@ export function AtlasRaft() {
         <VizLabel x={4} y={86} text="SNAPSHOT ON LAG" tone="muted" size={4.5} />
         <VizLabel x={116} y={62} text="CONSISTENT" tone="ink" size={4.5} />
         <VizLabel x={116} y={70} text="FROM SCRATCH" tone="muted" size={4.5} />
+        <VizFlow path="M 42 32 L 62 22" index={0} tone="bush" />
+        <VizFlow path="M 42 46 L 62 56" index={1} tone="flag" />
+        <VizFlow path="M 96 38 L 116 38" index={2} tone="water" />
       </svg>
     </VizFrame>
   );
@@ -143,6 +149,8 @@ export function AtlasHashing() {
         <VizLabel x={4} y={32} text="CLOCKWISE" tone="muted" size={4.5} />
         <VizLabel x={126} y={78} text="NEW NODE" tone="flag" size={4.5} />
         <VizLabel x={126} y={86} text="SMALL MOVE" tone="muted" size={4.5} />
+        <VizFlow path="M 68 22 A 22 22 0 0 1 98 26" index={0} tone="bush" />
+        <VizFlow path="M 100 52 A 22 22 0 0 1 92 68" index={1} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -168,6 +176,10 @@ export function AtlasChaos() {
         <VizLabel x={80} y={66} text="AUTOMATIC REVERT" anchor="middle" tone="bush" size={4.5} />
         <VizLabel x={2} y={82} text="DELIBERATE FAILURE" tone="ink" size={4.5} />
         <VizLabel x={2} y={90} text="NOT A PRODUCTION SURPRISE" tone="muted" size={4.5} />
+        <VizFlow path="M 15 22 L 15 32" index={0} tone="flag" />
+        <VizFlow path="M 40 42 L 54 42" index={1} tone="flag" />
+        <VizFlow path="M 90 42 L 104 42" index={2} tone="flag" />
+        <VizFlow path="M 123 50 L 123 60 L 15 60 L 15 52" index={3} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -195,6 +207,9 @@ export function AtlasAnomaly() {
         <VizLabel x={126} y={64} text="RESOLVED" tone="bush" size={4.5} />
         <VizEdge path="M 24 62 L 50 62" index={3} tone="flag" />
         <VizEdge path="M 84 62 L 122 62" index={3} tone="bush" />
+        <VizFlow path="M 80 40 L 92 40" index={0} tone="flag" />
+        <VizFlow path="M 24 62 L 50 62" index={1} tone="flag" />
+        <VizFlow path="M 84 62 L 122 62" index={2} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -235,6 +250,13 @@ export function AtlasAdvisory() {
         <VizNode x={118} y={30} w={40} h={20} label="ADVISORY" sublabel="read-only" tone="flag" index={5} />
         <VizEdge path="M 138 50 L 138 60" index={5} tone="bush" />
         <VizNode x={116} y={62} w={42} h={14} label="HUMAN APPROVAL" tone="bush" index={6} />
+        <VizFlow path="M 28 39 L 38 39" index={0} />
+        <VizFlow path="M 102 12 L 116 36" index={1} tone="flag" />
+        <VizFlow path="M 102 26 L 116 38" index={2} tone="flag" />
+        <VizFlow path="M 102 40 L 116 40" index={3} tone="flag" />
+        <VizFlow path="M 102 54 L 116 42" index={4} tone="flag" />
+        <VizFlow path="M 102 68 L 116 44" index={5} tone="flag" />
+        <VizFlow path="M 138 50 L 138 60" index={6} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -263,6 +285,12 @@ export function AtlasObservability() {
 
         <VizNode x={118} y={30} w={40} h={24} label="ALGORITHMIC" sublabel="TRANSPARENCY" tone="bush" index={4} />
         <VizLabel x={2} y={86} text="NO MANAGED SERVICE TO HIDE BEHIND" tone="muted" size={4.5} />
+        <VizFlow path="M 42 34 L 56 16" index={0} tone="water" />
+        <VizFlow path="M 42 39 L 56 42" index={1} tone="water" />
+        <VizFlow path="M 42 44 L 56 68" index={2} tone="water" />
+        <VizFlow path="M 102 14 L 116 30" index={3} tone="bush" />
+        <VizFlow path="M 102 42 L 116 42" index={4} tone="bush" />
+        <VizFlow path="M 102 70 L 116 54" index={5} tone="bush" />
       </svg>
     </VizFrame>
   );

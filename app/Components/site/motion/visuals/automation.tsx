@@ -17,7 +17,9 @@ export function AutomationDeliveryPipeline() {
         {["M 28 43 L 33 43", "M 60 43 L 65 43", "M 92 43 L 97 43", "M 124 43 L 129 43"].map((d, i) => (
           <VizEdge key={d} path={d} index={i} />
         ))}
-        <VizFlow path="M 28 43 L 130 43" index={0} tone="bush" />
+        {["M 28 43 L 33 43", "M 60 43 L 65 43", "M 92 43 L 97 43", "M 124 43 L 129 43"].map((path, i) => (
+          <VizFlow key={path} path={path} index={i} tone="bush" />
+        ))}
 
         <VizLabel x={4} y={20} text="MANUAL — ERROR-PRONE" tone="muted" size={4.5} />
         <VizLabel x={4} y={70} text="PIPELINED — REPEATABLE" tone="bush" size={4.5} />
@@ -66,6 +68,10 @@ export function AutomationOperationalLoop() {
 
         <VizLabel x={4} y={70} text="WAS: FIREFIGHTING" tone="muted" size={4.5} />
         <VizLabel x={4} y={78} text="NOW: CAUGHT BEFORE USERS NOTICE" tone="ink" size={4.5} />
+        <VizFlow path="M 34 40 L 44 40" index={0} />
+        <VizFlow path="M 78 40 L 88 40" index={1} tone="flag" />
+        <VizFlow path="M 122 40 L 132 40" index={2} tone="bush" />
+        <VizFlow path="M 106 30 L 106 16 L 18 16 L 18 28" index={3} tone="water" />
       </svg>
     </VizFrame>
   );

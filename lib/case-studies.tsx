@@ -43,7 +43,12 @@ export type VisualKey =
   | "neo-state-unification"
   | "neo-offline-sync"
   | "neo-idempotency"
-  | "neo-multitenancy";
+  | "neo-multitenancy"
+  | "resu-clean-verified-profile"
+  | "resu-clean-fabrication-guard"
+  | "resu-clean-ats-pipeline"
+  | "resu-clean-job-search"
+  | "resu-clean-kit-generation";
 
 export interface CaseStudySection {
   heading: string;
@@ -662,6 +667,104 @@ export const caseStudies: CaseStudy[] = [
       "Scripting",
       "Monitoring",
       "Process Design",
+    ],
+  },
+  {
+    slug: "resu-clean",
+    title: "resu-clean — Self-Hosted Resume Toolkit",
+    category: "AI & Career Systems",
+    kind: "Engineering Project",
+    timeframe: "Ongoing engineering project",
+    context:
+      "A local-first job-search and resume workflow built for the reality of job applications: clean the resume, verify what is true, tailor against a job description, search sources, and package the application without handing your process to a SaaS platform.",
+    github: "https://github.com/mfalme0/resu-clean",
+    tags: [
+      "Resume Engineering",
+      "ATS",
+      "Job Search",
+      "Local-First",
+      "AI Guardrails",
+      "SQLite",
+      "Svelte",
+    ],
+    summary:
+      "A self-hosted resume toolkit that cleans, ATS-scores and tailors resumes using a verified profile of facts, searches and dedupes jobs from sources, then generates application kits without inventing experience or sending anything automatically.",
+    problem: [
+      "Most resume tools are either generic SaaS products or AI wrappers that guess and invent facts instead of working from verified evidence.",
+      "Job applications involve a long chain of work: resume cleaning, ATS scoring, tailoring to a specific posting, searching relevant jobs, and assembling a consistent kit — and most of it lives across scattered tools.",
+      "A career system should remain local and portable, with no forced account, no telemetry, and no email automation that hides the decision-making behind the app.",
+    ],
+    approach: [
+      {
+        heading: "Verified profile as the source of truth",
+        body:
+          "The project treats a user-approved profile as the only trusted source of facts. New claims go to a pending queue and require approval before they become part of the resume record, which prevents the usual AI pattern of inventing employers, dates, metrics or titles.",
+        visual: "resu-clean-verified-profile",
+      },
+      {
+        heading: "No-fabrication guardrails",
+        body:
+          "Every model-assisted workflow validates output against the original resume and approved profile before it is shown. Facts that are invented or mismatched get discarded and the deterministic path is used instead, which keeps the system truthful even when a model is noisy.",
+        visual: "resu-clean-fabrication-guard",
+      },
+      {
+        heading: "ATS scoring + resume cleaning",
+        body:
+          "A deterministic cleaning pipeline normalises the resume and the ATS scorer checks alignment against a job description. Model support is optional and layered on top of the deterministic logic rather than replacing it, so the product still works without a provider configured.",
+        visual: "resu-clean-ats-pipeline",
+      },
+      {
+        heading: "Job search without the black box",
+        body:
+          "The app supports source detection, search, deduplication and ranking. It runs against configured job sources and normalises them into one model, which makes the job-search layer explicit and inspectable instead of a mysterious feed somewhere in the cloud.",
+        visual: "resu-clean-job-search",
+      },
+      {
+        heading: "Application kit generation",
+        body:
+          "After the resume is tailored, the system assembles the application materials: cover text, tracked job status, generated email, and packaged output for sending or saving. The tool helps organise the process without taking over the decision.",
+        visual: "resu-clean-kit-generation",
+      },
+    ],
+    outcomes: [
+      "A local-first resume system with clear guardrails against fabricated experience and unsupported claims.",
+      "A realistic workflow from resume intake to ATS check to tailored application, with no need to surrender your process to a cloud service.",
+      "An explicit separation between deterministic work and model-assisted work, so the app still functions even when a provider is unavailable.",
+      "A portable project design: one .NET backend, one Svelte frontend, one SQLite data directory, and no database server to manage.",
+    ],
+    metrics: [
+      {
+        label: "Runtime",
+        value: ".NET 8",
+        detail: "Single-process ASP.NET backend serving API + built UI.",
+      },
+      {
+        label: "Storage",
+        value: "SQLite",
+        detail: "Data, resumes, profile facts, job searches and keys live locally.",
+      },
+      {
+        label: "Model support",
+        value: "OpenAI-compatible + local",
+        detail: "OpenAI, Anthropic, Groq, Gemini, Ollama, LM Studio and more.",
+      },
+      {
+        label: "Safety model",
+        value: "Approval-first",
+        detail: "New facts are queued for verification before they become trusted.",
+      },
+    ],
+    stack: [
+      "C#",
+      ".NET 8",
+      "ASP.NET Core",
+      "SQLite",
+      "Svelte",
+      "Vite",
+      "TypeScript",
+      "OpenAI-compatible APIs",
+      "Ollama",
+      "LM Studio",
     ],
   },
   {

@@ -55,7 +55,7 @@ you are mid-edit.
 
 1. **Write the component** in the matching file under `motion/visuals/` (`atlas.tsx`,
    `nexus.tsx`, `cs2rgb.tsx`, `school-erp.tsx`, `infrastructure.tsx`, `automation.tsx`,
-   `neo-learn.tsx`).
+   `neo-learn.tsx`, `resu-clean.tsx`).
 
    ```tsx
    export function MyVisual() {
@@ -79,7 +79,7 @@ In dev, `auditVisuals()` warns about any registered graphic no case study uses â
 call it from a page or leave it for manual use.
 
 Naming: `<case-study-prefix>-<topic>`, kebab-case. Prefixes are `atlas`, `nexus`,
-`cs2rgb`, `erp`, `infra`, `automation`, `neo`.
+`cs2rgb`, `erp`, `infra`, `automation`, `neo`, `resu-clean`.
 
 ---
 
@@ -93,7 +93,7 @@ Rebuild diagrams from these rather than hand-rolling SVG, so they stay on-palett
 | `VizFrame` | The box. Reserves space, owns `role="img"`, handles the entrance. **Always use it.** |
 | `VizNode` | Bordered labelled box. Auto-fits its label to its own width. |
 | `VizEdge` | Connector that draws itself via `pathLength`. `dashed` for secondary links. |
-| `VizFlow` | Looping packet along a path. **Never renders under reduced motion.** |
+| `VizFlow` | Directed transfer: arrowhead, marching accent path and looping square packet. Packet and dashes stop under reduced motion; the static arrow remains. |
 | `VizBar` | Horizontal meter for numeric outcomes. |
 | `VizLabel` | Small caption text inside a diagram. |
 
@@ -107,6 +107,7 @@ Purpose first. Ask what the diagram *tells the reader* that the paragraph does n
 | --- | --- |
 | Architecture, topology, modules | `VizNode` + `VizEdge` |
 | A sequenced pipeline | nodes in a row + `VizFlow` packets |
+| Data, events, requests or state move between components | `VizFlow` packets on the corresponding directed edges |
 | Consensus, sharding, traversal | rings, leader/follower, highlighted paths |
 | Numeric outcomes | `VizBar`, one per metric |
 | Gates, tiers, permission classes | ordered ramps via `TierLadder` |
@@ -114,6 +115,13 @@ Purpose first. Ask what the diagram *tells the reader* that the paragraph does n
 
 A bar chart is not a substitute for an architecture diagram. If a section explains
 how two systems talk, draw two systems talking.
+
+**Animate real transfers.** When a diagram shows data, events, requests, replication,
+or workflow state moving between components, place `VizFlow` on the edges that carry
+that movement. Its path must match a visible `VizEdge` and the arrow direction implied
+by the story. For fan-out or replication, animate the meaningful branches; do not add
+packets to static metrics, labels, or relationships that do not represent a transfer.
+Keep the moving packets subordinate to the diagram's one focal point.
 
 ---
 
@@ -141,7 +149,14 @@ as diagrams reveal.
 section is about. Everything else stays structural.
 
 **Timing.** Stagger is `0.06s`, most reveals `0.32â€“0.55s`, nothing blocks past ~1s.
-`VizFlow` loops every ~3s and is the only continuous motion.
+`VizFlow` carries traffic along its path with a square packet; multiple paths stagger
+slightly. Keep continuous motion limited to paths that represent real transfers.
+Direction remains legible without motion through the arrowhead.
+
+**Directionality.** Add `VizFlow` only to edges where data, events, requests or state
+actually move. Its path must match the corresponding `VizEdge`; the arrowhead shows
+direction even with reduced motion, while marching dashes and the packet convey live
+traffic. Do not animate a static relationship just to decorate the diagram.
 
 ---
 

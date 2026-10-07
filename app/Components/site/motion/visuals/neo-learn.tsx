@@ -26,9 +26,14 @@ export function NeoTransportAbstraction() {
 
         <VizEdge path="M 136 40 L 148 40" index={3} />
         <VizNode x={2} y={82} w={156} h={8} label="CENTRAL STATE" tone="water" index={4} />
+        <VizEdge path="M 121 52 L 121 80" index={4} tone="water" />
 
         <VizFlow path="M 28 38 L 42 18" index={0} tone="bush" />
         <VizFlow path="M 28 48 L 42 66" index={1} tone="flag" />
+        <VizFlow path="M 90 16 L 104 38" index={2} tone="bush" />
+        <VizFlow path="M 90 66 L 104 50" index={3} tone="flag" />
+        <VizFlow path="M 136 40 L 148 40" index={4} tone="water" />
+        <VizFlow path="M 121 52 L 121 80" index={5} tone="water" />
       </svg>
     </VizFrame>
   );
@@ -52,7 +57,10 @@ export function NeoTransportPipeline() {
         <VizNode x={120} y={14} w={38} h={14} label="SMS" tone="bush" index={3} />
         <VizNode x={120} y={56} w={38} h={14} label="STK" tone="water" index={4} />
 
-        <VizFlow path="M 30 42 L 108 42" index={0} tone="flag" />
+        <VizFlow path="M 30 42 L 40 42" index={0} tone="flag" />
+        <VizFlow path="M 70 42 L 80 42" index={1} tone="flag" />
+        <VizFlow path="M 110 38 L 118 22" index={1} tone="bush" />
+        <VizFlow path="M 110 46 L 118 62" index={2} tone="water" />
 
         <VizLabel x={2} y={78} text="LEARNING ENGINE NEVER SEES THE TRANSPORT" tone="ink" size={4.5} />
         <VizLabel x={2} y={86} text="WEB · ANDROID · SMS · STK · WHATSAPP · EMAIL · PUSH" tone="muted" size={4} />
@@ -81,6 +89,9 @@ export function NeoStateUnification() {
 
         <VizLabel x={2} y={40} text="LEARNER → COURSE →" tone="muted" size={4.5} />
         <VizLabel x={2} y={50} text="LESSON → ANSWER" tone="muted" size={4.5} />
+        <VizFlow path="M 46 18 L 62 38" index={0} tone="bush" />
+        <VizFlow path="M 46 66 L 62 46" index={1} tone="flag" />
+        <VizFlow path="M 96 42 L 108 42" index={2} tone="water" />
       </svg>
     </VizFrame>
   );
@@ -111,6 +122,10 @@ export function NeoOfflineSync() {
 
         <VizLabel x={2} y={78} text="CONFLICT RESOLUTION → SYNCED STATE" tone="ink" size={4.5} />
         <VizLabel x={2} y={87} text="SMS IS THE SECOND PATH WHEN IT CANNOT WAIT" tone="flag" size={4.5} />
+        <VizFlow path="M 32 18 L 42 18" index={0} tone="water" />
+        <VizFlow path="M 63 26 L 63 34" index={1} tone="flag" />
+        <VizFlow path="M 82 44 L 92 44" index={2} tone="flag" />
+        <VizFlow path="M 124 44 L 136 44" index={3} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -135,11 +150,16 @@ export function NeoIdempotency() {
         <VizNode x={104} y={8} w={54} h={14} label="ALREADY PROCESSED" sublabel="ignore" tone="muted" index={3} />
         <VizNode x={104} y={54} w={54} h={14} label="NEW → PROCESS" tone="bush" index={4} />
 
-        <VizEdge path="M 131 68 L 131 78 L 14 78 L 14 52" index={4} dashed />
+        <VizEdge path="M 131 68 L 131 82 L 14 82 L 14 52" index={4} dashed />
         <VizLabel x={16} y={76} text="UPDATE PROGRESS → ACKNOWLEDGE" tone="bush" size={4.5} />
 
         <VizLabel x={2} y={14} text="HANDLED" tone="ink" size={4.5} />
         <VizLabel x={2} y={22} text="DUPLICATES · OUT OF ORDER · RETRIES" tone="muted" size={4.5} />
+        <VizFlow path="M 32 40 L 42 40" index={0} tone="water" />
+        <VizFlow path="M 78 40 L 88 40" index={1} tone="flag" />
+        <VizFlow path="M 124 36 L 132 20" index={2} tone="ink" />
+        <VizFlow path="M 124 44 L 132 60" index={3} tone="bush" />
+        <VizFlow path="M 131 68 L 131 82 L 14 82 L 14 52" index={4} tone="bush" />
       </svg>
     </VizFrame>
   );
@@ -164,6 +184,9 @@ export function NeoMultitenancy() {
 
         {["M 29 20 L 29 28", "M 80 20 L 80 28", "M 131 20 L 131 28"].map((d, i) => (
           <VizEdge key={d} path={d} index={i} />
+        ))}
+        {["M 29 20 L 29 28", "M 80 20 L 80 28", "M 131 20 L 131 28"].map((path, i) => (
+          <VizFlow key={path} path={path} index={i} tone="water" />
         ))}
 
         <VizLabel x={2} y={62} text="CLASSES · COURSES · MESSAGING STATS" tone="muted" size={4.5} />

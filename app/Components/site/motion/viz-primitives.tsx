@@ -183,22 +183,97 @@ export function VizFlow({
   }[tone];
 
   return (
-    <motion.circle
-      r={2.4}
-      fill={fill}
-      initial={{ offsetDistance: "0%", opacity: 0 }}
-      whileInView={{ offsetDistance: ["0%", "100%"], opacity: [0, 1, 1, 0] }}
-      viewport={{ once: true }}
-      animate={{ offsetDistance: ["0%", "100%"] }}
-      transition={{
-        duration: 2.2,
-        delay: 0.5 + index * 0.25,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatDelay: 0.8,
-      }}
-      style={{ offsetPath: `path('${path}')`, offsetRotate: "0deg" }}
-    />
+    <g>
+      <FlowPath path={path} tone={tone} />
+      {!reduced && (
+        <motion.rect
+          x={-2.5}
+          y={-2.5}
+          width={5}
+          height={5}
+          fill={fill}
+          stroke="var(--ink)"
+          strokeWidth={0.8}
+          initial={{ offsetDistance: "0%", opacity: 0 }}
+          whileInView={{ offsetDistance: ["0%", "100%"], opacity: [0, 1, 1, 0] }}
+          viewport={{ once: true }}
+          animate={{ offsetDistance: ["0%", "100%"] }}
+          transition={{
+            duration: 2.6,
+            delay: 0.45 + index * 0.2,
+            ease: "linear",
+            repeat: Infinity,
+            repeatDelay: 0.4,
+          }}
+          style={{ offsetPath: `path('${path}')`, offsetRotate: "0deg" }}
+        />
+      )}
+    </g>
+  );
+}
+
+function FlowPath({
+  path,
+  tone,
+}: {
+  path: string;
+  tone: "flag" | "water" | "bush" | "ink";
+}) {
+  const { reduced } = useSectionMotion();
+  const stroke = {
+    flag: "var(--flag)",
+    water: "var(--water)",
+    bush: "var(--bush)",
+    ink: "var(--ink)",
+  }[tone];
+  const markerId = React.useId().replace(/:/g, "");
+
+  return (
+    <>
+      <defs>
+        <marker
+          id={`flow-arrow-${markerId}`}
+          markerWidth={4}
+          markerHeight={4}
+          refX={3.6}
+          refY={2}
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path d="M 0 0 L 4 2 L 0 4 Z" fill={stroke} />
+        </marker>
+      </defs>
+      <motion.path
+        d={path}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={1.5}
+        strokeLinecap="butt"
+        markerEnd={`url(#flow-arrow-${markerId})`}
+        initial={reduced ? false : { pathLength: 0, opacity: 0 }}
+        whileInView={{ pathLength: 1, opacity: 1 }}
+        viewport={{ once: true, margin: "-20px" }}
+        transition={{ duration: reduced ? 0 : tokens.base, ease: tokens.ease }}
+      />
+      {!reduced && (
+        <motion.path
+          d={path}
+          fill="none"
+          stroke="var(--sheet)"
+          strokeWidth={0.7}
+          strokeDasharray="1.2 3.2"
+          strokeLinecap="butt"
+          initial={{ strokeDashoffset: 0, opacity: 0 }}
+          whileInView={{ opacity: 0.95 }}
+          viewport={{ once: true, margin: "-20px" }}
+          animate={{ strokeDashoffset: -4.4 }}
+          transition={{
+            opacity: { duration: tokens.base },
+            strokeDashoffset: { duration: 0.7, ease: "linear", repeat: Infinity },
+          }}
+        />
+      )}
+    </>
   );
 }
 

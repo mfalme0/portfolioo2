@@ -30,10 +30,15 @@ export function ErpModularArchitecture() {
         )}
 
         <VizNode x={2} y={36} w={156} h={20} label="SHARED DATA LAYER" sublabel="PostgreSQL / MySQL · RESTful APIs" tone="flag" index={4} />
+        {["M 21 22 L 21 34", "M 60 22 L 60 34", "M 99 22 L 99 34", "M 138 22 L 138 34"].map((path, i) => (
+          <VizFlow key={path} path={path} index={i} tone="water" />
+        ))}
 
         {["M 21 56 L 21 66", "M 99 56 L 99 66"].map((d, i) => (
           <VizEdge key={d} path={d} index={i} dashed />
         ))}
+        <VizFlow path="M 21 56 L 21 66" index={4} tone="flag" />
+        <VizFlow path="M 99 56 L 99 66" index={5} tone="flag" />
 
         <VizNode x={2} y={68} w={39} h={16} label="ADMIN" sublabel="staff console" tone="muted" index={5} />
         <VizNode x={80} y={68} w={39} h={16} label="PARENTS" sublabel="mobile + web" tone="muted" index={6} />
@@ -74,6 +79,11 @@ export function ErpNotificationPipeline() {
 
         <VizFlow path="M 32 44 L 44 44" index={0} />
         <VizFlow path="M 76 44 L 86 44" index={1} tone="bush" />
+        <VizFlow path="M 76 44 L 86 20" index={2} tone="water" />
+        <VizFlow path="M 76 44 L 86 68" index={3} tone="water" />
+        <VizFlow path="M 120 18 L 132 34" index={4} tone="bush" />
+        <VizFlow path="M 120 70 L 132 54" index={5} tone="bush" />
+        <VizFlow path="M 104 28 L 104 58" index={6} tone="flag" />
       </svg>
     </VizFrame>
   );
@@ -103,6 +113,9 @@ export function ErpAuthLayers() {
 
         {["M 21 36 L 21 44", "M 60 36 L 60 44", "M 99 36 L 99 44", "M 138 36 L 138 44"].map((d, i) => (
           <VizEdge key={d} path={d} index={i + 4} />
+        ))}
+        {["M 21 36 L 21 44", "M 60 36 L 60 44", "M 99 36 L 99 44", "M 138 36 L 138 44"].map((path, i) => (
+          <VizFlow key={path} path={path} index={i} tone="water" />
         ))}
 
         <VizLabel x={2} y={78} text="ON-DEVICE VERIFICATION" tone="muted" />
@@ -137,6 +150,10 @@ export function ErpDeliveryInfrastructure() {
         <VizLabel x={2} y={70} text="MANUAL RELEASES" tone="muted" size={4.5} />
         <VizLabel x={2} y={77} text="REPLACED BY PIPELINES" tone="flag" size={4.5} />
         <VizLabel x={2} y={85} text="−45% DEPLOYMENT ERRORS" tone="flag" size={4.5} />
+        <VizFlow path="M 42 16 L 52 16" index={0} tone="flag" />
+        <VizFlow path="M 76 24 L 76 32" index={1} tone="flag" />
+        <VizFlow path="M 76 52 L 76 58" index={2} tone="flag" />
+        <VizFlow path="M 54 43 L 44 43" index={3} tone="bush" />
       </svg>
     </VizFrame>
   );
