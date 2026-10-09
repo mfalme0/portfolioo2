@@ -208,10 +208,41 @@ function readAll(): PostMeta[] {
   );
 }
 
+/**
+ * Fingerprint of the `.mdx` files in `content/blog/`: name, size and mtime for
+ * each. Used to invalidate `cache` when the directory changes.
+ *
+ * `fs` calls are invisible to Turbopack's module graph, so HMR cannot tell that
+ * a post was added or edited — a plain memoised `readAll()` would keep serving
+ * whatever was on disk when the module first loaded, and any post saved
+ * afterwards would be missing from the index *and* 404 on its own URL, because
+ * `generateStaticParams` never emits its slug.
+ */
+function directorySignature(): string {
+  return fs
+    .readdirSync(POSTS_DIR)
+    .filter((name) => name.endsWith(".mdx"))
+    .map((name) => {
+      const { size, mtimeMs } = fs.statSync(path.join(POSTS_DIR, name));
+      return `${name}:${size}:${mtimeMs}`;
+    })
+    .sort()
+    .join("|");
+}
+
 let cache: PostMeta[] | null = null;
+let cacheSignature: string | null = null;
 
 function all(): PostMeta[] {
-  if (cache === null) cache = readAll();
+  if (!fs.existsSync(POSTS_DIR)) return [];
+
+  const signature = directorySignature();
+
+  if (cache === null || signature !== cacheSignature) {
+    cache = readAll();
+    cacheSignature = signature;
+  }
+
   return cache;
 }
 
