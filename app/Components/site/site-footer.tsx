@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { BsGithub, BsLinkedin, BsInstagram, BsTwitterX } from "react-icons/bs";
+import { BsGithub, BsLinkedin, BsInstagram } from "react-icons/bs";
 import { siteConfig, whatsappLink } from "@/lib/site-config";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { legalDocs } from "@/lib/legal";
@@ -10,7 +10,6 @@ const socials = [
   { icon: <BsGithub />, url: siteConfig.socials.github, label: "GitHub" },
   { icon: <BsLinkedin />, url: siteConfig.socials.linkedin, label: "LinkedIn" },
   { icon: <BsInstagram />, url: siteConfig.socials.instagram, label: "Instagram" },
-  { icon: <BsTwitterX />, url: siteConfig.socials.x, label: "X" },
 ];
 
 const columns: {
@@ -19,26 +18,23 @@ const columns: {
   action?: React.ReactNode;
 }[] = [
   {
-    heading: "Services",
+    heading: "Navigate",
     links: [
-      { label: "All Services", href: "/services" },
-      { label: "Software Engineering", href: "/software-engineering" },
-      { label: "IT Consulting", href: "/it-consulting" },
-      { label: "Infrastructure", href: "/infrastructure" },
-      { label: "Cloud & DevOps", href: "/cloud" },
-      { label: "AI & Automation", href: "/ai-automation" },
-      { label: "Technical Leadership", href: "/technical-leadership" },
+      { label: "Home", href: "/" },
+      { label: "Hire Me", href: "/hire" },
+      { label: "Work With Me", href: "/work-with-me" },
+      { label: "Projects", href: "/work" },
+      { label: "Writing", href: "/blog" },
+      { label: "Contact", href: "/contact" },
     ],
   },
   {
-    heading: "PC Building",
+    heading: "Services",
     links: [
-      { label: "Custom PC Building", href: "/pc-building" },
-      { label: "Gaming PCs", href: "/gaming-pcs" },
-      { label: "Developer Workstations", href: "/workstations" },
-      { label: "PC Upgrades", href: "/pc-upgrades" },
-      { label: "PC Troubleshooting", href: "/pc-troubleshooting" },
-      { label: "PC Build Tool", href: "/tools/pc-build" },
+      { label: "Software Engineering", href: "/services" },
+      { label: "IT & Infrastructure", href: "/it-consulting" },
+      { label: "AI & Automation", href: "/ai-automation" },
+      { label: "Technical Leadership", href: "/technical-leadership" },
     ],
   },
   {
@@ -48,10 +44,7 @@ const columns: {
       { label: "Guides", href: "/guides" },
       { label: "Blog", href: "/blog" },
       { label: "Infrastructure Check", href: "/tools/infrastructure-check" },
-      { label: "Homelab", href: "/homelab" },
-      { label: "Sitemap", href: "/sitemap" },
-      { label: "About Joseph", href: "/about" },
-      { label: "Work", href: "/work" },
+      { label: "About", href: "/about" },
     ],
   },
   {
@@ -68,6 +61,7 @@ const columns: {
 
 export default function SiteFooter() {
   const year = new Date().getFullYear();
+
   return (
     <footer className="relative w-full" style={{ backgroundColor: "var(--ink)", color: "#fff", borderTop: "4px solid var(--ink)" }}>
       <div className="max-w-[1280px] mx-auto px-6 md:px-14 pt-16 pb-10">
@@ -77,8 +71,7 @@ export default function SiteFooter() {
               Mfalme&middot;0
             </span>
             <p className="text-xs font-mono leading-relaxed mt-3 max-w-xs" style={{ color: "#E0E0E0" }}>
-              Software, infrastructure, AI, hardware and technical systems &mdash; designed, built and operated
-              from Nairobi.
+              Software, infrastructure and systems that growing teams can trust.
             </p>
             <div className="flex items-center gap-4 mt-5">
               {socials.map((s) => (
@@ -97,7 +90,7 @@ export default function SiteFooter() {
             </div>
             <div className="mt-6 space-y-2">
               <Link
-                href="/blog#work-with-me"
+                href="/work-with-me"
                 className="block text-xs font-mono font-bold tracking-[0.08em] uppercase transition-opacity hover:opacity-60"
                 style={{ color: "var(--water)" }}
               >
@@ -115,7 +108,7 @@ export default function SiteFooter() {
               <a href={`mailto:${siteConfig.email}`} className="block text-xs font-mono font-medium" style={{ color: "#E0E0E0" }}>
                 {siteConfig.email}
               </a>
-              <span className="block text-xs font-mono font-medium"               style={{ color: "#E0E0E0" }}>
+              <span className="block text-xs font-mono font-medium" style={{ color: "#E0E0E0" }}>
                 {siteConfig.location} &middot; {siteConfig.timezone}
               </span>
             </div>
@@ -158,7 +151,7 @@ export default function SiteFooter() {
           </nav>
           <div className="flex items-center gap-4">
             <span className="badge-est">Ref Mfalme&middot;0-2026</span>
-            <span className="text-[10px] font-medium"             style={{ color: "#E0E0E0" }}>
+            <span className="text-[10px] font-medium" style={{ color: "#E0E0E0" }}>
               Designed &amp; Built in Nairobi
             </span>
           </div>

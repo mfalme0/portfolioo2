@@ -4,8 +4,8 @@ export const siteConfig = {
   brand: "Mfalme\u00b70",
   role: "Technology Engineer \u00b7 Systems Architect \u00b7 IT & Cloud",
   positioning:
-    "Software, infrastructure, AI, hardware and technical systems \u2014 designed, built and operated from Nairobi.",
-  url: "https://mfalme.runs-on.dev",
+    "Software engineering, systems architecture and reliable operations for growing businesses in Nairobi.",
+  url: "https://gitau.vercel.app",
   email: "joseph.gitau.c@gmail.com",
   phone: "+254 755 917 099",
   phoneRaw: "+254755917099",

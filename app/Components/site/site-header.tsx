@@ -1,78 +1,21 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedLogo from "../animated-logo";
 import { siteConfig, whatsappLink } from "@/lib/site-config";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
-import { FiChevronDown } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 
-interface NavLinkItem {
-  label: string;
-  href: string;
-  description?: string;
-}
-
-interface NavGroup {
-  label: string;
-  links: NavLinkItem[];
-}
-
-const siteNavGroups: NavGroup[] = [
-  {
-    label: "Services",
-    links: [
-      { label: "All Services", href: "/services", description: "Overview of everything offered" },
-      { label: "Software Engineering", href: "/software-engineering", description: "ERPs, portals, APIs" },
-      { label: "IT Consulting", href: "/it-consulting", description: "Assessments, planning, audits" },
-      { label: "Infrastructure", href: "/infrastructure", description: "Linux, servers, networking, backups" },
-      { label: "Cloud & DevOps", href: "/cloud", description: "Azure, Docker, Kubernetes, CI/CD" },
-      { label: "AI & Automation", href: "/ai-automation", description: "Workflows, documents, assistants" },
-      { label: "Technical Leadership", href: "/technical-leadership", description: "Fractional CTO, architecture" },
-    ],
-  },
-  {
-    label: "PC Building",
-    links: [
-      { label: "Custom PC Building", href: "/pc-building", description: "PCs designed around your work" },
-      { label: "Gaming PCs", href: "/gaming-pcs", description: "1080p to 4K, esports, streaming" },
-      { label: "Developer & AI Workstations", href: "/workstations", description: "Dev, VMs, local AI" },
-      { label: "PC Upgrades", href: "/pc-upgrades", description: "SSD, RAM, GPU, CPU" },
-      { label: "PC Troubleshooting", href: "/pc-troubleshooting", description: "Diagnose and fix" },
-      { label: "PC Consulting", href: "/pc-consulting", description: "Component selection & advice" },
-      { label: "PC Build Tool", href: "/tools/pc-build", description: "Quick questionnaire" },
-    ],
-  },
-  {
-    label: "Case Studies",
-    links: [
-      { label: "All Case Studies", href: "/case-studies", description: "Evidence, not claims" },
-      { label: "School ERP", href: "/case-studies/school-erp", description: "Full-stack ERP + operations" },
-      { label: "Atlas: Distributed Systems", href: "/case-studies/atlas", description: "Raft, replicated KV, queues" },
-      { label: "Infrastructure Build", href: "/case-studies/infrastructure", description: "Networks, storage, failover" },
-      { label: "Automation & Operations", href: "/case-studies/automation", description: "Scripts, pipelines, hours saved" },
-    ],
-  },
-  {
-    label: "Resources",
-    links: [
-      { label: "Resources Home", href: "/resources", description: "Guides, tools and the lab" },
-      { label: "Guides", href: "/guides", description: "PC, IT, software and AI guides" },
-      { label: "Blog", href: "/blog", description: "Longer notes from the work" },
-      { label: "Infrastructure Check", href: "/tools/infrastructure-check", description: "Free self-assessment" },
-      { label: "Homelab", href: "/homelab", description: "Personal infrastructure lab" },
-      { label: "LAN Party", href: "/LAN", description: "Local network gaming" },
-      { label: "Sitemap", href: "/sitemap", description: "Every page, indexed" },
-    ],
-  },
-];
-
-const plainLinks = [
-  { label: "About", href: "/about" },
-  { label: "Work", href: "/work" },
-  { label: "Work With Me", href: "/blog#work-with-me" },
+const primaryLinks = [
+  { label: "Home", href: "/" },
+  { label: "Hire Me", href: "/hire" },
+  { label: "Work With Me", href: "/work-with-me" },
+  { label: "Projects", href: "/work" },
+  { label: "Writing", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function SiteHeader() {
@@ -96,17 +39,6 @@ export default function SiteHeader() {
 
   const isActive = (href: string) => pathname === href;
 
-  const activeGroup = useMemo(() => {
-    for (const group of siteNavGroups) {
-      if (group.links.some((l) => l.href === pathname)) return group.label;
-    }
-    if (plainLinks.some((l) => l.href === pathname)) return undefined;
-    if (pathname === "/case-studies" || pathname.startsWith("/case-studies/")) return "Case Studies";
-    if (pathname.startsWith("/guides")) return "Resources";
-    if (pathname.startsWith("/blog")) return "Resources";
-    return undefined;
-  }, [pathname]);
-
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-[60] transition-all duration-500">
@@ -126,31 +58,29 @@ export default function SiteHeader() {
             </Link>
 
             <nav className="hidden xl:flex items-center gap-0.5" aria-label="Main navigation">
-              {plainLinks.map((l) => (
+              {primaryLinks.map((link) => (
                 <Link
-                  key={l.href}
-                  href={l.href}
+                  key={link.href}
+                  href={link.href}
                   className={`relative px-3 py-2 text-[11px] font-medium tracking-[0.08em] uppercase transition-colors ${
-                    isActive(l.href) ? "text-(--color-foreground)" : "text-(--color-muted) hover:text-(--color-foreground)"
+                    isActive(link.href) ? "text-(--color-foreground)" : "text-(--color-muted) hover:text-(--color-foreground)"
                   }`}
                 >
-                  {l.label}
-                  {isActive(l.href) && <ActiveMarker />}
+                  {link.label}
+                  {isActive(link.href) && <ActiveMarker />}
                 </Link>
               ))}
-              {siteNavGroups.map((group) => (
-                <Dropdown key={group.label} group={group} active={activeGroup === group.label} pathname={pathname} />
-              ))}
-              <div className="mx-2 h-4 w-px" style={{ backgroundColor: "var(--color-border)" }} />
-              <Link
-                href="/contact"
-                className="rog-btn-primary relative overflow-hidden rounded-[2px] px-4 py-2 text-[10px] font-bold uppercase font-mono tracking-[0.12em]"
-              >
-                <span className="relative flex items-center gap-1.5">Start a Project</span>
-              </Link>
             </nav>
 
             <div className="flex items-center gap-2">
+              <a
+                href={siteConfig.resume}
+                className="hidden md:inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] font-mono px-3 py-2 rounded-[2px] border border-(--color-border) hover:border-(--color-foreground) transition-colors"
+                style={{ color: "var(--color-foreground)" }}
+              >
+                <FiDownload className="text-[12px]" />
+                Résumé
+              </a>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -179,44 +109,29 @@ export default function SiteHeader() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[59] bg-(--color-background) xl:hidden overflow-y-auto pt-28 pb-16"
           >
-            <div className="px-6 space-y-8">
-              <nav className="flex flex-wrap gap-3" aria-label="Mobile primary">
-                {plainLinks.map((l) => (
+            <div className="px-6 space-y-6">
+              <nav className="flex flex-col gap-2" aria-label="Mobile primary">
+                {primaryLinks.map((link) => (
                   <Link
-                    key={l.href}
-                    href={l.href}
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setMobileOpen(false)}
                     className="apple-card-flat px-4 py-3 text-sm font-semibold"
-                    style={{ color: "var(--color-foreground)" }}
+                    style={{ color: isActive(link.href) ? "var(--flag)" : "var(--color-foreground)" }}
                   >
-                    {l.label}
+                    {link.label}
                   </Link>
                 ))}
               </nav>
 
-              {siteNavGroups.map((group) => (
-                <div key={group.label}>
-                  <span className="text-[9px] font-mono font-bold tracking-[0.2em] uppercase" style={{ color: "var(--flag)" }}>
-                    {group.label}
-                  </span>
-                  <ul className="mt-3 space-y-1">
-                    {group.links.map((l) => (
-                      <li key={l.href}>
-                        <Link
-                          href={l.href}
-                          onClick={() => setMobileOpen(false)}
-                          className="block py-2 text-base font-medium"
-                          style={{ color: isActive(l.href) ? "var(--flag)" : "var(--color-foreground)" }}
-                        >
-                          {l.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-
               <div className="flex flex-col gap-3 pt-4" style={{ borderTop: "1px solid var(--color-border)" }}>
+                <a
+                  href={siteConfig.resume}
+                  className="text-center text-xs font-mono font-bold tracking-[0.12em] uppercase"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  Download résumé
+                </a>
                 <a
                   href={whatsappLink(whatsappCtaMessage("general"))}
                   target="_blank"
@@ -224,9 +139,6 @@ export default function SiteHeader() {
                   className="rog-btn-primary relative overflow-hidden rounded-[2px] px-5 py-3 text-[11px] font-bold uppercase font-mono"
                 >
                   <span className="relative">Start a Project</span>
-                </a>
-                <a href={`mailto:${siteConfig.email}`} className="text-center text-xs font-mono" style={{ color: "var(--color-muted)" }}>
-                  {siteConfig.email}
                 </a>
               </div>
             </div>
@@ -245,43 +157,5 @@ function ActiveMarker() {
       style={{ backgroundColor: "var(--flag)" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     />
-  );
-}
-
-function Dropdown({ group, active, pathname }: { group: NavGroup; active: boolean; pathname: string }) {
-  return (
-    <div className="relative group/drop">
-      <button
-        type="button"
-        className={`relative flex items-center gap-1 px-3 py-2 text-[11px] font-medium tracking-[0.08em] uppercase transition-colors ${
-          active ? "text-(--color-foreground)" : "text-(--color-muted) hover:text-(--color-foreground)"
-        }`}
-        aria-haspopup="true"
-      >
-        {group.label}
-        <FiChevronDown className="text-[10px] transition-transform duration-300 group-hover/drop:rotate-180" style={{ color: "var(--color-muted)" }} />
-        {active && <ActiveMarker />}
-      </button>
-      <div className="invisible opacity-0 translate-y-2 group-hover/drop:visible group-hover/drop:opacity-100 group-hover/drop:translate-y-0 focus-within:visible focus-within:opacity-100 focus-within:translate-y-0 transition-all duration-200 absolute left-1/2 -translate-x-1/2 pt-3 w-[340px]">
-        <div className="rounded-[3px] border bg-(--color-card-bg) backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-2" style={{ borderColor: "var(--color-border)" }}>
-          {group.links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`block rounded-[2px] px-3 py-2 transition-colors ${pathname === l.href ? "bg-(--color-card-bg)" : ""}`}
-            >
-              <span className="block text-[12px] font-semibold" style={{ color: "var(--color-foreground)" }}>
-                {l.label}
-              </span>
-              {l.description && (
-                <span className="block text-[10px] mt-0.5" style={{ color: "var(--color-muted)" }}>
-                  {l.description}
-                </span>
-              )}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }

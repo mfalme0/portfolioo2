@@ -341,7 +341,7 @@ Don't "fix" these unless asked; they're documented here so you don't waste time 
   - Umma University B.Sc. Computer Science 2021–2024
   - **VisionFund Kenya — Software Engineering Intern, Oct–Dec 2023** (career start)
   - Gituamba Girls — Software Consultant, Jan 2024–Mar 2025
-  - Steadfast Academy — Engineering Team Lead & Head of IT, Apr 2025–Present
+  - Steadfast Academy — Engineering Team Lead & Head of IT, Apr 2025–Sep 2026
 - There is **no X/Twitter account** on this site. `siteConfig.socials` contains only GitHub,
   LinkedIn and Instagram, and the X profile is deliberately absent from all JSON-LD `sameAs` arrays.
   The `twitter: { card: … }` blocks in the layouts are **Open Graph link-preview metadata** and

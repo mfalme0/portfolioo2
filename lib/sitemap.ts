@@ -17,7 +17,7 @@ import { getAllPosts } from "./blog";
  *     same value instead of `new Date()` per row
  */
 
-export const BASE_URL = "https://mfalme.runs-on.dev";
+export const BASE_URL = "https://gitau.vercel.app";
 
 /** Stable within a single build. */
 export const BUILD_DATE = new Date();

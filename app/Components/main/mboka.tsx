@@ -8,7 +8,7 @@ const experiences = [
   {
     company: 'Steadfast Academy',
     role: 'Engineering Team Lead & Head of IT',
-    duration: 'APR 2025 — Present',
+    duration: 'APR 2025 — SEP 2026',
     location: 'Nairobi, Kenya',
     highlights: [
       'Designed and built notification delivery capabilities within an in-house ERP system — real-time push, in-app alerts, and multi-channel messaging across mobile and web, including event triggers, delivery confirmation, and channel fallback logic.',
