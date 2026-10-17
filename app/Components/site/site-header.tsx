@@ -14,6 +14,7 @@ const primaryLinks = [
   { label: "Hire Me", href: "/hire" },
   { label: "Work With Me", href: "/work-with-me" },
   { label: "Projects", href: "/work" },
+  { label: "Setup", href: "/setup" },
   { label: "Writing", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];

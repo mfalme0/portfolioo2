@@ -26,6 +26,21 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/setup/keyboards/aula-s2022',
+        destination: '/setup/keyboards/aula-f2022',
+        permanent: true,
+      },
+      {
+        source: '/setup/monitors/benq-zowie-xl-27',
+        destination: '/setup/monitors/zowie-xl2731',
+        permanent: true,
+      },
+      {
+        source: '/setup/ups/apc-back-ups-1400xs',
+        destination: '/setup/ups/apc-back-ups-bx1400ui',
+        permanent: true,
+      },
+      {
         source: '/blog/when-system-design-gets-so-fucked-you-need-a-pen-and-paper',
         destination: '/blog/system-design-pen-and-paper',
         permanent: true,

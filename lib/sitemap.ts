@@ -1,6 +1,7 @@
 import { guides } from "./guides";
 import { caseStudies } from "./case-studies";
 import { homelabItems } from "./homelab-data";
+import { setupCategories, setupDevices } from "./setup-data";
 import { getAllPosts } from "./blog";
 
 /**
@@ -73,6 +74,7 @@ export function getSitemapEntries(): SitemapEntry[] {
     staticRoute("/contact", "monthly", 0.8),
     staticRoute("/sitemap", "weekly", 0.3),
     staticRoute("/homelab", "weekly", 0.7),
+    staticRoute("/setup", "monthly", 0.6),
     staticRoute("/LAN", "weekly", 0.6),
     staticRoute("/privacy", "yearly", 0.3),
     staticRoute("/terms", "yearly", 0.3),
@@ -108,12 +110,22 @@ export function getSitemapEntries(): SitemapEntry[] {
     priority: 0.6,
   }));
 
+  const setupRoutes: SitemapEntry[] = [
+    ...setupCategories.map((category) =>
+      staticRoute(`/setup/${category.slug}`, "monthly", 0.5)
+    ),
+    ...setupDevices.map((device) =>
+      staticRoute(`/setup/${device.category}/${device.slug}`, "monthly", 0.5)
+    ),
+  ];
+
   return [
     ...staticRoutes,
     ...blogRoutes,
     ...guideRoutes,
     ...caseStudyRoutes,
     ...homelabRoutes,
+    ...setupRoutes,
   ];
 }
 
@@ -187,6 +199,23 @@ export function getSitemapGroups(): SitemapGroup[] {
         lastModified: BUILD_DATE,
         note: c.kind,
       })),
+    },
+    {
+      title: "Setup",
+      description: "The peripherals in my personal setup, organized by category and device.",
+      entries: [
+        { path: "/setup", lastModified: BUILD_DATE, note: "Personal setup" },
+        ...setupCategories.map((category) => ({
+          path: `/setup/${category.slug}`,
+          lastModified: BUILD_DATE,
+          note: category.name,
+        })),
+        ...setupDevices.map((device) => ({
+          path: `/setup/${device.category}/${device.slug}`,
+          lastModified: BUILD_DATE,
+          note: device.name,
+        })),
+      ],
     },
     {
       title: "Lab & Archive",
