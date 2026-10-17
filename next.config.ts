@@ -26,8 +26,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/setup/keyboards/aula-s2022',
-        destination: '/setup/keyboards/aula-f2022',
+        source: '/setup/keyboards/aula-f2022',
+        destination: '/setup/keyboards/aula-s2022',
         permanent: true,
       },
       {

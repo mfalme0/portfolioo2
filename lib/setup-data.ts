@@ -21,6 +21,17 @@ export interface SetupDevice {
   specifications: { label: string; value: string }[];
   notes?: string;
   image?: string;
+  /**
+   * A hardware fault on a device that is otherwise still in the setup. Kept
+   * separate from `status`, which describes lifecycle (in use or retired)
+   * rather than condition.
+   */
+  fault?: {
+    headline: string;
+    detail: string;
+    /** Where the failure sits across the panel, as a 0-1 fraction. Drives the card overlay. */
+    split?: number;
+  };
 }
 
 export const setupCategories: SetupCategory[] = [
@@ -80,16 +91,16 @@ export const setupDevices: SetupDevice[] = [
   {
     slug: "aula-f75",
     category: "keyboards",
-    name: "Aula F75 Pro",
+    name: "Aula F75",
     brand: "Aula",
-    model: "F75 Pro",
+    model: "F75",
     status: "current",
     summary:
       "A 75% gasket-mount board that gets the whole enthusiast formula into a very small price.",
-    role: "Compact daily board, paired with the full-size F2022.",
+    role: "Compact daily board, paired with the full-size S2022.",
     why: "The F75 is the cheapest way I know to get the full modern keyboard formula in one box: a gasket mount instead of a plate screwed rigidly to the case, factory-lubed switches, plate-mounted stabilisers and a foam stack that removes the hollow rattle most budget boards have. The 75% layout keeps the function row and arrows while dropping the number pad, which is the single change that makes a desk feel bigger. The aluminium knob is a small thing that turns out to matter once you use it for volume.",
     dailyUse:
-      "It shares the desk with the F2022. The F75 is the board for when I want the desk cleared and the arrow keys kept; the F2022 covers the occasions when I need the number pad.",
+      "It shares the desk with the S2022. The F75 is the board for when I want the desk cleared and the arrow keys kept; the S2022 covers the occasions when I need the number pad.",
     tradeoffs:
       "Aula's software is proprietary — no QMK, VIA or ZMK on this generation, so everything goes through the manufacturer's app and it only does its job properly on Windows. The ABS case and keycap legends wear faster than PBT doubleshot on the competition. Keycap colouring and knob position vary between regional revisions, so what you get depends on which SKU is in stock.",
     specifications: [
@@ -105,16 +116,16 @@ export const setupDevices: SetupDevice[] = [
     image: "/images/setup/keyboards/aula-f75.webp",
   },
   {
-    slug: "aula-f2022",
+    slug: "aula-s2022",
     category: "keyboards",
-    name: "Aula F2022",
+    name: "Aula S2022",
     brand: "Aula",
-    model: "F2022",
+    model: "S2022",
     status: "current",
     summary:
       "A full-size 104-key board with a detachable palm rest, covering the times I need a number pad.",
     role: "Full-size board in the rotation, and the only one with a number pad.",
-    why: "The F2022 exists for the jobs the F75 cannot do. It is a conventional wired board — no wireless, no hot-swap, no gasket mount — and that is the point: when I want to type on something completely different, the plain mechanical feel and the audible blue switches make it feel like a different instrument. The detachable palm rest is more useful than it sounds, because it is the difference between this being a desk board and a laptop-replacement board.",
+    why: "The S2022 exists for the jobs the F75 cannot do. It is a conventional wired board — no wireless, no hot-swap, no gasket mount — and that is the point: when I want to type on something completely different, the plain mechanical feel and the audible blue switches make it feel like a different instrument. The detachable palm rest is more useful than it sounds, because it is the difference between this being a desk board and a laptop-replacement board.",
     dailyUse:
       "The full-size option. It takes over whenever I am entering a lot of numbers or want the audible click of a mechanical switch rather than the softer F75.",
     tradeoffs:
@@ -129,7 +140,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Water resistance", value: "Yes — sealed switch membrane" },
       { label: "Extra keys", value: "Fn-layer multimedia row" },
     ],
-    image: "/images/setup/keyboards/aula-f2022.webp",
+    image: "/images/setup/keyboards/aula-s2022.webp",
   },
 
   // -------------------------------------------------------------------- mice
@@ -157,6 +168,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "On-board memory", value: "5 profiles" },
       { label: "Mouse feet", value: "PTFE" },
     ],
+    image: "/images/setup/mice/logitech-g-pro-wireless.webp",
   },
   {
     slug: "aula-sc660",
@@ -182,6 +194,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Lighting", value: "RGB, translucent shell" },
       { label: "Storage", value: "Receiver stows in the underside" },
     ],
+    image: "/images/setup/mice/aula-sc660.webp",
   },
   {
     slug: "razer-deathadder-essential",
@@ -207,7 +220,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Software", value: "Razer Synapse 3" },
       { label: "Dimensions", value: "127 × 73 × 43 mm" },
     ],
-    image: "/images/setup/mice/razer-deathadder-essential.png",
+    image: "/images/setup/mice/razer-deathadder-essential.webp",
   },
   {
     slug: "glorious-model-o-wireless",
@@ -233,6 +246,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Tracking", value: "400 IPS, 50 G" },
       { label: "Lift-off", value: "1–2 mm, adjustable in software" },
     ],
+    image: "/images/setup/mice/glorious-model-o-wireless.webp",
   },
 
   // ------------------------------------------------------------------- audio
@@ -259,6 +273,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Connector", value: "0.75 mm 2-pin" },
       { label: "Plug", value: "3.5 mm" },
     ],
+    image: "/images/setup/audio/kz-edx-ultra.webp",
   },
   {
     slug: "logitech-g935",
@@ -284,6 +299,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Extras", value: "G-keys, backlit custom tags" },
       { label: "Also includes", value: "3.5 mm analogue cable" },
     ],
+    image: "/images/setup/audio/logitech-g935.webp",
   },
   {
     slug: "kz-castor-pro",
@@ -309,6 +325,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Cable", value: "Detachable 0.75 mm, 120 cm OFC" },
       { label: "Connector", value: "0.75 mm 2-pin" },
     ],
+    image: "/images/setup/audio/kz-castor-pro.webp",
   },
   {
     slug: "corsair-hs50",
@@ -334,7 +351,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Lighting", value: "RGB" },
       { label: "Battery", value: "None — not a wireless headset" },
     ],
-    image: "/images/setup/audio/corsair-hs50.avif",
+    image: "/images/setup/audio/corsair-hs50.webp",
   },
   {
     slug: "steelseries-arctis-5",
@@ -360,6 +377,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Weight", value: "308 g" },
       { label: "Extras", value: "ChatMix dial, RGB" },
     ],
+    image: "/images/setup/audio/steelseries-arctis-5.webp",
   },
 
   // ---------------------------------------------------------------- monitors
@@ -385,7 +403,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Screen type", value: "Flat, frameless bezel" },
       { label: "Stand", value: "Height and rotation adjustable" },
     ],
-    image: "/images/setup/monitors/tar-g-1440p-180hz.png",
+    image: "/images/setup/monitors/tar-g-1440p-180hz.webp",
   },
   {
     slug: "zowie-xl2731",
@@ -412,6 +430,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Ports", value: "DVI-DL, HDMI 2.0 ×2, DisplayPort 1.2, headphone out" },
       { label: "Features", value: "Black eQualizer, S Switch arc, 3D Vision" },
     ],
+    image: "/images/setup/monitors/zowie-xl2731.webp",
   },
   {
     slug: "dell-p2014ht",
@@ -438,6 +457,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Ports", value: "VGA and DisplayPort, plus touch input" },
       { label: "Colour gamut", value: "83% CIE1976" },
     ],
+    image: "/images/setup/monitors/dell-p2014ht.webp",
   },
   {
     slug: "aoc-cu34g2x",
@@ -446,13 +466,20 @@ export const setupDevices: SetupDevice[] = [
     brand: "AOC",
     model: "CU34G2X",
     status: "current",
-    summary: "A 34-inch 1500R curved ultrawide at 3440×1440 and 144Hz.",
-    role: "The ultrawide, and the display with the most room for simultaneous panes.",
-    why: "3440×1440 at 34 inches gives roughly the vertical resolution of a 27-inch 16:9 panel with the width of two 16:9 monitors, which is the actual reason to own an ultrawide: two full applications side by side with no bezels and one cable. The 1500R curve is gentle enough to be comfortable over a long session while still placing the edges closer than a flat panel. VA gives a 3000:1 native contrast, which is the best contrast figure of anything in this setup, and the 1ms response is a marketing number on a VA panel but FreeSync plus 144Hz keeps motion clean.",
+    summary:
+      "A 34-inch 1500R curved ultrawide at 3440×1440 and 144Hz — now running on half a panel.",
+    role: "The half-working ultrawide, kept for the half of it that still lights up.",
+    why: "3440×1440 at 34 inches gives roughly the vertical resolution of a 27-inch 16:9 panel with the width of two 16:9 monitors, which is the actual reason to own an ultrawide: two full applications side by side with no bezels and one cable. The 1500R curve is gentle enough to be comfortable over a long session while still placing the edges closer than a flat panel. VA gives a 3000:1 native contrast, which is the best contrast figure of anything in this setup, and the 1ms response is a marketing number on a VA panel but FreeSync plus 144Hz keeps motion clean. None of that matters as much as it once did, because the panel has since failed and taken half the display with it.",
     dailyUse:
-      "The wide workspace — long documents beside code, or a terminal beside a browser. It is the panel that removes the need to alt-tab between two applications.",
+      "It is on the desk, but it is no longer the wide workspace it was bought for. What survives is one full-height half of an ultrawide, which is narrower than the 27-inch panel next to it and no use for two side-by-side applications. It stays because a dead half is still a usable monitor and because the alternative is binning a panel that cost real money.",
     tradeoffs:
-      "1440p vertical means a 34-inch panel at native scaling gives roughly 1080p-equivalent vertical room, so it is not the place for dense text that needs to be read closely. VA panels have noticeably slower dark transitions than IPS, which shows in smearing on dark scenes. The stand only offers 130mm of height adjustment, and the on-bezel buttons are small.",
+      "The panel has failed on one side, so this is now a half monitor. Half an ultrawide is a strange object to own: it is narrower than the 27-inch display it sits beside, and anything that relied on the extra width no longer works. The remaining faults are the ones the panel type already had — 1440p vertical means it was never the place for dense text, and VA panels smear on dark transitions — but they are now the least of its problems. Whether it is worth repairing depends entirely on whether the failure is the panel itself or the board driving it, and at this age nobody will say. It stays on the list because it is still physically here, not because it is still a good display.",
+    fault: {
+      headline: "Half the panel is dead",
+      detail:
+        "One full side of the display no longer lights up. The surviving half still runs at full resolution and refresh rate, so it is usable, but the panel is not. Everything above is written around what the monitor still does rather than what it was bought to do.",
+      split: 0.5,
+    },
     specifications: [
       { label: "Size", value: "34 inches" },
       { label: "Curvature", value: "1500R" },
@@ -464,6 +491,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Contrast", value: "3000:1 native" },
       { label: "Adaptive sync", value: "AMD FreeSync, 30–144 Hz" },
       { label: "Ports", value: "2 × DisplayPort 1.4, 2 × HDMI 2.0, 4 × USB 3.2, audio out" },
+      { label: "Known fault", value: "Panel failure — one side dead, half the display unusable" },
     ],
   },
 
@@ -491,6 +519,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Edge", value: "Stitched" },
       { label: "Range", value: "Also made in S, M and XL" },
     ],
+    image: "/images/setup/mousepads/hx-mpfsl.webp",
   },
 
   // ------------------------------------------------------------- controllers
@@ -517,6 +546,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Grips", value: "Textured" },
       { label: "Buttons", value: "9 plus menu and share" },
     ],
+    image: "/images/setup/controllers/xbox-one-tech-recon.webp",
   },
   {
     slug: "xbox-one-white",
@@ -541,6 +571,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Features", value: "Impulse triggers, share button, rumble" },
       { label: "Colour", value: "White" },
     ],
+    image: "/images/setup/controllers/xbox-one-white.webp",
   },
   {
     slug: "dualshock-4",
@@ -565,6 +596,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Sensors", value: "Six-axis accelerometer and gyroscope" },
       { label: "Extras", value: "Built-in speaker, 3.5 mm jack, light bar" },
     ],
+    image: "/images/setup/controllers/dualshock-4.webp",
   },
 
   // --------------------------------------------------------------------- ups
@@ -577,16 +609,17 @@ export const setupDevices: SetupDevice[] = [
     status: "current",
     summary: "A 650VA line-interactive unit carrying the lighter end of the equipment.",
     role: "Backup power for the network and display side of the desk.",
-    why: "BV650 is the smaller of the two units and it is matched to what is actually plugged into it: the router, the display and the network gear, which together sit well inside 375W. Line-interactive with automatic voltage regulation means brownouts and spikes are corrected without draining the battery at all, which is the common case here rather than a full outage. Six IEC outlets means the network stack is covered without a power strip.",
+    why: "BV650 is the smaller of the two units and it is matched to what is actually plugged into it: the router, the display and the network gear, which together sit well inside 375W. Line-interactive with automatic voltage regulation means brownouts and spikes are corrected without draining the battery at all, which is the common case here rather than a full outage. Four Schuko outlets on the rear cover the network stack without a power strip.",
     dailyUse:
       "It stays plugged in permanently and does nothing visible unless the power fails. Its job is that a brownout does not take the router and the displays down at once.",
     tradeoffs:
-      "650VA is not enough for a desktop and a monitor together, which is why the larger unit exists — splitting the load across the two is the whole arrangement. The stepped approximation to a sinewave output is fine for PC power supplies with their own filtering, but it will upset sensitive or older hardware. There is no USB communication port, so there is no automatic safe shutdown — if an outage outlasts the battery, everything downstream loses power anyway.",
+      "650VA is not enough for a desktop and a monitor together, which is why the larger unit exists — splitting the load across the two is the whole arrangement. The stepped approximation to a sinewave output is fine for PC power supplies with their own filtering, but it will upset sensitive or older hardware. The Schuko outlets take a plug straight from the wall with no C13 lead, which is the whole point of this build, but it also means you cannot feed it a C13 cable to daisy-chain into the other unit. There is no USB communication port, so there is no automatic safe shutdown — if an outage outlasts the battery, everything downstream loses power anyway.",
     specifications: [
       { label: "Capacity", value: "650 VA / 375 W" },
       { label: "Topology", value: "Line-interactive with AVR" },
-      { label: "Input", value: "230 V, IEC C14" },
-      { label: "Outputs", value: "6 × IEC C13 with battery backup" },
+      { label: "Input", value: "230 V, Schuko CEE 7/7P" },
+      { label: "Outputs", value: "4 × Schuko CEE 7/3, battery-backed" },
+      { label: "Outlet variant", value: "230V Schuko build — the IEC C13 variant of the same part number has 6 outlets" },
       { label: "Battery", value: "12 V 7 Ah sealed lead-acid" },
       { label: "Transfer time", value: "6 ms typical, 10 ms max" },
       { label: "Runtime", value: "Approx. 10 minutes at 120 W" },
@@ -621,6 +654,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Warranty", value: "2 years" },
       { label: "Status", value: "Discontinued part" },
     ],
+    image: "/images/setup/ups/apc-back-ups-bx1400ui.webp",
   },
 ];
 

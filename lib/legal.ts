@@ -9,6 +9,18 @@ export const legalDocs = [
   { href: "/cookies", label: "Cookie Policy", short: "Cookies" },
 ] as const;
 
+/**
+ * Shown on the /setup pages, which name a lot of third-party hardware.
+ *
+ * This covers brand *names* only. Product photography is a separate copyright
+ * question handled per image — see `lib/setup-credits.ts` for the records that
+ * drive the attribution lines on each device page.
+ */
+export const trademarkNotice =
+  "Every product, brand and company named on this page is the trademark of its respective owner. " +
+  "They are listed here purely to identify the hardware on one desk. " +
+  "I am not affiliated with, sponsored by, endorsed by, or claiming ownership of any brand or product mentioned.";
+
 export const legalController = {
   name: siteConfig.name,
   tradingAs: siteConfig.brand,

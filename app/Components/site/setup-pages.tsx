@@ -7,6 +7,7 @@ import {
   type SetupCategory,
   type SetupDevice,
 } from "@/lib/setup-data";
+import { ImageCredit, TrademarkNotice } from "./trademark-notice";
 
 function SetupCard({
   category,
@@ -74,6 +75,9 @@ export function SetupIndexPage() {
               <SetupCard key={category.slug} category={category} index={index} />
             ))}
           </div>
+          <div className="mt-12 border-t pt-6" style={{ borderColor: "var(--rule)" }}>
+            <TrademarkNotice />
+          </div>
         </div>
       </section>
     </>
@@ -136,13 +140,54 @@ function DeviceCard({ device, index }: { device: SetupDevice; index: number }) {
         style={{ backgroundColor: "var(--paper)" }}
       >
         {device.image ? (
-          <Image
-            src={device.image}
-            alt={device.name}
-            fill
-            sizes="(min-width: 768px) 45vw, 100vw"
-            className="object-contain p-4"
-          />
+          device.fault ? (
+            /* The dead side of the panel is drawn, not described: the render is
+               clipped to the working half and the failed half is filled with a
+               dead-panel treatment, so the fault is legible in the grid. */
+            <div className="absolute inset-0 flex">
+              <div className="relative h-full overflow-hidden" style={{ width: `${(device.fault.split ?? 0.5) * 100}%` }}>
+                <Image
+                  src={device.image}
+                  alt={`${device.name} — working half`}
+                  fill
+                  sizes="(min-width: 768px) 45vw, 100vw"
+                  className="object-contain p-4"
+                />
+              </div>
+              <div
+                className="relative h-full overflow-hidden"
+                style={{ width: `${(1 - (device.fault.split ?? 0.5)) * 100}%` }}
+                aria-hidden="true"
+              >
+                <Image
+                  src={device.image}
+                  alt=""
+                  fill
+                  sizes="0px"
+                  className="object-contain p-4"
+                  style={{
+                    clipPath: `inset(0 0 0 ${-100 / Math.max(device.fault.split ?? 0.5, 0.0001)}%)`,
+                    filter: "grayscale(1) brightness(0.45)",
+                  }}
+                />
+                <span
+                  className="pointer-events-none absolute inset-0 opacity-25"
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(to bottom, rgba(0,0,0,0.9) 0px, rgba(0,0,0,0.9) 1px, transparent 1px, transparent 3px)",
+                  }}
+                />
+              </div>
+            </div>
+          ) : (
+            <Image
+              src={device.image}
+              alt={device.name}
+              fill
+              sizes="(min-width: 768px) 45vw, 100vw"
+              className="object-contain p-4"
+            />
+          )
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 p-6 text-center">
             <span
@@ -165,8 +210,11 @@ function DeviceCard({ device, index }: { device: SetupDevice; index: number }) {
           <span className="font-mono text-[10px] font-bold tracking-[0.18em]" style={{ color: "var(--flag)" }}>
             DEVICE_{String(index + 1).padStart(2, "0")}
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color: device.status === "current" ? "var(--bush)" : "var(--gravel)" }}>
-            {device.status}
+          <span
+            className="font-mono text-[9px] uppercase tracking-[0.14em]"
+            style={{ color: device.fault ? "var(--flag)" : device.status === "current" ? "var(--bush)" : "var(--gravel)" }}
+          >
+            {device.fault ? "Fault" : device.status}
           </span>
         </div>
         <h2 className="mt-5 font-display text-2xl font-bold tracking-tight" style={{ color: "var(--fg)" }}>
@@ -232,6 +280,25 @@ export function SetupDevicePage({
             </div>
           )}
           <div className="space-y-4 lg:col-span-8">
+            {device.fault && (
+              <section
+                className="apple-card-flat p-6 md:p-8"
+                style={{ borderLeft: "3px solid var(--flag)" }}
+              >
+                <span className="apple-eyebrow-accent" style={{ color: "var(--flag)" }}>
+                  Fault report
+                </span>
+                <h2
+                  className="mt-4 font-display text-xl font-bold tracking-tight"
+                  style={{ color: "var(--fg)" }}
+                >
+                  {device.fault.headline}
+                </h2>
+                <p className="mt-3 text-sm leading-7" style={{ color: "var(--gravel)" }}>
+                  {device.fault.detail}
+                </p>
+              </section>
+            )}
             {sections.map((section) => (
               <section key={section.title} className="apple-card-flat p-6 md:p-8">
                 <span className="apple-eyebrow-accent">{section.title}</span>
@@ -259,6 +326,12 @@ export function SetupDevicePage({
               </dl>
             )}
           </aside>
+        </div>
+        <div className="mx-auto max-w-7xl px-6 md:px-14">
+          <div className="space-y-2 border-t pt-6" style={{ borderColor: "var(--rule)" }}>
+            <ImageCredit category={device.category} slug={device.slug} />
+            <TrademarkNotice />
+          </div>
         </div>
       </article>
     </>
