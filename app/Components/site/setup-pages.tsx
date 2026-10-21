@@ -129,7 +129,17 @@ export function SetupCategoryPage({ category }: { category: SetupCategory }) {
   );
 }
 
+/**
+ * Fraction of a fault card's width given to the working side of the panel.
+ * Clamped so a bad value can never collapse either half to nothing.
+ */
+function faultSplit(fault: SetupDevice["fault"]): number {
+  return Math.min(Math.max(fault?.split ?? 0.5, 0.05), 0.95);
+}
+
 function DeviceCard({ device, index }: { device: SetupDevice; index: number }) {
+  const split = faultSplit(device.fault);
+
   return (
     <Link
       href={`/setup/${device.category}/${device.slug}`}
@@ -141,35 +151,51 @@ function DeviceCard({ device, index }: { device: SetupDevice; index: number }) {
       >
         {device.image ? (
           device.fault ? (
-            /* The dead side of the panel is drawn, not described: the render is
-               clipped to the working half and the failed half is filled with a
-               dead-panel treatment, so the fault is legible in the grid. */
+            /* The dead side of the panel is drawn, not described. Each half is a
+               clipping window onto the *same* full-card placement of the image:
+               the inner wrapper is sized to the whole card and offset so both
+               halves line up, and overflow-hidden keeps only each one's slice.
+               Sizing the image to the half box instead would repeat the product
+               twice rather than split it. */
             <div className="absolute inset-0 flex">
-              <div className="relative h-full overflow-hidden" style={{ width: `${(device.fault.split ?? 0.5) * 100}%` }}>
-                <Image
-                  src={device.image}
-                  alt={`${device.name} — working half`}
-                  fill
-                  sizes="(min-width: 768px) 45vw, 100vw"
-                  className="object-contain p-4"
-                />
+              <div
+                className="relative h-full overflow-hidden"
+                style={{ width: `${split * 100}%` }}
+              >
+                <div
+                  className="absolute inset-y-0 flex items-center justify-center"
+                  style={{ width: `${100 / split}%`, left: 0 }}
+                >
+                  <Image
+                    src={device.image}
+                    alt={`${device.name} — working half`}
+                    fill
+                    sizes="(min-width: 768px) 45vw, 100vw"
+                    className="object-contain p-4"
+                  />
+                </div>
               </div>
               <div
                 className="relative h-full overflow-hidden"
-                style={{ width: `${(1 - (device.fault.split ?? 0.5)) * 100}%` }}
+                style={{ width: `${(1 - split) * 100}%` }}
                 aria-hidden="true"
               >
-                <Image
-                  src={device.image}
-                  alt=""
-                  fill
-                  sizes="0px"
-                  className="object-contain p-4"
+                <div
+                  className="absolute inset-y-0 flex items-center justify-center"
                   style={{
-                    clipPath: `inset(0 0 0 ${-100 / Math.max(device.fault.split ?? 0.5, 0.0001)}%)`,
-                    filter: "grayscale(1) brightness(0.45)",
+                    width: `${100 / (1 - split)}%`,
+                    left: `${(-100 * split) / (1 - split)}%`,
                   }}
-                />
+                >
+                  <Image
+                    src={device.image}
+                    alt=""
+                    fill
+                    sizes="0px"
+                    className="object-contain p-4"
+                    style={{ filter: "grayscale(1) brightness(0.45)" }}
+                  />
+                </div>
                 <span
                   className="pointer-events-none absolute inset-0 opacity-25"
                   style={{

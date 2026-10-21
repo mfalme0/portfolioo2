@@ -35,4 +35,14 @@ export const setupImageCredits: Record<string, ImageCredit> = {
     source: "Dell product media",
     licence: "Manufacturer imagery",
   },
+  "monitors/aoc-cu34g2x": {
+    author: "AOC / TPV",
+    source: "AOC product media",
+    licence: "Manufacturer imagery",
+  },
+  "ups/apc-bv650": {
+    author: "APC / Schneider Electric",
+    source: "APC product media",
+    licence: "Manufacturer imagery",
+  },
 };

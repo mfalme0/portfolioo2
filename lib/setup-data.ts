@@ -151,21 +151,21 @@ export const setupDevices: SetupDevice[] = [
     brand: "Logitech",
     model: "G Pro Wireless",
     status: "current",
-    summary: "A 63g wireless mouse that still tops out at 8000Hz polling on the cable.",
+    summary: "A 63g wireless mouse whose 1000Hz polling never improved past the original 2018 design.",
     role: "The lightest board-side mouse in the rotation, and the wireless default.",
-    why: "Sixty-three grams used to be the headline claim of this mouse, but the durable part is the sensor and the polling: the HERO sensor holds 16,000 DPI without the jitter that plagued earlier generations, and plugging it in gives a genuine 8000Hz report rather than the 1000Hz most wireless mice top out at. It also carries onboard memory, so the DPI and button profiles survive being used on a different machine without reconfiguring anything.",
+    why: "Sixty-three grams was the headline claim of this mouse and it still holds, but the part that has aged is the polling rate: 1000Hz was what shipped in 2018 and it is still what this reports, over the cable and over the air alike. The sensor is the part Logitech kept current — the original HERO shipped at 16,000 DPI and was upgraded to HERO 25K through a free G HUB update, which is where the 25,600 figure in the software comes from. It also carries onboard memory, so the DPI and button profiles survive being used on a different machine without reconfiguring anything.",
     dailyUse:
-      "The wireless option for general desktop work. When a session turns competitive and I want the full polling rate, the cable comes out and it becomes a very light wired mouse.",
+      "The wireless option for general desktop work. The cable still earns its place — it charges over it and takes the latency argument off the table — but it does not buy a higher report rate, because there is no higher report rate to buy.",
     tradeoffs:
-      "The battery is the weak point — around 25 hours, which is less than the Glorious and far less than a headset, so it wants a weekly top-up. The HERO sensor is good rather than class-leading; newer sensors track marginally more smoothly on fast flicks. It is also the most expensive of the four, and 63g is no longer remarkable now that lighter mice exist.",
+      "The 1000Hz report rate is the honest weak point, and it is a design decision rather than a limitation of this unit: the 8000Hz modes people mean are on the later Superlight revision, not this one. The battery is the other weak point — around 25 hours, which is less than the Glorious and far less than a headset, so it wants a weekly top-up. The HERO sensor is good rather than class-leading; newer sensors track marginally more smoothly on fast flicks. And 63g is no longer remarkable now that lighter mice exist.",
     specifications: [
-      { label: "Sensor", value: "HERO optical, up to 16,000 DPI" },
-      { label: "Weight", value: "63 g (87 g with cable)" },
-      { label: "Polling rate", value: "Up to 8000 Hz wired; 1000 Hz wireless" },
+      { label: "Sensor", value: "HERO optical, 100–25,600 DPI (16,000 before the G HUB update)" },
+      { label: "Weight", value: "63 g (80 g with cable)" },
+      { label: "Polling rate", value: "1000 Hz (1 ms), wired and wireless" },
       { label: "Wireless", value: "2.4 GHz LIGHTSPEED" },
       { label: "Battery", value: "Approx. 25 hours" },
       { label: "Buttons", value: "6 + 3 on-board DPI" },
-      { label: "On-board memory", value: "5 profiles" },
+      { label: "On-board memory", value: "Up to 5 DPI settings" },
       { label: "Mouse feet", value: "PTFE" },
     ],
     image: "/images/setup/mice/logitech-g-pro-wireless.webp",
@@ -183,7 +183,7 @@ export const setupDevices: SetupDevice[] = [
     dailyUse:
       "The one that goes between the laptop and the desktop without a dongle swap, and the one I reach for when I need Bluetooth rather than a receiver.",
     tradeoffs:
-      "The PMW3325 is capped at 10,000 DPI and polling tops out at 1000 Hz, so it gives ground to the G Pro Wireless on anything competitive. The 500 mAh battery is small, and the RGB drains it faster. It is also the least refined shell of the four — the transparency is a novelty that wears off.",
+      "The PMW3325 is capped at 10,000 DPI against the G Pro Wireless's 25,600, and 77g is 14g heavier, so it gives ground on anything competitive — but not on polling, because both mice report at 1000 Hz and neither has a mode that goes faster. The 500 mAh battery is small, and the RGB drains it faster. It is also the least refined shell of the four — the transparency is a novelty that wears off.",
     specifications: [
       { label: "Sensor", value: "PMW3325 optical" },
       { label: "Max DPI", value: "10,000 (200–10,000 customisable)" },
@@ -235,7 +235,7 @@ export const setupDevices: SetupDevice[] = [
     dailyUse:
       "The set-and-forget wireless mouse. It is the one that stays charged, which makes it the least annoying thing on the desk even when it is not the fastest.",
     tradeoffs:
-      "It is a 1000 Hz mouse with no dongle-bundled 4000 Hz mode, so it loses to the G Pro Wireless on polling. The Omron switches are rated at 20 million clicks, roughly half what modern competitors claim, and they are a known failure point. Glorious CORE is Windows-only, and the battery figure assumes RGB is off — with lighting on it is dramatically shorter.",
+      "It is a 1000 Hz mouse and so is the G Pro Wireless, so polling is not the difference between them — the split is battery and weight, not latency. Neither ships with the 4000 or 8000 Hz mode that newer dongles bundle, which means both feel dated next to a mouse that has one. The Omron switches are rated at 20 million clicks, roughly half what modern competitors claim, and they are a known failure point. Glorious CORE is Windows-only, and the battery figure assumes RGB is off — with lighting on it is dramatically shorter.",
     specifications: [
       { label: "Weight", value: "69 g" },
       { label: "Sensor", value: "BAMF optical, up to 19,000 DPI" },
@@ -493,6 +493,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Ports", value: "2 × DisplayPort 1.4, 2 × HDMI 2.0, 4 × USB 3.2, audio out" },
       { label: "Known fault", value: "Panel failure — one side dead, half the display unusable" },
     ],
+    image: "/images/setup/monitors/aoc-cu34g2x.webp",
   },
 
   // --------------------------------------------------------------- mousepads
@@ -609,17 +610,17 @@ export const setupDevices: SetupDevice[] = [
     status: "current",
     summary: "A 650VA line-interactive unit carrying the lighter end of the equipment.",
     role: "Backup power for the network and display side of the desk.",
-    why: "BV650 is the smaller of the two units and it is matched to what is actually plugged into it: the router, the display and the network gear, which together sit well inside 375W. Line-interactive with automatic voltage regulation means brownouts and spikes are corrected without draining the battery at all, which is the common case here rather than a full outage. Four Schuko outlets on the rear cover the network stack without a power strip.",
+    why: "BV650 is the smaller of the two units and it is matched to what is actually plugged into it: the router, the display and the network gear, which together sit well inside 375W. Line-interactive with automatic voltage regulation means brownouts and spikes are corrected without draining the battery at all, which is the common case here rather than a full outage. Four universal outlets on the rear cover the network stack without a power strip, and universal means the unit takes a Schuko plug straight from the wall or an IEC lead from a strip without either side needing an adapter.",
     dailyUse:
       "It stays plugged in permanently and does nothing visible unless the power fails. Its job is that a brownout does not take the router and the displays down at once.",
     tradeoffs:
-      "650VA is not enough for a desktop and a monitor together, which is why the larger unit exists — splitting the load across the two is the whole arrangement. The stepped approximation to a sinewave output is fine for PC power supplies with their own filtering, but it will upset sensitive or older hardware. The Schuko outlets take a plug straight from the wall with no C13 lead, which is the whole point of this build, but it also means you cannot feed it a C13 cable to daisy-chain into the other unit. There is no USB communication port, so there is no automatic safe shutdown — if an outage outlasts the battery, everything downstream loses power anyway.",
+      "650VA is not enough for a desktop and a monitor together, which is why the larger unit exists — splitting the load across the two is the whole arrangement. The stepped approximation to a sinewave output is fine for PC power supplies with their own filtering, but it will upset sensitive or older hardware. Universal outlets are the flexible choice — one box covers both a Schuko wall plug and an IEC lead — but the universal contacts are bulkier than dedicated sockets and are the first thing to inspect if a device ever refuses to charge from them. There is no USB communication port, so there is no automatic safe shutdown — if an outage outlasts the battery, everything downstream loses power anyway.",
     specifications: [
       { label: "Capacity", value: "650 VA / 375 W" },
       { label: "Topology", value: "Line-interactive with AVR" },
       { label: "Input", value: "230 V, Schuko CEE 7/7P" },
-      { label: "Outputs", value: "4 × Schuko CEE 7/3, battery-backed" },
-      { label: "Outlet variant", value: "230V Schuko build — the IEC C13 variant of the same part number has 6 outlets" },
+      { label: "Outputs", value: "4 × universal outlets, battery-backed" },
+      { label: "Outlet variant", value: "Universal-socket build — the Schuko and IEC C13 variants of the same model carry different outlet counts" },
       { label: "Battery", value: "12 V 7 Ah sealed lead-acid" },
       { label: "Transfer time", value: "6 ms typical, 10 ms max" },
       { label: "Runtime", value: "Approx. 10 minutes at 120 W" },
@@ -627,6 +628,7 @@ export const setupDevices: SetupDevice[] = [
       { label: "Weight", value: "4.5 kg" },
       { label: "Warranty", value: "2 years" },
     ],
+    image: "/images/setup/ups/apc-bv650.webp",
   },
   {
     slug: "apc-back-ups-bx1400ui",

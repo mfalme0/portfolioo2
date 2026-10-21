@@ -1,10 +1,11 @@
 /**
  * Builds the product imagery for the /setup gear catalogue.
  *
- * Sources live in `app/Components/Images/` (legacy assets from the old ROG gear
- * page, not importable from app code) plus a few originals already in
- * `public/images/setup/`. Every output is normalised the same way so the device
- * grid reads as one catalogue:
+ * Sources live in `app/Components/Images/` — legacy assets from the old ROG gear
+ * page alongside newer originals, none of it importable from app code. Nothing
+ * is read from `public/images/setup/`, which holds generated output only, so a
+ * source dropped in there would be mistaken for a built image. Every output is
+ * normalised the same way so the device grid reads as one catalogue:
  *
  *   1. white studio background is flood-filled away (only where it touches the
  *      frame edge, so white keycaps and white plastics survive)
@@ -69,6 +70,7 @@ const MANIFEST = [
   { category: "monitors", slug: "tar-g-1440p-180hz", source: `${LEGACY}/tar-g-1440p-180hz.png` },
   { category: "monitors", slug: "zowie-xl2731", source: `${LEGACY}/zowie-front.png`, removeBackground: true },
   { category: "monitors", slug: "dell-p2014ht", source: `${LEGACY}/dell-p2014h.png`, removeBackground: true },
+  { category: "monitors", slug: "aoc-cu34g2x", source: `${LEGACY}/aoc-cu34g2x.avif` },
 
   // ── mousepads ────────────────────────────────────────────────────────────
   { category: "mousepads", slug: "hx-mpfsl", source: `${LEGACY}/hyperx.jpg`, removeBackground: true },
@@ -79,6 +81,7 @@ const MANIFEST = [
   { category: "controllers", slug: "xbox-one-tech-recon", source: `${LEGACY}/xbox-recon-tech-commons.jpg`, removeBackground: true },
 
   // ── ups ──────────────────────────────────────────────────────────────────
+  { category: "ups", slug: "apc-bv650", source: `${LEGACY}/apc-bv650.webp`, removeBackground: true },
   { category: "ups", slug: "apc-back-ups-bx1400ui", source: `${LEGACY}/ups.png` },
 ];
 
