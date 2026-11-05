@@ -8,6 +8,7 @@ import AnimatedLogo from "../animated-logo";
 import { siteConfig, whatsappLink } from "@/lib/site-config";
 import { whatsappCtaMessage } from "@/lib/cta-messages";
 import { FiDownload } from "react-icons/fi";
+import { useTheme } from "@/app/Context/theme";
 
 const primaryLinks = [
   { label: "Home", href: "/" },
@@ -15,6 +16,7 @@ const primaryLinks = [
   { label: "Work With Me", href: "/work-with-me" },
   { label: "Projects", href: "/work" },
   { label: "Setup", href: "/setup" },
+  { label: "Homelab", href: "/homelab" },
   { label: "Writing", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
@@ -23,6 +25,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -38,7 +41,8 @@ export default function SiteHeader() {
     };
   }, [mobileOpen]);
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   return (
     <>
@@ -97,6 +101,23 @@ export default function SiteHeader() {
                   style={{ backgroundColor: "var(--color-foreground)" }}
                 />
               </button>
+
+              <button
+                onClick={toggleTheme}
+                aria-label={`Switch to ${theme === "daylight" ? "night" : "daylight"} theme`}
+                className="hidden xl:flex items-center justify-center text-sm transition-all duration-300 hover:opacity-60"
+                style={{ color: "var(--color-foreground)" }}
+              >
+                {theme === "daylight" ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -126,6 +147,14 @@ export default function SiteHeader() {
               </nav>
 
               <div className="flex flex-col gap-3 pt-4" style={{ borderTop: "1px solid var(--color-border)" }}>
+                <button
+                  onClick={toggleTheme}
+                  aria-label={`Switch to ${theme === "daylight" ? "night" : "daylight"} theme`}
+                  className="text-left text-xs font-mono font-bold tracking-[0.12em] uppercase transition-colors hover:text-(--color-accent)"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  {theme === "daylight" ? "Switch to night mode 🌙" : "Switch to daylight mode ☀️"}
+                </button>
                 <a
                   href={siteConfig.resume}
                   className="text-center text-xs font-mono font-bold tracking-[0.12em] uppercase"

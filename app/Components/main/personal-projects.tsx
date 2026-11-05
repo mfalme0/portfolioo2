@@ -44,6 +44,23 @@ const categories = [
     accent: '#f59e0b',
     items: [
       { name: 'Home Automation Monorepo', desc: 'Multi-project repository spanning Arduino-based fan controllers, IoT lighting bridges, and automation bots — applying consistent tooling across a diverse hardware/software portfolio.', tech: ['Arduino', 'IoT', 'Monorepo'] },
+      {
+        name: 'DHT11 Temp & Humidity Sensor',
+        desc: 'Arduino Uno with DHT11 sensor for temperature and humidity monitoring, built as a zone sensor for home automation.',
+        tech: ['Arduino Uno', 'DHT11', 'IoT'],
+        links: [
+          { label: 'GitHub', href: 'https://github.com/mfalme0/dht11-monitor', external: true },
+          { label: 'Instagram', href: 'https://www.instagram.com/p/DfW_bXejI7U/?img_index=1', external: true },
+        ],
+      },
+      {
+        name: 'JBL Charge 3 Zone Speaker',
+        desc: 'Repurposed JBL Charge 3 as a Home Assistant zone speaker for whole-home audio distribution.',
+        tech: ['Home Assistant', 'Hardware', 'Audio'],
+        links: [
+          { label: 'Instagram', href: 'https://www.instagram.com/p/DfUh_SIjKrr/?img_index=1', external: true },
+        ],
+      },
     ],
   },
   {
@@ -97,6 +114,25 @@ function CategoryCard({ cat, index }: { cat: typeof categories[0]; index: number
                 </span>
               ))}
             </div>
+            {item.links && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {item.links.map((link, li) => (
+                  <a
+                    key={li}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[8px] font-bold px-2 py-1 rounded-sm border uppercase tracking-[0.05em]"
+                    style={{
+                      borderColor: 'var(--color-border)',
+                      color: 'var(--color-muted)',
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )}
             {i < cat.items.length - 1 && (
               <div className="mt-3" style={{ borderBottom: '1px solid var(--color-border)' }} />
             )}

@@ -103,21 +103,34 @@ export default function HomePage() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-[0.18em]" style={{ borderColor: "var(--color-border)", color: "var(--flag)" }}>
                 <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: "var(--flag)" }} />
-                Nairobi • Available for senior delivery and consulting work
+                SENIOR BACKEND ENGINEER · NAIROBI, KENYA
               </div>
 
               <h1 className="mt-6 text-[clamp(2.8rem,7vw,6rem)] leading-[0.94] tracking-[-0.04em] font-display" style={{ color: "var(--fg)" }}>
-                I design and ship software, systems, and infrastructure that teams can trust.
+                Senior Backend Engineer.
+                <br />
+                <span style={{ color: "var(--flag)" }}>Systems that stay up.</span>
               </h1>
 
               <p className="mt-6 max-w-xl text-[15px] md:text-base leading-relaxed" style={{ color: "var(--gravel)" }}>
-                I build ERP platforms, internal operations systems, cloud infrastructure and automation for schools, businesses and growing teams.
-                My work sits at the intersection of product, engineering and operations.
+                Backend-focused full stack engineer with 5+ years building production systems in C#, Java, Go and Node.js.
+                Led four engineering teams and shipped a school ERP serving ~800 concurrent users. Event-driven
+                microservices, Azure, Kubernetes, Docker, CI/CD — 99.9% uptime delivered from Nairobi.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <CtaLink href="/hire" label="Hire me" />
-                <CtaLink href="/work-with-me" label="Work with me" variant="ghost" />
+                <a
+                  href="/Joseph_Chege.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative overflow-hidden rounded-[2px] px-5 py-2.5 text-[11px] font-bold uppercase inline-flex font-mono transition-all duration-300 border border-(--color-border) hover:border-(--color-foreground)"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  <span className="flex items-center gap-2">
+                    Download Résumé
+                  </span>
+                </a>
                 <CtaAnchor href={whatsappLink(whatsappCtaMessage("general"))} label="WhatsApp" variant="ghost" external />
               </div>
 

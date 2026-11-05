@@ -5,9 +5,14 @@ import { themeConfig, Theme as ThemeType } from '@/lib/theme-config';
 
 export type Theme = ThemeType;
 
-const themeKeys: Theme[] = ['daylight'];
+const themeKeys: Theme[] = ['daylight', 'night'];
 
 function migrateTheme(): Theme {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('theme') as Theme | null;
+    if (stored && themeKeys.includes(stored)) return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'daylight';
+  }
   return 'daylight';
 }
 
@@ -52,8 +57,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
-    setTheme(themeKeys[0]);
-  }, []);
+    const next = themeKeys[0] === theme ? themeKeys[1] : themeKeys[0];
+    setTheme(next);
+  }, [theme]);
 
   const t = themeConfig.themes[theme];
 

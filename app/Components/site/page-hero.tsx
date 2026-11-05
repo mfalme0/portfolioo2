@@ -27,8 +27,8 @@ export function PageHero({
 }: PageHeroProps) {
   return (
     <section
-      className="relative w-full overflow-hidden section-grid border-b-4 border-black pt-32 pb-16 md:pt-40 md:pb-20"
-      style={{ backgroundColor: "var(--paper)" }}
+      className="relative w-full overflow-hidden section-grid border-b-4 pt-32 pb-16 md:pt-40 md:pb-20"
+      style={{ backgroundColor: "var(--paper)", borderColor: "var(--ink)" }}
     >
       <div
         className="absolute -top-1/4 right-[-8%] h-[60vh] w-[50vw] pointer-events-none"
@@ -37,7 +37,11 @@ export function PageHero({
           clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
         }}
       />
-      <div className="absolute right-8 top-28 h-16 w-16 rotate-45 border-4 border-black bg-[#F0C020] opacity-90" aria-hidden="true" />
+      <div
+        className="absolute right-8 top-28 h-16 w-16 rotate-45 border-4 opacity-90"
+        style={{ borderColor: "var(--ink)", backgroundColor: "var(--water)" }}
+        aria-hidden="true"
+      />
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-14">
         <Breadcrumbs items={crumbs} />
         <div className="mt-6 flex items-center gap-3">

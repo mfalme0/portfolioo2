@@ -25,6 +25,7 @@ const columns: {
       { label: "Work With Me", href: "/work-with-me" },
       { label: "Projects", href: "/work" },
       { label: "My Setup", href: "/setup" },
+      { label: "Homelab", href: "/homelab" },
       { label: "Writing", href: "/blog" },
       { label: "Contact", href: "/contact" },
     ],
@@ -54,7 +55,7 @@ const columns: {
     action: (
       <CookieSettingsButton
         className="mt-4 appearance-none cursor-pointer text-left text-[10px] font-mono font-bold tracking-[0.12em] uppercase transition-opacity hover:opacity-60"
-        style={{ color: "#E0E0E0", textDecoration: "underline", textUnderlineOffset: "3px" }}
+        style={{ color: "var(--sheet)", textDecoration: "underline", textUnderlineOffset: "3px" }}
       />
     ),
   },
@@ -64,14 +65,14 @@ export default function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative w-full" style={{ backgroundColor: "var(--ink)", color: "#fff", borderTop: "4px solid var(--ink)" }}>
+    <footer className="relative w-full" style={{ backgroundColor: "var(--ink)", color: "var(--sheet)", borderTop: "4px solid var(--ink)" }}>
       <div className="max-w-[1280px] mx-auto px-6 md:px-14 pt-16 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
           <div className="lg:col-span-2">
-            <span className="text-[11px] font-mono font-bold tracking-[0.24em] uppercase" style={{ color: "#fff" }}>
+            <span className="text-[11px] font-mono font-bold tracking-[0.24em] uppercase" style={{ color: "var(--sheet)" }}>
               Mfalme&middot;0
             </span>
-            <p className="text-xs font-mono leading-relaxed mt-3 max-w-xs" style={{ color: "#E0E0E0" }}>
+            <p className="text-xs font-mono leading-relaxed mt-3 max-w-xs" style={{ color: "var(--gravel)" }}>
               Software, infrastructure and systems that growing teams can trust.
             </p>
             <div className="flex items-center gap-4 mt-5">
@@ -83,7 +84,7 @@ export default function SiteFooter() {
                   rel="noopener noreferrer"
                   aria-label={s.label}
                   className="text-sm transition-all duration-300 hover:-translate-y-0.5 hover:opacity-60"
-                  style={{ color: "#fff" }}
+                  style={{ color: "var(--sheet)" }}
                 >
                   {s.icon}
                 </a>
@@ -106,10 +107,10 @@ export default function SiteFooter() {
               >
                 WhatsApp: {siteConfig.phone}
               </a>
-              <a href={`mailto:${siteConfig.email}`} className="block text-xs font-mono font-medium" style={{ color: "#E0E0E0" }}>
+              <a href={`mailto:${siteConfig.email}`} className="block text-xs font-mono font-medium" style={{ color: "var(--sheet)" }}>
                 {siteConfig.email}
               </a>
-              <span className="block text-xs font-mono font-medium" style={{ color: "#E0E0E0" }}>
+              <span className="block text-xs font-mono font-medium" style={{ color: "var(--sheet)" }}>
                 {siteConfig.location} &middot; {siteConfig.timezone}
               </span>
             </div>
@@ -123,7 +124,7 @@ export default function SiteFooter() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-xs font-medium transition-colors hover:text-(--color-accent)" style={{ color: "#fff" }}>
+                    <Link href={l.href} className="text-xs font-medium transition-colors hover:text-(--color-accent)" style={{ color: "var(--sheet)" }}>
                       {l.label}
                     </Link>
                   </li>
@@ -135,7 +136,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="mt-14 pt-6 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid var(--rule)" }}>
-          <p className="text-[10px] font-medium" style={{ color: "#E0E0E0" }}>
+          <p className="text-[10px] font-medium" style={{ color: "var(--sheet)" }}>
             &copy; {year} {siteConfig.name}. All rights reserved.
           </p>
           <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
@@ -144,7 +145,7 @@ export default function SiteFooter() {
                 key={doc.href}
                 href={doc.href}
                 className="text-[10px] font-medium transition-opacity hover:opacity-60"
-                style={{ color: "#E0E0E0" }}
+                style={{ color: "var(--sheet)" }}
               >
                 {doc.label}
               </Link>
@@ -152,7 +153,7 @@ export default function SiteFooter() {
           </nav>
           <div className="flex items-center gap-4">
             <span className="badge-est">Ref Mfalme&middot;0-2026</span>
-            <span className="text-[10px] font-medium" style={{ color: "#E0E0E0" }}>
+            <span className="text-[10px] font-medium" style={{ color: "var(--sheet)" }}>
               Designed &amp; Built in Nairobi
             </span>
           </div>
